@@ -15,13 +15,14 @@ export function setJwtToken(token: string) {
 	localStorage.setItem('accessToken', token);
 }
 
+// DEFINE
 export const logIn = async (nick: string, password: string): Promise<void> => {
 	try {
 		const { jwtToken } = await requestJwtToken({ nick, password });
 
 		if (jwtToken) {
-			updateStorage({ jwtToken });
-			updateUserInfo(jwtToken);
+			updateStorage({ jwtToken }); // LocalStorage.accessToken > BACKEND
+			updateUserInfo(jwtToken); // ReactiveVariable > FRONTEND
 		}
 	} catch (err) {
 		console.warn('login err', err);
@@ -154,8 +155,8 @@ export const updateUserInfo = (jwtToken: any) => {
 };
 
 export const logOut = () => {
-	deleteStorage();
-	deleteUserInfo();
+	deleteStorage(); // LocalStorage.accessToken > BACKEND
+	deleteUserInfo(); // ReactiveVariable > FRONTEND
 	window.location.reload();
 };
 
