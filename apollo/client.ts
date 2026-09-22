@@ -10,7 +10,7 @@ let apolloClient: ApolloClient<NormalizedCacheObject>;
 
 function getHeaders() {
 	const headers = {} as HeadersInit;
-	const token = getJwtToken();
+	const token = getJwtToken(); // LocalStorage.accessToken => BACKEND uchun kerak
 	// @ts-ignore
 	if (token) headers['Authorization'] = `Bearer ${token}`;
 	return headers;
