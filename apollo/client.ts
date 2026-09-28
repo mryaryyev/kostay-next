@@ -33,7 +33,7 @@ function createIsomorphicLink() {
 			operation.setContext(({ headers = {} }) => ({
 				headers: {
 					...headers,
-					...getHeaders(),
+					...getHeaders(), // bu yerda Headera token eklenir
 				},
 			}));
 			console.warn('requesting.. ', operation);
