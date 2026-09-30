@@ -83,21 +83,35 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 		setValue(newValue);
 		setSearchText('');
 
-		setMembersInquiry({ ...membersInquiry, page: 1, sort: 'createdAt' });
-
 		switch (newValue) {
 			case 'ACTIVE':
-				setMembersInquiry({ ...membersInquiry, search: { memberStatus: MemberStatus.ACTIVE } });
+				setMembersInquiry({
+					...membersInquiry,
+					page: 1,
+					search: { ...membersInquiry.search, text: '', memberStatus: MemberStatus.ACTIVE },
+				});
 				break;
 			case 'BLOCK':
-				setMembersInquiry({ ...membersInquiry, search: { memberStatus: MemberStatus.BLOCK } });
+				setMembersInquiry({
+					...membersInquiry,
+					page: 1,
+					search: { ...membersInquiry.search, text: '', memberStatus: MemberStatus.BLOCK },
+				});
 				break;
 			case 'DELETE':
-				setMembersInquiry({ ...membersInquiry, search: { memberStatus: MemberStatus.DELETE } });
+				setMembersInquiry({
+					...membersInquiry,
+					page: 1,
+					search: { ...membersInquiry.search, text: '', memberStatus: MemberStatus.DELETE },
+				});
 				break;
 			default:
 				delete membersInquiry?.search?.memberStatus;
-				setMembersInquiry({ ...membersInquiry });
+				setMembersInquiry({
+					...membersInquiry,
+					page: 1,
+					search: { ...membersInquiry.search, text: '' },
+				});
 				break;
 		}
 	};
@@ -129,6 +143,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 		try {
 			setMembersInquiry({
 				...membersInquiry,
+				page: 1,
 				search: {
 					...membersInquiry.search,
 					text: searchText,
@@ -155,7 +170,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 				});
 			} else {
 				delete membersInquiry?.search?.memberType;
-				setMembersInquiry({ ...membersInquiry });
+				setMembersInquiry({ ...membersInquiry, page: 1 });
 			}
 		} catch (err: any) {
 			console.log('searchTypeHandler: ', err.message);
@@ -217,6 +232,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 														setSearchText('');
 														setMembersInquiry({
 															...membersInquiry,
+															page: 1,
 															search: {
 																...membersInquiry.search,
 																text: '',
@@ -276,7 +292,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 AdminUsers.defaultProps = {
 	initialInquiry: {
 		page: 1,
-		limit: 10,
+		limit: 5,
 		sort: 'createdAt',
 		search: {},
 	},
