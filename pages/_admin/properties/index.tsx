@@ -27,7 +27,7 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 	const [value, setValue] = useState(
 		propertiesInquiry?.search?.propertyStatus ? propertiesInquiry?.search?.propertyStatus : 'ALL',
 	);
-	const [searchType, setSearchType] = useState('ALL');
+	const [searchLocation, setSearchLocation] = useState('ALL');
 
 	/** APOLLO REQUESTS **/
 	const [updatePropertyByAdmin] = useMutation(UPDATE_PROPERTY_BY_ADMIN);
@@ -80,21 +80,43 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 	const tabChangeHandler = async (event: any, newValue: string) => {
 		setValue(newValue);
 
-		setPropertiesInquiry({ ...propertiesInquiry, page: 1, sort: 'createdAt' });
-
 		switch (newValue) {
 			case 'ACTIVE':
-				setPropertiesInquiry({ ...propertiesInquiry, search: { propertyStatus: PropertyStatus.ACTIVE } });
+				setPropertiesInquiry({
+					...propertiesInquiry,
+					page: 1,
+					search: {
+						...propertiesInquiry.search,
+						propertyStatus: PropertyStatus.ACTIVE,
+					},
+				});
 				break;
 			case 'SOLD':
-				setPropertiesInquiry({ ...propertiesInquiry, search: { propertyStatus: PropertyStatus.SOLD } });
+				setPropertiesInquiry({
+					...propertiesInquiry,
+					page: 1,
+					search: {
+						...propertiesInquiry.search,
+						propertyStatus: PropertyStatus.SOLD,
+					},
+				});
 				break;
 			case 'DELETE':
-				setPropertiesInquiry({ ...propertiesInquiry, search: { propertyStatus: PropertyStatus.DELETE } });
+				setPropertiesInquiry({
+					...propertiesInquiry,
+					page: 1,
+					search: {
+						...propertiesInquiry.search,
+						propertyStatus: PropertyStatus.DELETE,
+					},
+				});
 				break;
 			default:
 				delete propertiesInquiry?.search?.propertyStatus;
-				setPropertiesInquiry({ ...propertiesInquiry });
+				setPropertiesInquiry({
+					...propertiesInquiry,
+					page: 1,
+				});
 				break;
 		}
 	};
@@ -116,9 +138,9 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 		}
 	};
 
-	const searchTypeHandler = async (newValue: string) => {
+	const searchLocationHandler = async (newValue: string) => {
 		try {
-			setSearchType(newValue);
+			setSearchLocation(newValue);
 
 			if (newValue !== 'ALL') {
 				setPropertiesInquiry({
@@ -132,16 +154,15 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 				});
 			} else {
 				delete propertiesInquiry?.search?.propertyLocationList;
-				setPropertiesInquiry({ ...propertiesInquiry });
+				setPropertiesInquiry({ ...propertiesInquiry, page: 1 });
 			}
 		} catch (err: any) {
-			console.log('searchTypeHandler: ', err.message);
+			console.log('searchLocationHandler: ', err.message);
 		}
 	};
 
 	const updatePropertyHandler = async (updateData: PropertyUpdate) => {
 		try {
-			console.log('+updateData: ', updateData);
 			await updatePropertyByAdmin({
 				variables: {
 					input: updateData,
@@ -192,12 +213,12 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 							</List>
 							<Divider />
 							<Stack className={'search-area'} sx={{ m: '24px' }}>
-								<Select sx={{ width: '160px', mr: '20px' }} value={searchType}>
-									<MenuItem value={'ALL'} onClick={() => searchTypeHandler('ALL')}>
+								<Select sx={{ width: '160px', mr: '20px' }} value={searchLocation}>
+									<MenuItem value={'ALL'} onClick={() => searchLocationHandler('ALL')}>
 										ALL
 									</MenuItem>
 									{Object.values(PropertyLocation).map((location: string) => (
-										<MenuItem value={location} onClick={() => searchTypeHandler(location)} key={location}>
+										<MenuItem value={location} onClick={() => searchLocationHandler(location)} key={location}>
 											{location}
 										</MenuItem>
 									))}
