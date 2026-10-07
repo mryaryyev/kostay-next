@@ -13,13 +13,13 @@ const Notice = () => {
 		{
 			no: 1,
 			event: true,
-			title: 'Register to use and get discounts',
-			date: '01.03.2024',
+			title: 'Welcome to Kostay: find stays across South Korea',
+			date: '07.10.2026',
 		},
 		{
 			no: 2,
-			title: "It's absolutely free to upload and trade properties",
-			date: '31.03.2024',
+			title: 'Hosts can now list their stays on Kostay',
+			date: '07.10.2026',
 		},
 	];
 

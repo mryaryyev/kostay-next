@@ -15,33 +15,31 @@ const About: NextPage = () => {
 				<Stack className={'intro'}>
 					<Stack className={'container'}>
 						<Stack className={'left'}>
-							<strong>We're on a Mission to Change View of Real Estate Field.</strong>
+							<strong>We're on a Mission to Make Finding a Stay in Korea Simple.</strong>
 						</Stack>
 						<Stack className={'right'}>
 							<p>
-								It doesn’t matter how organized you are — a surplus of toys will always ensure your house is a mess
-								waiting to happen. Fortunately, getting kids on board with the idea of ditching their stuff is a lot
-								easier than it sounds.
+								Kostay brings together stays across South Korea, from city apartments in Seoul to houses on Jeju.
+								Every listing shows its nightly price in Korean won and how many guests it fits.
 								<br />
 								<br />
-								Maecenas quis viverra metus, et efficitur ligula. Nam congue augue et ex congue, sed luctus lectus
-								congue. Integer convallis condimentum sem. Duis elementum tortor eget condimentum tempor. Praesent
-								sollicitudin lectus ut pharetra pulvinar.
+								Hosts list and manage their own stays, and guests can search by location, stay type, rooms, beds,
+								number of guests and nightly price.
 							</p>
 							<Stack className={'boxes'}>
 								<div className={'box'}>
 									<div>
 										<img src="/img/icons/garden.svg" alt="" />
 									</div>
-									<span>Modern Villa</span>
-									<p>Nullam sollicitudin blandit Nullam maximus.</p>
+									<span>Stays across Korea</span>
+									<p>Apartments, villas and houses in nine regions.</p>
 								</div>
 								<div className={'box'}>
 									<div>
 										<img src="/img/icons/securePayment.svg" alt="" />
 									</div>
-									<span>Secure Payment</span>
-									<p>Nullam sollicitudin blandit Nullam maximus.</p>
+									<span>Clear Nightly Prices</span>
+									<p>Every price is shown per night in KRW.</p>
 								</div>
 							</Stack>
 						</Stack>
@@ -54,24 +52,24 @@ const About: NextPage = () => {
 						</Stack>
 						<Stack className={'info'}>
 							<Box component={'div'}>
-								<strong>4M</strong>
-								<p>Award Winning</p>
+								<strong>9</strong>
+								<p>Regions</p>
 							</Box>
 							<Box component={'div'}>
-								<strong>12K</strong>
-								<p>Property Ready</p>
+								<strong>3</strong>
+								<p>Stay types</p>
 							</Box>
 							<Box component={'div'}>
-								<strong>20M</strong>
-								<p>Happy Customer</p>
+								<strong>KRW</strong>
+								<p>Nightly prices</p>
 							</Box>
 						</Stack>
 					</Stack>
 				</Stack>
 				<Stack className={'agents'}>
 					<Stack className={'container'}>
-						<span className={'title'}>Our Exclusive Agetns</span>
-						<p className={'desc'}>Aliquam lacinia diam quis lacus euismod</p>
+						<span className={'title'}>Our Hosts</span>
+						<p className={'desc'}>Meet the hosts who list stays on Kostay.</p>
 						<Stack className={'wrap'}>
 							{/*{[1, 2, 3, 4, 5].map(() => {*/}
 							{/*	return <AgentCard />;*/}
@@ -82,14 +80,14 @@ const About: NextPage = () => {
 				<Stack className={'options'}>
 					<img src="/img/banner/aboutBanner.svg" alt="" className={'about-banner'} />
 					<Stack className={'container'}>
-						<strong>Let’s find the right selling option for you</strong>
+						<strong>Hosting on Kostay</strong>
 						<Stack>
 							<div className={'icon-box'}>
 								<img src="/img/icons/security.svg" alt="" />
 							</div>
 							<div className={'text-box'}>
-								<span>Property Management</span>
-								<p>Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.</p>
+								<span>List your stay</span>
+								<p>Add photos, a description, a nightly price in KRW and the maximum number of guests.</p>
 							</div>
 						</Stack>
 						<Stack>
@@ -97,8 +95,8 @@ const About: NextPage = () => {
 								<img src="/img/icons/keywording.svg" alt="" />
 							</div>
 							<div className={'text_-box'}>
-								<span>Property Management</span>
-								<p>Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.</p>
+								<span>Keep it up to date</span>
+								<p>Edit your active listings at any time from My Stays.</p>
 							</div>
 						</Stack>
 						<Stack>
@@ -106,8 +104,8 @@ const About: NextPage = () => {
 								<img src="/img/icons/investment.svg" alt="" />
 							</div>
 							<div className={'text-box'}>
-								<span>Property Management</span>
-								<p>Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.</p>
+								<span>Pause when you need to</span>
+								<p>Deactivate a listing to hide it from guests, and reactivate it when you're ready.</p>
 							</div>
 						</Stack>
 						<Stack className={'btn'}>
@@ -116,23 +114,11 @@ const About: NextPage = () => {
 						</Stack>
 					</Stack>
 				</Stack>
-				<Stack className={'partners'}>
-					<Stack className={'container'}>
-						<span>Trusted bu the world's best</span>
-						<Stack className={'wrap'}>
-							<img src="/img/icons/brands/amazon.svg" alt="" />
-							<img src="/img/icons/brands/amd.svg" alt="" />
-							<img src="/img/icons/brands/cisco.svg" alt="" />
-							<img src="/img/icons/brands/dropcam.svg" alt="" />
-							<img src="/img/icons/brands/spotify.svg" alt="" />
-						</Stack>
-					</Stack>
-				</Stack>
 				<Stack className={'help'}>
 					<Stack className={'container'}>
 						<Box component={'div'} className={'left'}>
-							<strong>Need help? Talk to our expert.</strong>
-							<p>Talk to our experts or Browse through more properties.</p>
+							<strong>Need help? Talk to our team.</strong>
+							<p>Contact our team or browse more stays.</p>
 						</Box>
 						<Box component={'div'} className={'right'}>
 							<div className={'white'}>
