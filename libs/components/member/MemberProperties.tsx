@@ -57,7 +57,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 			<div id="member-properties-page">
 				<Stack className="main-title-box">
 					<Stack className="right-box">
-						<Typography className="main-title">Properties</Typography>
+						<Typography className="main-title">Stays</Typography>
 					</Stack>
 				</Stack>
 				<Stack className="properties-list-box">
@@ -73,7 +73,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 						{agentProperties?.length === 0 && (
 							<div className={'no-data'}>
 								<img src="/img/icons/icoAlert.svg" alt="" />
-								<p>No Property found!</p>
+								<p>No stays found!</p>
 							</div>
 						)}
 						{agentProperties?.map((property: Property) => {
@@ -92,7 +92,9 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 									/>
 								</Stack>
 								<Stack className="total-result">
-									<Typography>{total} property available</Typography>
+									<Typography>
+										{total} stay{total === 1 ? '' : 's'} available
+									</Typography>
 								</Stack>
 							</Stack>
 						)}

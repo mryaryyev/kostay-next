@@ -63,7 +63,7 @@ const headCells: readonly HeadCell[] = [
 		id: 'agent',
 		numeric: false,
 		disablePadding: false,
-		label: 'AGENT',
+		label: 'HOST',
 	},
 	{
 		id: 'location',

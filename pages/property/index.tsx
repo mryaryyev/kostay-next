@@ -172,16 +172,16 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 						<Stack className="main-config" mb={'76px'}>
 							<Stack className={'list-config'}>
 								{!router.isReady || getPropertiesLoading ? (
-									<div className="no-data" role="status">Loading properties…</div>
+									<div className="no-data" role="status">Loading stays…</div>
 								) : getPropertiesError ? (
 									<div className="no-data" role="alert">
-										<p>Could not load properties. Please try again.</p>
+										<p>Could not load stays. Please try again.</p>
 										<Button onClick={() => getPropertiesRefetch().catch(() => undefined)}>Retry</Button>
 									</div>
 								) : properties.length === 0 ? (
 									<div className={'no-data'}>
 										<img src="/img/icons/icoAlert.svg" alt="" />
-										<p>No Properties found!</p>
+										<p>No stays found!</p>
 									</div>
 								) : (
 									properties.map((property: Property) => {
@@ -207,7 +207,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 								{!getPropertiesLoading && !getPropertiesError && properties.length !== 0 && (
 									<Stack className="total-result">
 										<Typography>
-											Total {total} propert{total > 1 ? 'ies' : 'y'} found
+											Total {total} stay{total > 1 ? 's' : ''} found
 										</Typography>
 									</Stack>
 								)}
