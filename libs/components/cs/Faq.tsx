@@ -52,238 +52,237 @@ const Faq = () => {
 		property: [
 			{
 				id: '00f5a45ed8897f8090116a01',
-				subject: 'Are the properties displayed on the site reliable?',
-				content: 'of course we only have verified properties',
+				subject: 'Are the stays listed on Kostay real?',
+				content: 'Every stay is listed by a registered host. If a listing looks wrong, please report it to the admin.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a22',
-				subject: 'What types of properties do you offer?',
-				content: 'We offer single-family homes, condos, townhouses, apartments, and penthouses',
+				subject: 'What types of stays can I find?',
+				content: 'Apartments, villas and houses. Use the Stay Type filter to choose.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a21',
-				subject: 'How can I search for properties on your website?',
-				content: 'Simply use our search bar to enter location, price range, bedrooms/bathrooms, and property type.',
+				subject: 'How do I search for stays?',
+				content:
+					'Use the filters on the Stays page: location, stay type, rooms, beds, number of guests and a nightly price range in KRW.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a23',
-				subject: 'Do you provide assistance for first-time homebuyers?',
-				content: 'Yes, we guide you through the process and help find suitable financing.',
+				subject: 'Can I book just one room of a stay?',
+				content: 'No. Bookings are for the whole stay; separate rooms are not offered.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a24',
-				subject: 'What should I consider when buying a property?',
-				content: 'Location, condition, size, amenities, and future development plans.',
+				subject: 'What do the price and guest numbers mean?',
+				content:
+					'The price is the nightly rate in Korean won (KRW). The guest number is the maximum number of guests the stay allows.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a25',
-				subject: 'How long does the home-buying process typically take?',
-				content: 'Usually 3 to 6 days, depending on various factors.',
+				subject: "Why can't I find a stay I saw before?",
+				content: 'Hosts can pause a listing at any time. Paused stays are hidden until the host reactivates them.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a29',
-				subject: 'What happens if I encounter issues with the property after purchase?',
-				content: 'We offer post-purchase support to address any concerns promptly.',
+				subject: 'Can a stay be booked on the day another guest checks out?',
+				content: "Yes. The check-out day is free for the next guest's check-in.",
 			},
 			{
 				id: '00f5a45ed8897f8090116a28',
-				subject: 'Do you offer properties in specific neighborhoods?',
-				content: 'Yes, we have listings in various neighborhoods based on your preferences.',
+				subject: 'Do you have stays in specific areas?',
+				content:
+					'Yes. Stays are grouped by region, including Seoul, Busan, Incheon, Daegu, Gyeongju, Gwangju, Chonju, Daejon and Jeju.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a27',
-				subject: 'Can I sell my property through your website?',
-				content: 'Absolutely, we provide services for selling properties as well.',
+				subject: 'Can I list my own place?',
+				content: 'Yes. Sign up as a host and add your stay from My Page.',
 			},
 			{
 				id: '00f5a45ed8897f8090116b99',
-				subject: 'What if I need help understanding legal aspects of property purchase?',
-				content: 'Our team can provide basic guidance and recommend legal professionals if needed.',
+				subject: 'Can I see which dates a stay is available?',
+				content: 'Not yet. An availability calendar is not available on the site yet.',
 			},
 		],
 		payment: [
 			{
 				id: '00f5a45ed8897f8090116a02',
-				subject: 'How can I make the payment?',
-				content: 'you make the payment through an agent!',
+				subject: 'Can I book or pay for a stay on Kostay now?',
+				content: 'Not yet. Booking and payment screens are not available on the site yet.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a91',
-				subject: 'Are there any additional fees for using your services?',
-				content: 'No, our services are free for buyers. Sellers pay a commission upon successful sale.',
+				subject: 'Are there service fees?',
+				content: 'This has not been decided yet.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a92',
-				subject: 'Is there an option for installment payments?',
-				content: 'Yes, we offer installment payment plans for certain properties. Please inquire for more details.',
+				subject: 'How is the total price of a booking calculated?',
+				content:
+					'The nightly price in KRW multiplied by the number of nights. Kostay always calculates the amount; it is never entered by hand.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a93',
-				subject: 'Is my payment information secure on your website?',
-				content:
-					'Yes, we use industry-standard encryption technology to ensure the security of your payment information.',
+				subject: 'Which currency are prices shown in?',
+				content: 'All prices are shown per night in Korean won (KRW). Kostay does not convert currencies.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a94',
-				subject: 'Can I make payments online through your website?',
-				content: "Yes, you can securely make payments online through our website's payment portal.",
+				subject: 'Can I pay online with a card?',
+				content: 'Not yet. Payments are currently simulated and no payment provider is connected.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a95',
-				subject: "What happens if there's an issue with my payment?",
-				content: 'If you encounter any issues with your payment, please contact our support team for assistance.',
+				subject: 'When can a booking be paid?',
+				content: 'Only after the host has confirmed it.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a96',
-				subject: 'Do you offer refunds for payments made?',
+				subject: 'Is a paid booking refunded if I cancel?',
 				content:
-					'Refund policies vary depending on the circumstances. Please refer to our refund policy or contact us for more information.',
+					'Yes. Cancelling a paid booking refunds it in full. Payments are currently simulated, so no real money is charged.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a97',
-				subject: 'Are there any discounts or incentives for early payments?',
-				content:
-					'We occasionally offer discounts or incentives for early payments. Check our promotions or contact us for current offers.',
+				subject: 'Are there cancellation deadlines or partial refunds?',
+				content: 'This has not been decided yet.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a99',
-				subject: 'How long does it take for payments to be processed?',
-				content:
-					'Payment processing times vary depending on the payment method used. Typically, credit/debit card payments are processed instantly',
+				subject: 'Do I need an account to book a stay?',
+				content: 'Yes. Booking requires a logged-in member.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a98',
-				subject: 'Are there penalties for late payments?',
-				content:
-					'Late payment penalties may apply depending on the terms of your agreement. Please refer to your contract or contact us for details.',
+				subject: 'Which payment providers will be supported?',
+				content: 'This has not been decided yet.',
 			},
 		],
 		buyers: [
 			{
 				id: '00f5a45ed8897f8090116a03',
-				subject: 'What should buyers pay attention to?',
-				content: 'Buyers should check and decide whether the property they want to buy or rent is actually suitable!',
+				subject: 'What should I check before choosing a stay?',
+				content:
+					'The location, the maximum number of guests, rooms and beds, the nightly price, and the photos and description.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a85',
-				subject: 'How can I determine if a property is within my budget?',
-				content:
-					'Calculate your budget by considering your income, down payment, and potential mortgage payments. Our agents can assist you within your budget.',
+				subject: 'How do I find stays within my budget?',
+				content: 'Set a minimum and maximum nightly price in the filter, or sort the list by lowest price.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a84',
-				subject: 'What documents do I need to provide when purchasing a property?',
-				content:
-					"You'll typically need identification, proof of income, bank statements, and any necessary loan documentation. Our team will guide you through.",
+				subject: 'How many guests can I bring?',
+				content: 'Up to the maximum number of guests shown on the stay. A booking cannot exceed it.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a83',
-				subject: 'What factors should I consider when choosing a neighborhood?',
-				content:
-					'Consider factors such as location, safety, schools, amenities, transportation, and future development plans.',
+				subject: 'What should I consider when choosing an area?',
+				content: 'Transport links, nearby attractions, safety and amenities.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a82',
-				subject: 'Can I negotiate the price of a property?',
+				subject: 'How can I learn more about a host?',
 				content:
-					'Yes, you can negotiate the price of a property. Our agents will assist you in making competitive offers and negotiating terms with the seller.',
+					"Open the host's page from the Hosts list to see their profile, their stays and comments from other members.",
 			},
 			{
 				id: '00f5a45ed8897f8090116a81',
-				subject: 'What are some red flags to watch out for when viewing properties?',
+				subject: 'What should I watch out for in a listing?',
 				content:
-					'Watch out for signs of structural damage, water damage, mold, outdated systems, and undesirable neighborhood conditions.',
+					'Be careful with listings that have few photos or a vague description. If something looks suspicious, report it to the admin.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a80',
-				subject: 'Do you provide assistance with property inspections?',
+				subject: 'What happens after I request a booking?',
 				content:
-					'Yes, we can recommend reputable inspectors and accompany you during property inspections to identify any potential issues.',
+					'The booking starts as pending, and the host then confirms it. Booking screens are not available on the site yet.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a79',
-				subject: 'How long does it typically take to find the right property?',
+				subject: 'Which dates can I choose?',
 				content:
-					'The timeframe varies depending on your preferences and market conditions. Our agents will work diligently to find the right property as quickly as possible.',
+					'A check-in and a check-out date. Check-in cannot be in the past, and check-out must be after check-in.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a78',
-				subject: 'What are the advantages of using a real estate agent when buying a property?',
-				content:
-					'Real estate agents provide expertise, negotiation skills, and guidance throughout the buying process, ultimately saving you time and hassle.',
+				subject: 'Can I cancel a booking?',
+				content: 'Yes, you can cancel your own pending or confirmed booking. A paid booking is refunded in full.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a77',
-				subject: 'What happens if I change my mind about a property after making an offer?',
+				subject: 'Can I save stays to look at later?',
 				content:
-					'Depending on the terms of the offer and the stage of the transaction, you may have options to withdraw your offer.',
+					'Yes. Like a stay to add it to My Favorites. Stays you open also appear under Recently Visited on My Page.',
 			},
 		],
 
 		agents: [
 			{
 				id: '00f5a45ed8897f8090116a04',
-				subject: 'What do I need to do if I want to become an agent?',
+				subject: 'How do I become a host?',
 				content:
-					'If you really decide to become an agent, you should read our terms and conditions and contact the admin!',
+					'Choose Host as your account type when you sign up. If you already have an account, read our terms and contact the admin.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a62',
-				subject: 'What qualifications do I need to become a real estate agent?',
-				content: 'Complete pre-licensing course, pass licensing exam, meet state requirements.',
+				subject: 'How do I list a stay?',
+				content:
+					'Go to My Page → Add Stay. Fill in the details, nightly price in KRW, maximum guests and photos, then save.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a63',
-				subject: 'How do I find clients as a new real estate agent?',
-				content: 'Build network, use online/offline marketing, join reputable brokerage.',
+				subject: 'Can I edit a listing?',
+				content: 'Yes, active listings can be edited from My Stays. To edit a paused listing, reactivate it first.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a64',
-				subject: 'What are some effective marketing strategies for selling properties?',
-				content: 'Use social media, online platforms, networking events, and direct mail.',
+				subject: 'How do I pause a listing?',
+				content: 'In My Stays, open the status menu and choose Deactivate. Choose Reactivate to show it to guests again.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a65',
-				subject: 'How do I handle negotiations with buyers and sellers?',
-				content: 'Develop strong negotiation skills, understand market trends, represent client interests.',
+				subject: 'How should I set my nightly price?',
+				content: 'Enter a whole number in KRW per night. Compare similar stays in your area to choose a fair rate.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a66',
-				subject: 'What should I do to stay updated with market trends and changes?',
-				content: 'Attend industry events, follow real estate news, participate in training.',
+				subject: 'What makes a good listing?',
+				content: 'Clear photos, an accurate description, the correct number of guests and an up-to-date price.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a67',
-				subject: 'How do I handle difficult clients or situations?',
+				subject: 'Do I have to approve bookings?',
 				content:
-					'Approach with professionalism, empathy, and patience. Listen actively, address issues collaboratively.',
+					'Yes. Every booking starts as pending, and you confirm it as the host. Booking screens are not available on the site yet.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a68',
-				subject: 'What tools and technologies should I utilize as a real estate agent?',
-				content: 'Use CRM software, virtual tours, digital marketing tools, and mobile apps.',
+				subject: 'Can I book my own stay?',
+				content: 'No. Hosts cannot book their own stays.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a69',
-				subject: 'How do I ensure compliance with real estate laws and regulations?',
-				content: 'Stay updated with laws, attend education courses, consult legal professionals.',
+				subject: 'What rules apply to hosting in South Korea?',
+				content:
+					"Hosts are responsible for following local laws and registration rules for short-term stays. If you're unsure, consult a local professional.",
 			},
 			{
 				id: '00f5a45ed8897f8090116a70',
-				subject: 'What strategies can I use to grow my real estate business?',
-				content: 'Build relationships, provide exceptional service, seek referrals, and continuously improve skills.',
+				subject: 'What happens to existing bookings if I pause or delete a listing?',
+				content: 'This has not been decided yet.',
 			},
 		],
 		membership: [
 			{
 				id: '00f5a45ed8897f8090116a05',
 				subject: 'Do you have a membership service on your site?',
-				content: 'membership service is not available on our site yet!',
+				content: 'Kostay has member accounts, but there is no separate membership program.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a60',
 				subject: 'What are the benefits of becoming a member on your website?',
-				content: 'We currently do not offer membership benefits, but stay tuned for updates on any future offerings.',
+				content: 'We currently do not offer membership benefits.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a59',
@@ -298,23 +297,22 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a57',
 				subject: 'How can I sign up for a membership on your site?',
-				content: 'As of now, we do not have a sign-up process for memberships.',
+				content: 'You can create an account from Login/Signup. A separate membership program does not exist.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a56',
-				subject: 'Do members receive discounts on property listings or services?',
+				subject: 'Do members receive discounts on stays or services?',
 				content: 'Membership discounts are not part of our current offerings.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a55',
 				subject: 'Are there plans to introduce a membership program in the future?',
-				content:
-					"While we can't confirm any plans at this time, we're always exploring ways to enhance our services for users.",
+				content: 'This has not been decided yet.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a54',
 				subject: 'What kind of content or benefits can members expect if a membership program is introduced?',
-				content: "We're evaluating potential benefits and features, but specifics are not available yet.",
+				content: 'This has not been decided yet.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a33',
@@ -341,7 +339,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a45',
 				subject: 'Are there guidelines for posting?',
-				content: 'Yes, follow our community guidelines.',
+				content: 'There is no separate guidelines page yet. Please be respectful to other members.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a46',
@@ -351,7 +349,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a47',
 				subject: 'Can I connect with other members outside of the community section?',
-				content: 'Currently, no.',
+				content: 'Yes. You can follow other members from their page and use the site chat.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a48',
@@ -376,7 +374,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a52',
 				subject: 'Are there moderators?',
-				content: 'Yes, we have moderators.',
+				content: 'Admins can edit and remove posts.',
 			},
 		],
 		other: [
@@ -422,7 +420,7 @@ const Faq = () => {
 			},
 			{
 				id: '00f5a45ed8897f8090116a31',
-				subject: 'Do you host events or webinars related to real estate?',
+				subject: 'Do you host events or webinars related to travel or hosting?',
 				content: "We're not hosting events or webinars at this time.",
 			},
 			{
@@ -445,7 +443,7 @@ const Faq = () => {
 							changeCategoryHandler('property');
 						}}
 					>
-						Property
+						Stays
 					</div>
 					<div
 						className={category === 'payment' ? 'active' : ''}
@@ -461,7 +459,7 @@ const Faq = () => {
 							changeCategoryHandler('buyers');
 						}}
 					>
-						Foy Buyers
+						For Guests
 					</div>
 					<div
 						className={category === 'agents' ? 'active' : ''}
@@ -469,7 +467,7 @@ const Faq = () => {
 							changeCategoryHandler('agents');
 						}}
 					>
-						For Agents
+						For Hosts
 					</div>
 					<div
 						className={category === 'membership' ? 'active' : ''}
