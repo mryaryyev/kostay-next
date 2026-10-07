@@ -12,6 +12,10 @@ import { PropertiesInquiry } from '../../types/property/property.input';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { normalizePropertySearch } from '../../utils';
+import moment from 'moment';
+
+const DATE_FORMAT = 'YYYY-MM-DD';
+const MAX_GUESTS_STEPPER = 16;
 
 const style = {
 	position: 'absolute' as 'absolute',
@@ -45,11 +49,18 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 	const locationRef: any = useRef();
 	const typeRef: any = useRef();
 	const roomsRef: any = useRef();
+	const datesRef: any = useRef();
+	const guestsRef: any = useRef();
 	const router = useRouter();
 	const [openAdvancedFilter, setOpenAdvancedFilter] = useState(false);
 	const [openLocation, setOpenLocation] = useState(false);
 	const [openType, setOpenType] = useState(false);
 	const [openRooms, setOpenRooms] = useState(false);
+	const [openDates, setOpenDates] = useState(false);
+	const [openGuests, setOpenGuests] = useState(false);
+	// Dates travel as separate URL params; getProperties has no availability filter yet.
+	const [checkIn, setCheckIn] = useState('');
+	const [checkOut, setCheckOut] = useState('');
 	const [propertyLocation, setPropertyLocation] = useState<PropertyLocation[]>(Object.values(PropertyLocation));
 	const [propertyType, setPropertyType] = useState<PropertyType[]>(Object.values(PropertyType));
 
@@ -57,6 +68,17 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 	const guestError =
 		guestsCount !== '' &&
 		(!Number.isInteger(Number(guestsCount)) || Number(guestsCount) < 1 || Number(guestsCount) > 2147483647);
+	const today = moment().format(DATE_FORMAT);
+	const minCheckOut = checkIn ? moment(checkIn, DATE_FORMAT).add(1, 'day').format(DATE_FORMAT) : today;
+	const datesError =
+		(checkIn !== '' && checkIn < today) ||
+		(checkIn !== '' && checkOut !== '' && checkOut <= checkIn) ||
+		(checkIn === '') !== (checkOut === '');
+	const datesLabel =
+		checkIn && checkOut
+			? `${moment(checkIn, DATE_FORMAT).format('MMM D')} – ${moment(checkOut, DATE_FORMAT).format('MMM D')}`
+			: 'Check-in — Check-out';
+	const guestsNumber = guestsCount === '' || guestError ? 0 : Number(guestsCount);
 
 	/** LIFECYCLES **/
 	useEffect(() => {
@@ -72,6 +94,14 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 			if (!roomsRef?.current?.contains(event.target)) {
 				setOpenRooms(false);
 			}
+
+			if (!datesRef?.current?.contains(event.target)) {
+				setOpenDates(false);
+			}
+
+			if (!guestsRef?.current?.contains(event.target)) {
+				setOpenGuests(false);
+			}
 		};
 
 		document.addEventListener('mousedown', clickHandler);
@@ -83,9 +113,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 
 	/** HANDLERS **/
 	const advancedFilterHandler = (status: boolean) => {
-		setOpenLocation(false);
-		setOpenRooms(false);
-		setOpenType(false);
+		disableAllStateHandler();
 		setOpenAdvancedFilter(status);
 	};
 
@@ -93,24 +121,59 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 		setOpenLocation((prev) => !prev);
 		setOpenRooms(false);
 		setOpenType(false);
+		setOpenDates(false);
+		setOpenGuests(false);
 	};
 
 	const typeStateChangeHandler = () => {
 		setOpenType((prev) => !prev);
 		setOpenLocation(false);
 		setOpenRooms(false);
+		setOpenDates(false);
+		setOpenGuests(false);
+	};
+
+	const datesStateChangeHandler = () => {
+		setOpenDates((prev) => !prev);
+		setOpenLocation(false);
+		setOpenType(false);
+		setOpenRooms(false);
+		setOpenGuests(false);
+	};
+
+	const guestsStateChangeHandler = () => {
+		setOpenGuests((prev) => !prev);
+		setOpenLocation(false);
+		setOpenType(false);
+		setOpenRooms(false);
+		setOpenDates(false);
 	};
 
 	const roomStateChangeHandler = () => {
 		setOpenRooms((prev) => !prev);
 		setOpenType(false);
 		setOpenLocation(false);
+		setOpenDates(false);
+		setOpenGuests(false);
 	};
 
 	const disableAllStateHandler = () => {
 		setOpenRooms(false);
 		setOpenType(false);
 		setOpenLocation(false);
+		setOpenDates(false);
+		setOpenGuests(false);
+	};
+
+	const checkInChangeHandler = (value: string) => {
+		setCheckIn(value);
+		// Keep check-out after check-in: drop it if the new check-in passes it.
+		if (checkOut && value && checkOut <= value) setCheckOut('');
+	};
+
+	const guestsStepHandler = (delta: number) => {
+		const next = Math.min(MAX_GUESTS_STEPPER, Math.max(1, guestsNumber + delta));
+		setGuestsCount(String(next));
 	};
 
 	const propertyLocationSelectHandler = useCallback(
@@ -141,7 +204,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 						typeList: [value],
 					},
 				});
-				roomStateChangeHandler();
+				datesStateChangeHandler();
 			} catch (err: any) {
 				console.log('ERROR, propertyTypeSelectHandler:', err);
 			}
@@ -228,11 +291,18 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 	const resetFilterHandler = () => {
 		setSearchFilter(normalizePropertySearch(initialInput, initialInput));
 		setGuestsCount('');
+		setCheckIn('');
+		setCheckOut('');
 	};
 
 	const pushSearchHandler = async () => {
 		if (guestError) {
 			setOpenAdvancedFilter(true);
+			return;
+		}
+		if (datesError) {
+			disableAllStateHandler();
+			setOpenDates(true);
 			return;
 		}
 		try {
@@ -241,7 +311,10 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 				page: 1,
 				search: { ...searchFilter.search, guestsCount: guestsCount === '' ? undefined : Number(guestsCount) },
 			}, initialInput);
-			await router.push({ pathname: '/property', query: { input: JSON.stringify(input) } });
+			await router.push({
+				pathname: '/property',
+				query: { input: JSON.stringify(input), ...(checkIn && checkOut ? { checkIn, checkOut } : {}) },
+			});
 		} catch (err: any) {
 			console.log('ERROR, pushSearchHandler:', err);
 		}
@@ -259,12 +332,20 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							<ExpandMoreIcon />
 						</Box>
 						<Box className={`box ${openType ? 'on' : ''}`} onClick={typeStateChangeHandler}>
-							<span> {searchFilter?.search?.typeList ? searchFilter?.search?.typeList[0] : t('Property type')} </span>
+							<span> {searchFilter?.search?.typeList ? searchFilter?.search?.typeList[0] : 'Stay type'} </span>
+							<ExpandMoreIcon />
+						</Box>
+						<Box className={`box ${openDates ? 'on' : ''} ${datesError ? 'invalid' : ''}`} onClick={datesStateChangeHandler}>
+							<span>{datesLabel}</span>
+							<ExpandMoreIcon />
+						</Box>
+						<Box className={`box ${openGuests ? 'on' : ''}`} onClick={guestsStateChangeHandler}>
+							<span>{guestsNumber ? `${guestsNumber} guest${guestsNumber > 1 ? 's' : ''}` : 'Guests'}</span>
 							<ExpandMoreIcon />
 						</Box>
 						<Box className={`box ${openRooms ? 'on' : ''}`} onClick={roomStateChangeHandler}>
 							<span>
-								{searchFilter?.search?.roomsList ? `${searchFilter?.search?.roomsList[0]} rooms}` : t('Rooms')}
+								{searchFilter?.search?.roomsList ? `${searchFilter?.search?.roomsList[0]} rooms` : t('Rooms')}
 							</span>
 							<ExpandMoreIcon />
 						</Box>
@@ -313,6 +394,78 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 								</span>
 							);
 						})}
+					</div>
+
+					<div className={`filter-dates ${openDates ? 'on' : ''}`} ref={datesRef}>
+						<div className={'date-fields'}>
+							<label>
+								<span>Check-in</span>
+								<input
+									type="date"
+									min={today}
+									value={checkIn}
+									onChange={(e) => checkInChangeHandler(e.target.value)}
+									aria-invalid={datesError && (checkIn === '' || checkIn < today)}
+								/>
+							</label>
+							<label>
+								<span>Check-out</span>
+								<input
+									type="date"
+									min={minCheckOut}
+									value={checkOut}
+									onChange={(e) => setCheckOut(e.target.value)}
+									aria-invalid={datesError && (checkOut === '' || checkOut <= checkIn)}
+								/>
+							</label>
+						</div>
+						<div className={'date-footer'}>
+							{datesError ? (
+								<p className={'filter-error'} role="alert">
+									Choose both dates; check-out must be after check-in and not in the past.
+								</p>
+							) : (
+								<p className={'date-note'}>Availability filtering is coming soon.</p>
+							)}
+							{(checkIn || checkOut) && (
+								<button type="button" className={'clear-link'} onClick={() => { setCheckIn(''); setCheckOut(''); }}>
+									Clear dates
+								</button>
+							)}
+						</div>
+					</div>
+
+					<div className={`filter-guests ${openGuests ? 'on' : ''}`} ref={guestsRef}>
+						<div className={'guests-row'}>
+							<div>
+								<strong>Guests</strong>
+								<span>How many people are staying?</span>
+							</div>
+							<div className={'stepper'}>
+								<button
+									type="button"
+									aria-label="Fewer guests"
+									disabled={guestsNumber <= 1}
+									onClick={() => guestsStepHandler(-1)}
+								>
+									−
+								</button>
+								<span aria-live="polite">{guestsNumber || 'Any'}</span>
+								<button
+									type="button"
+									aria-label="More guests"
+									disabled={guestsNumber >= MAX_GUESTS_STEPPER}
+									onClick={() => guestsStepHandler(1)}
+								>
+									+
+								</button>
+							</div>
+						</div>
+						{guestsCount !== '' && (
+							<button type="button" className={'clear-link'} onClick={() => setGuestsCount('')}>
+								Any number of guests
+							</button>
+						)}
 					</div>
 				</Stack>
 

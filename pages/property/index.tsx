@@ -17,6 +17,7 @@ import { GET_PROPERTIES } from '../../apollo/user/query';
 import { T } from '../../libs/types/common';
 import { LIKE_TARGET_PROPERTY } from '../../apollo/user/mutation';
 import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
+import moment from 'moment';
 
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
@@ -32,6 +33,14 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 		[router.query.input, initialInput],
 	);
 	const currentPage = searchFilter.page;
+	// Dates come from the home search as separate URL params; getProperties cannot filter by them yet.
+	const isPlainDate = (value: unknown): value is string =>
+		typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && moment(value, 'YYYY-MM-DD', true).isValid();
+	const { checkIn, checkOut } = router.query;
+	const stayDates =
+		isPlainDate(checkIn) && isPlainDate(checkOut) && checkOut > checkIn
+			? `${moment(checkIn, 'YYYY-MM-DD').format('MMM D')} – ${moment(checkOut, 'YYYY-MM-DD').format('MMM D, YYYY')}`
+			: null;
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [sortingOpen, setSortingOpen] = useState(false);
 	const filterSortName =
@@ -170,6 +179,11 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 							<Filter searchFilter={searchFilter} setSearchFilter={setSearchFilter} initialInput={initialInput} />
 						</Stack>
 						<Stack className="main-config" mb={'76px'}>
+							{stayDates && (
+								<p className={'stay-dates-note'}>
+									Dates: <strong>{stayDates}</strong> · availability filtering is coming soon
+								</p>
+							)}
 							<Stack className={'list-config'}>
 								{!router.isReady || getPropertiesLoading ? (
 									<div className="no-data" role="status">Loading stays…</div>

@@ -421,3 +421,15 @@
 #pc-wrap .card-config .price-box { max-width: calc(100% - 40px); }
 #pc-wrap .card-config .type-buttons { gap: 8px; }
 #pc-wrap .card-config .type-buttons .type { min-width: 0; }
+#pc-wrap #property-list-page .stay-dates-note {
+	align-self: stretch;
+	margin: 0 0 -85px;
+	padding: 10px 16px;
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 1px 4px 0 rgba(24, 26, 32, 0.07);
+	font-family: $font;
+	font-size: 13px;
+	color: #717171;
+	strong { color: #181a20; font-weight: 600; }
+}
