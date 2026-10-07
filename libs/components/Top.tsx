@@ -17,6 +17,7 @@ import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../apollo/store';
 import { Logout } from '@mui/icons-material';
 import { REACT_APP_API_URL } from '../config';
+import KostayLogo from './common/KostayLogo';
 
 const Top = () => {
 	const device = useDeviceDetect();
@@ -166,7 +167,7 @@ const Top = () => {
 					<Stack className={'container'}>
 						<Box component={'div'} className={'logo-box'}>
 							<Link href={'/'}>
-								<img src="/img/logo/logoWhite.svg" alt="Kostay" />
+								<KostayLogo width={150} height={60} />
 							</Link>
 						</Box>
 						<Box component={'div'} className={'router-box'}>
