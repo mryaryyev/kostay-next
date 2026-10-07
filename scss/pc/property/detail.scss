@@ -754,3 +754,17 @@
 		}
 	}
 }
+
+#pc-wrap #property-detail-page .property-info-config {
+	.info { gap: 20px; }
+	.top-box { flex-wrap: wrap; }
+	.nightly-price { white-space: nowrap; }
+}
+#pc-wrap .property-unavailable {
+	min-height: 320px;
+	padding: 48px 24px;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	text-align: center;
+}

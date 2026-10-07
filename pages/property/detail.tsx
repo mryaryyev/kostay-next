@@ -15,7 +15,7 @@ import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { useRouter } from 'next/router';
 import { Property } from '../../libs/types/property/property';
 import moment from 'moment';
-import { formatterStr } from '../../libs/utils';
+import { formatKRW } from '../../libs/utils';
 import { REACT_APP_API_URL } from '../../libs/config';
 import { userVar } from '../../apollo/store';
 import { CommentInput, CommentsInquiry } from '../../libs/types/comment/comment.input';
@@ -46,7 +46,6 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 	const [propertyId, setPropertyId] = useState<string | null>(null);
-	const [property, setProperty] = useState<Property | null>(null);
 	const [slideImage, setSlideImage] = useState<string>('');
 	const [destinationProperties, setDestinationProperties] = useState<Property[]>([]);
 	const [commentInquiry, setCommentInquiry] = useState<CommentsInquiry>(initialComment);
@@ -73,10 +72,11 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		skip: !propertyId,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
-			if (data?.getProperty) setProperty(data?.getProperty);
-			if (data?.getProperty) setSlideImage(data?.getProperty?.propertyImages[0]);
+			if (data?.getProperty) setSlideImage(data?.getProperty?.propertyImages?.[0] ?? '');
 		},
 	});
+
+	const property: Property | null = getPropertyData?.getProperty?._id === propertyId ? getPropertyData.getProperty : null;
 
 	const {
 		loading: getPropertiesLoading,
@@ -96,7 +96,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 				},
 			},
 		},
-		skip: !propertyId && !property,
+		skip: !property,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
 			if (data?.getProperties?.list) setDestinationProperties(data?.getProperties?.list);
@@ -121,20 +121,12 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 
 	/** LIFECYCLES **/
 	useEffect(() => {
-		if (router.query.id) {
-			setPropertyId(router.query.id as string);
-			setCommentInquiry({
-				...commentInquiry,
-				search: {
-					commentRefId: router.query.id as string,
-				},
-			});
-			setInsertCommentData({
-				...insertCommentData,
-				commentRefId: router.query.id as string,
-			});
-		}
-	}, [router]);
+		const id = typeof router.query.id === 'string' ? router.query.id : '';
+		setPropertyId(id || null);
+		setSlideImage('');
+		setCommentInquiry((current) => ({ ...current, page: 1, search: { commentRefId: id } }));
+		setInsertCommentData((current) => ({ ...current, commentRefId: id }));
+	}, [router.query.id]);
 
 	useEffect(() => {
 		if (commentInquiry.search.commentRefId) {
@@ -196,10 +188,24 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		}
 	};
 
-	if (getPropertyLoading) {
+	if (
+		device !== 'mobile' &&
+		(!router.isReady ||
+			getPropertyLoading ||
+			(typeof router.query.id === 'string' && propertyId !== router.query.id))
+	) {
 		return (
 			<Stack sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '1080px' }}>
 				<CircularProgress size={'4rem'} />
+			</Stack>
+		);
+	}
+
+	if (device !== 'mobile' && (getPropertyError || !property)) {
+		return (
+			<Stack className="property-unavailable" role="alert">
+				<Typography>This property could not be loaded. It may no longer be available.</Typography>
+				<Link href="/property">Back to properties</Link>
 			</Stack>
 		);
 	}
@@ -219,27 +225,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 										<Typography className={'city'}>{property?.propertyLocation}</Typography>
 										<Stack className={'divider'}></Stack>
 										<Stack className={'buy-rent-box'}>
-											{property?.propertyBarter && (
-												<>
-													<Stack className={'circle'}>
-														<svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 6 6" fill="none">
-															<circle cx="3" cy="3" r="3" fill="#EB6753" />
-														</svg>
-													</Stack>
-													<Typography className={'buy-rent'}>Barter</Typography>
-												</>
-											)}
-
-											{property?.propertyRent && (
-												<>
-													<Stack className={'circle'}>
-														<svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 6 6" fill="none">
-															<circle cx="3" cy="3" r="3" fill="#EB6753" />
-														</svg>
-													</Stack>
-													<Typography className={'buy-rent'}>rent</Typography>
-												</>
-											)}
+											<Typography className={'buy-rent'}>Up to {property?.maxGuests} guests</Typography>
 										</Stack>
 										<Stack className={'divider'}></Stack>
 										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -296,7 +282,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 											<Typography>{property?.propertyLikes}</Typography>
 										</Stack>
 									</Stack>
-									<Typography>${formatterStr(property?.propertyPrice)}</Typography>
+									<Typography className="nightly-price">{formatKRW(property?.pricePerNight)} / night</Typography>
 								</Stack>
 							</Stack>
 							<Stack className={'images'}>
@@ -416,8 +402,8 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 										<Stack className={'info-box'}>
 											<Stack className={'left'}>
 												<Box component={'div'} className={'info'}>
-													<Typography className={'title'}>Price</Typography>
-													<Typography className={'data'}>${formatterStr(property?.propertyPrice)}</Typography>
+													<Typography className={'title'}>Price per Night</Typography>
+													<Typography className={'data'}>{formatKRW(property?.pricePerNight)} / night</Typography>
 												</Box>
 												<Box component={'div'} className={'info'}>
 													<Typography className={'title'}>Property Size</Typography>
@@ -442,9 +428,9 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 													<Typography className={'data'}>{property?.propertyType}</Typography>
 												</Box>
 												<Box component={'div'} className={'info'}>
-													<Typography className={'title'}>Property Options</Typography>
+													<Typography className={'title'}>Maximum Guests</Typography>
 													<Typography className={'data'}>
-														For {property?.propertyBarter && 'Barter'} {property?.propertyRent && 'Rent'}
+														{property?.maxGuests}
 													</Typography>
 												</Box>
 											</Stack>

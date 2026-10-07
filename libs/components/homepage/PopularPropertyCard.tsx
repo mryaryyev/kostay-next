@@ -1,3 +1,4 @@
+import { formatKRW } from '../../utils';
 import React from 'react';
 import { Stack, Box, Divider, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
@@ -43,7 +44,7 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 						''
 					)}
 
-					<div className={'price'}>${property.propertyPrice}</div>
+					<div className={'price'}>{formatKRW(property.pricePerNight)} / night</div>
 				</Box>
 				<Box component={'div'} className={'info'}>
 					<strong className={'title'} onClick={() => pushDetailHandler(property._id)}>
@@ -66,7 +67,7 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 					</div>
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
-						<p>{property?.propertyRent ? 'rent' : 'sale'}</p>
+						<p>Up to {property.maxGuests} guests</p>
 						<div className="view-like-box">
 							<IconButton color={'default'}>
 								<RemoveRedEyeIcon />
@@ -95,7 +96,7 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 						''
 					)}
 
-					<div className={'price'}>${property.propertyPrice}</div>
+					<div className={'price'}>{formatKRW(property.pricePerNight)} / night</div>
 				</Box>
 				<Box component={'div'} className={'info'}>
 					<strong className={'title'} onClick={() => pushDetailHandler(property._id)}>
@@ -118,7 +119,7 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 					</div>
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
-						<p>{property?.propertyRent ? 'rent' : 'sale'}</p>
+						<p>Up to {property.maxGuests} guests</p>
 						<div className="view-like-box">
 							<IconButton color={'default'}>
 								<RemoveRedEyeIcon />

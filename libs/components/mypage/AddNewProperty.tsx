@@ -5,6 +5,7 @@ import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { PropertyLocation, PropertyType } from '../../enums/property.enum';
 import { REACT_APP_API_URL, propertySquare } from '../../config';
 import { PropertyInput } from '../../types/property/property.input';
+import { PropertyUpdate } from '../../types/property/property.update';
 import axios from 'axios';
 import { getJwtToken } from '../../auth';
 import { userVar } from '../../../apollo/store';
@@ -12,12 +13,17 @@ import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { CREATE_PROPERTY, UPDATE_PROPERTY } from '../../../apollo/user/mutation';
 import { GET_PROPERTY } from '../../../apollo/user/query';
 import { sweetErrorHandling, sweetMixinErrorAlert, sweetMixinSuccessAlert } from '../../sweetAlert';
+import { isPositiveInt, parsePositiveInt } from '../../utils';
 
 const AddProperty = ({ initialValues, ...props }: any) => {
 	const device = useDeviceDetect();
 	const router = useRouter();
 	const inputRef = useRef<any>(null);
 	const [insertPropertyData, setInsertPropertyData] = useState<PropertyInput>(initialValues);
+	const [priceText, setPriceText] = useState<string>('');
+	const [guestsText, setGuestsText] = useState<string>('');
+	const propertyId = typeof router.query.propertyId === 'string' ? router.query.propertyId : '';
+	const isEditMode = Boolean(propertyId);
 	const [propertyType, setPropertyType] = useState<PropertyType[]>(Object.values(PropertyType));
 	const [propertyLocation, setPropertyLocation] = useState<PropertyLocation[]>(Object.values(PropertyLocation));
 	const token = getJwtToken();
@@ -34,22 +40,34 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		refetch: getPropertyRefetch,
 	} = useQuery(GET_PROPERTY, {
 		fetchPolicy: 'network-only',
+		skip: !isEditMode,
 		variables: {
-			input: router.query.propertyId,
+			input: propertyId,
 		},
 	});
 
+	// getProperty returns ACTIVE listings only, so a missing result means the listing cannot be edited
+	const editUnavailable =
+		isEditMode &&
+		!getPropertyLoading &&
+		(Boolean(getPropertyError) || (getPropertyData !== undefined && !getPropertyData.getProperty));
+
 	/** LIFECYCLES **/
+	useEffect(() => {
+		const loaded = getPropertyData?.getProperty;
+		setPriceText(loaded ? String(loaded.pricePerNight) : '');
+		setGuestsText(loaded ? String(loaded.maxGuests) : '');
+	}, [getPropertyData]);
+
 	useEffect(() => {
 		setInsertPropertyData({
 			...insertPropertyData,
 			propertyTitle: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertyTitle : '',
-			propertyPrice: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertyPrice : 0,
+			pricePerNight: getPropertyData?.getProperty ? getPropertyData?.getProperty?.pricePerNight : 0,
+			maxGuests: getPropertyData?.getProperty ? getPropertyData?.getProperty?.maxGuests : 0,
 			propertyType: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertyType : '',
 			propertyLocation: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertyLocation : '',
 			propertyAddress: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertyAddress : '',
-			propertyBarter: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertyBarter : false,
-			propertyRent: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertyRent : false,
 			propertyRooms: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertyRooms : 0,
 			propertyBeds: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertyBeds : 0,
 			propertySquare: getPropertyData?.getProperty ? getPropertyData?.getProperty?.propertySquare : 0,
@@ -114,12 +132,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 	const doDisabledCheck = () => {
 		if (
 			insertPropertyData.propertyTitle === '' ||
-			insertPropertyData.propertyPrice === 0 || // @ts-ignore
+			!isPositiveInt(insertPropertyData.maxGuests) ||
+			!isPositiveInt(insertPropertyData.pricePerNight) || // @ts-ignore
 			insertPropertyData.propertyType === '' || // @ts-ignore
 			insertPropertyData.propertyLocation === '' || // @ts-ignore
 			insertPropertyData.propertyAddress === '' || // @ts-ignore
-			insertPropertyData.propertyBarter === '' || // @ts-ignore
-			insertPropertyData.propertyRent === '' ||
 			insertPropertyData.propertyRooms === 0 ||
 			insertPropertyData.propertyBeds === 0 ||
 			insertPropertyData.propertySquare === 0 ||
@@ -128,11 +145,19 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		) {
 			return true;
 		}
+		return false;
+	};
+
+	const hasValidNumbers = async (): Promise<boolean> => {
+		if (isPositiveInt(insertPropertyData.pricePerNight) && isPositiveInt(insertPropertyData.maxGuests)) return true;
+		await sweetMixinErrorAlert('Price per night and maximum guests must be positive whole numbers.');
+		return false;
 	};
 
 	const insertPropertyHandler = useCallback(async () => {
 		try {
-			const result = await createProperty({
+			if (!(await hasValidNumbers())) return;
+			await createProperty({
 				variables: {
 					input: insertPropertyData,
 				},
@@ -152,11 +177,14 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 
 	const updatePropertyHandler = useCallback(async () => {
 		try {
-			// @ts-ignore
-			insertPropertyData._id = getPropertyData?.getProperty?._id;
-			const result = await updateProperty({
+			const id = getPropertyData?.getProperty?._id;
+			if (!id) return;
+			if (!(await hasValidNumbers())) return;
+			const { memberId, ...fields } = insertPropertyData;
+			const input: PropertyUpdate = { ...fields, _id: id };
+			await updateProperty({
 				variables: {
-					input: insertPropertyData,
+					input,
 				},
 			});
 
@@ -170,16 +198,36 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		} catch (err: any) {
 			sweetErrorHandling(err).then();
 		}
-	}, [insertPropertyData]);
+	}, [insertPropertyData, getPropertyData]);
 
 	if (user?.memberType !== 'AGENT') {
 		router.back();
 	}
 
-	console.log('+insertPropertyData', insertPropertyData);
+	const priceInvalid = priceText !== '' && parsePositiveInt(priceText) === null;
+	const guestsInvalid = guestsText !== '' && parsePositiveInt(guestsText) === null;
 
 	if (device === 'mobile') {
 		return <div>ADD NEW PROPERTY MOBILE PAGE</div>;
+	} else if (editUnavailable) {
+		return (
+			<div id="add-property-page">
+				<Stack className="main-title-box">
+					<Typography className="main-title">Edit listing</Typography>
+					<Typography className="sub-title">
+						Only active listings can be edited. Reactivate this listing first.
+					</Typography>
+				</Stack>
+				<Stack className="buttons-row">
+					<Button
+						className="next-button"
+						onClick={() => router.push({ pathname: '/mypage', query: { category: 'myProperties' } })}
+					>
+						<Typography className="next-button-text">Back to my listings</Typography>
+					</Button>
+				</Stack>
+			</div>
+		);
 	} else {
 		return (
 			<div id="add-property-page">
@@ -206,16 +254,23 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 
 							<Stack className="config-row">
 								<Stack className="price-year-after-price">
-									<Typography className="title">Price</Typography>
+									<Typography className="title">Price per Night</Typography>
 									<input
 										type="text"
+										inputMode="numeric"
 										className="description-input"
-										placeholder={'Price'}
-										value={insertPropertyData.propertyPrice}
-										onChange={({ target: { value } }) =>
-											setInsertPropertyData({ ...insertPropertyData, propertyPrice: parseInt(value) })
-										}
+										placeholder={'Price per Night (KRW)'}
+										value={priceText}
+										onChange={({ target: { value } }) => {
+											setPriceText(value);
+											setInsertPropertyData({ ...insertPropertyData, pricePerNight: parsePositiveInt(value) ?? 0 });
+										}}
 									/>
+									{priceInvalid && (
+										<Typography sx={{ color: '#d32f2f', fontSize: '12px', mt: '4px' }}>
+											Enter a whole number of won greater than 0.
+										</Typography>
+									)}
 								</Stack>
 								<Stack className="price-year-after-price">
 									<Typography className="title">Select Type</Typography>
@@ -286,42 +341,24 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 
 							<Stack className="config-row">
 								<Stack className="price-year-after-price">
-									<Typography className="title">Barter</Typography>
-									<select
-										className={'select-description'}
-										value={insertPropertyData.propertyBarter ? 'yes' : 'no'}
-										defaultValue={insertPropertyData.propertyBarter ? 'yes' : 'no'}
-										onChange={({ target: { value } }) =>
-											setInsertPropertyData({ ...insertPropertyData, propertyBarter: value === 'yes' })
-										}
-									>
-										<option disabled={true} selected={true}>
-											Select
-										</option>
-										<option value={'yes'}>Yes</option>
-										<option value={'no'}>No</option>
-									</select>
-									<div className={'divider'}></div>
-									<img src={'/img/icons/Vector.svg'} className={'arrow-down'} />
-								</Stack>
-								<Stack className="price-year-after-price">
-									<Typography className="title">Rent</Typography>
-									<select
-										className={'select-description'}
-										value={insertPropertyData.propertyRent ? 'yes' : 'no'}
-										defaultValue={insertPropertyData.propertyRent ? 'yes' : 'no'}
-										onChange={({ target: { value } }) =>
-											setInsertPropertyData({ ...insertPropertyData, propertyRent: value === 'yes' })
-										}
-									>
-										<option disabled={true} selected={true}>
-											Select
-										</option>
-										<option value={'yes'}>Yes</option>
-										<option value={'no'}>No</option>
-									</select>
-									<div className={'divider'}></div>
-									<img src={'/img/icons/Vector.svg'} className={'arrow-down'} />
+									<Typography className="title">Maximum Guests</Typography>
+									<input
+										type="number"
+										min={1}
+										step={1}
+										className="description-input"
+										placeholder={'Maximum Guests'}
+										value={guestsText}
+										onChange={({ target: { value } }) => {
+											setGuestsText(value);
+											setInsertPropertyData({ ...insertPropertyData, maxGuests: parsePositiveInt(value) ?? 0 });
+										}}
+									/>
+									{guestsInvalid && (
+										<Typography sx={{ color: '#d32f2f', fontSize: '12px', mt: '4px' }}>
+											Enter a whole number of guests greater than 0.
+										</Typography>
+									)}
 								</Stack>
 							</Stack>
 
@@ -496,7 +533,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 						</Stack>
 
 						<Stack className="buttons-row">
-							{router.query.propertyId ? (
+							{isEditMode ? (
 								<Button className="next-button" disabled={doDisabledCheck()} onClick={updatePropertyHandler}>
 									<Typography className="next-button-text">Save</Typography>
 								</Button>
@@ -516,12 +553,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 AddProperty.defaultProps = {
 	initialValues: {
 		propertyTitle: '',
-		propertyPrice: 0,
+		pricePerNight: 0,
+		maxGuests: 0,
 		propertyType: '',
 		propertyLocation: '',
 		propertyAddress: '',
-		propertyBarter: false,
-		propertyRent: false,
 		propertyRooms: 0,
 		propertyBeds: 0,
 		propertySquare: 0,

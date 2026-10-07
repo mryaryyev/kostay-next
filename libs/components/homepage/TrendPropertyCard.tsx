@@ -1,3 +1,4 @@
+import { formatKRW } from '../../utils';
 import React from 'react';
 import { Stack, Box, Divider, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
@@ -36,7 +37,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
 					style={{ backgroundImage: `url(${REACT_APP_API_URL}/${property?.propertyImages[0]})` }}
 					onClick={() => pushDetailHandler(property._id)}
 				>
-					<div>${property.propertyPrice}</div>
+					<div>{formatKRW(property.pricePerNight)} / night</div>
 				</Box>
 				<Box component={'div'} className={'info'}>
 					<strong className={'title'} onClick={() => pushDetailHandler(property._id)}>
@@ -59,10 +60,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
 					</div>
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
-						<p>
-							{property.propertyRent ? 'Rent' : ''} {property.propertyRent && property.propertyBarter && '/'}{' '}
-							{property.propertyBarter ? 'Barter' : ''}
-						</p>
+						<p>Up to {property.maxGuests} guests</p>
 						<div className="view-like-box">
 							<IconButton color={'default'}>
 								<RemoveRedEyeIcon />
@@ -90,7 +88,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
 					style={{ backgroundImage: `url(${REACT_APP_API_URL}/${property?.propertyImages[0]})` }}
 					onClick={() => pushDetailHandler(property._id)}
 				>
-					<div>${property.propertyPrice}</div>
+					<div>{formatKRW(property.pricePerNight)} / night</div>
 				</Box>
 				<Box component={'div'} className={'info'}>
 					<strong className={'title'} onClick={() => pushDetailHandler(property._id)}>
@@ -114,10 +112,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
 					</div>
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
-						<p>
-							{property.propertyRent ? 'Rent' : ''} {property.propertyRent && property.propertyBarter && '/'}{' '}
-							{property.propertyBarter ? 'Barter' : ''}
-						</p>
+						<p>Up to {property.maxGuests} guests</p>
 						<div className="view-like-box">
 							<IconButton color={'default'}>
 								<RemoveRedEyeIcon />

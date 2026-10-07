@@ -5,7 +5,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Property } from '../../types/property/property';
 import Link from 'next/link';
-import { formatterStr } from '../../utils';
+import { formatKRW } from '../../utils';
 import { REACT_APP_API_URL, topPropertyRank } from '../../config';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
@@ -48,7 +48,7 @@ const PropertyCard = (props: PropertyCardType) => {
 						</Box>
 					)}
 					<Box component={'div'} className={'price-box'}>
-						<Typography>${formatterStr(property?.propertyPrice)}</Typography>
+						<Typography>{formatKRW(property?.pricePerNight)} / night</Typography>
 					</Box>
 				</Stack>
 				<Stack className="bottom">
@@ -83,17 +83,8 @@ const PropertyCard = (props: PropertyCardType) => {
 					<Stack className="divider"></Stack>
 					<Stack className="type-buttons">
 						<Stack className="type">
-							<Typography
-								sx={{ fontWeight: 500, fontSize: '13px' }}
-								className={property.propertyRent ? '' : 'disabled-type'}
-							>
-								Rent
-							</Typography>
-							<Typography
-								sx={{ fontWeight: 500, fontSize: '13px' }}
-								className={property.propertyBarter ? '' : 'disabled-type'}
-							>
-								Barter
+							<Typography sx={{ fontWeight: 500, fontSize: '13px' }}>
+								Up to {property.maxGuests} guests
 							</Typography>
 						</Stack>
 						{!recentlyVisited && (

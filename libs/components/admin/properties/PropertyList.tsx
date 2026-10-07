@@ -1,3 +1,4 @@
+import { formatKRW } from '../../../utils';
 import React from 'react';
 import Link from 'next/link';
 import {
@@ -56,7 +57,7 @@ const headCells: readonly HeadCell[] = [
 		id: 'price',
 		numeric: false,
 		disablePadding: false,
-		label: 'PRICE',
+		label: 'PRICE / NIGHT (KRW)',
 	},
 	{
 		id: 'agent',
@@ -175,7 +176,7 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 												</Stack>
 											)}
 										</TableCell>
-										<TableCell align="center">{property.propertyPrice}</TableCell>
+										<TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>{formatKRW(property.pricePerNight)} / night</TableCell>
 										<TableCell align="center">{property.memberData?.memberNick}</TableCell>
 										<TableCell align="center">{property.propertyLocation}</TableCell>
 										<TableCell align="center">{property.propertyType}</TableCell>
@@ -190,7 +191,7 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 												</Button>
 											)}
 
-											{property.propertyStatus === PropertyStatus.SOLD && (
+											{property.propertyStatus === PropertyStatus.INACTIVE && (
 												<Button className={'badge warning'}>{property.propertyStatus}</Button>
 											)}
 

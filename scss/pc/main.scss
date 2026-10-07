@@ -1056,3 +1056,22 @@ body::-webkit-scrollbar {
 	border-radius: 2px;
 	margin-right: 8px;
 }
+
+.advanced-filter-modal .middle .row-box .guest-filter {
+	label {
+		margin-bottom: 10px;
+		font-size: 14px;
+		font-weight: 600;
+	}
+	input {
+		width: 100%;
+		height: 46px;
+		padding: 0 13px;
+		box-sizing: border-box;
+		border: 1px solid #ddd;
+		border-radius: 8px;
+		font: inherit;
+	}
+	input[aria-invalid='true'] { border-color: #b3261e; }
+	p { margin-top: 8px; color: #b3261e; font-size: 13px; }
+}

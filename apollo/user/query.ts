@@ -91,7 +91,8 @@ export const GET_PROPERTY = gql`
 			propertyLocation
 			propertyAddress
 			propertyTitle
-			propertyPrice
+			pricePerNight
+			maxGuests
 			propertySquare
 			propertyBeds
 			propertyRooms
@@ -99,10 +100,7 @@ export const GET_PROPERTY = gql`
 			propertyLikes
 			propertyImages
 			propertyDesc
-			propertyBarter
-			propertyRent
 			memberId
-			soldAt
 			deletedAt
 			constructedAt
 			createdAt
@@ -147,7 +145,8 @@ export const GET_PROPERTIES = gql`
 				propertyLocation
 				propertyAddress
 				propertyTitle
-				propertyPrice
+				pricePerNight
+				maxGuests
 				propertySquare
 				propertyBeds
 				propertyRooms
@@ -156,10 +155,7 @@ export const GET_PROPERTIES = gql`
 				propertyRank
 				propertyImages
 				propertyDesc
-				propertyBarter
-				propertyRent
 				memberId
-				soldAt
 				deletedAt
 				constructedAt
 				createdAt
@@ -209,7 +205,8 @@ export const GET_AGENT_PROPERTIES = gql`
 				propertyLocation
 				propertyAddress
 				propertyTitle
-				propertyPrice
+				pricePerNight
+				maxGuests
 				propertySquare
 				propertyBeds
 				propertyRooms
@@ -217,10 +214,7 @@ export const GET_AGENT_PROPERTIES = gql`
 				propertyLikes
 				propertyImages
 				propertyDesc
-				propertyBarter
-				propertyRent
 				memberId
-				soldAt
 				deletedAt
 				constructedAt
 				createdAt
@@ -243,7 +237,8 @@ export const GET_FAVORITES = gql`
 				propertyLocation
 				propertyAddress
 				propertyTitle
-				propertyPrice
+				pricePerNight
+				maxGuests
 				propertySquare
 				propertyBeds
 				propertyRooms
@@ -253,10 +248,7 @@ export const GET_FAVORITES = gql`
 				propertyRank
 				propertyImages
 				propertyDesc
-				propertyBarter
-				propertyRent
 				memberId
-				soldAt
 				deletedAt
 				constructedAt
 				createdAt
@@ -306,7 +298,8 @@ export const GET_VISITED = gql`
 				propertyLocation
 				propertyAddress
 				propertyTitle
-				propertyPrice
+				pricePerNight
+				maxGuests
 				propertySquare
 				propertyBeds
 				propertyRooms
@@ -316,10 +309,7 @@ export const GET_VISITED = gql`
 				propertyRank
 				propertyImages
 				propertyDesc
-				propertyBarter
-				propertyRent
 				memberId
-				soldAt
 				deletedAt
 				constructedAt
 				createdAt

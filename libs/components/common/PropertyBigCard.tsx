@@ -5,7 +5,7 @@ import useDeviceDetect from '../../hooks/useDeviceDetect';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Property } from '../../types/property/property';
 import { REACT_APP_API_URL, topPropertyRank } from '../../config';
-import { formatterStr } from '../../utils';
+import { formatKRW } from '../../utils';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import { useRouter } from 'next/router';
@@ -44,7 +44,7 @@ const PropertyBigCard = (props: PropertyBigCardProps) => {
 						</div>
 					)}
 
-					<div className={'price'}>${formatterStr(property?.propertyPrice)}</div>
+					<div className={'price'}>{formatKRW(property?.pricePerNight)} / night</div>
 				</Box>
 				<Box component={'div'} className={'info'}>
 					<strong className={'title'}>{property?.propertyTitle}</strong>
@@ -66,8 +66,7 @@ const PropertyBigCard = (props: PropertyBigCardProps) => {
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
 						<div>
-							{property?.propertyRent ? <p>Rent</p> : <span>Rent</span>}
-							{property?.propertyBarter ? <p>Barter</p> : <span>Barter</span>}
+							<span>Up to {property?.maxGuests} guests</span>
 						</div>
 						<div className="buttons-box">
 							<IconButton color={'default'}>

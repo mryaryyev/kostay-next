@@ -6,11 +6,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { propertySquare, propertyYears } from '../../config';
+import { propertySquare } from '../../config';
 import { PropertyLocation, PropertyType } from '../../enums/property.enum';
 import { PropertiesInquiry } from '../../types/property/property.input';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import { normalizePropertySearch } from '../../utils';
 
 const style = {
 	position: 'absolute' as 'absolute',
@@ -32,8 +33,6 @@ const MenuProps = {
 	},
 };
 
-const thisYear = new Date().getFullYear();
-
 interface HeaderFilterProps {
 	initialInput: PropertiesInquiry;
 }
@@ -42,7 +41,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 	const { initialInput } = props;
 	const device = useDeviceDetect();
 	const { t, i18n } = useTranslation('common');
-	const [searchFilter, setSearchFilter] = useState<PropertiesInquiry>(initialInput);
+	const [searchFilter, setSearchFilter] = useState<PropertiesInquiry>(() => normalizePropertySearch(initialInput, initialInput));
 	const locationRef: any = useRef();
 	const typeRef: any = useRef();
 	const roomsRef: any = useRef();
@@ -53,8 +52,11 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 	const [openRooms, setOpenRooms] = useState(false);
 	const [propertyLocation, setPropertyLocation] = useState<PropertyLocation[]>(Object.values(PropertyLocation));
 	const [propertyType, setPropertyType] = useState<PropertyType[]>(Object.values(PropertyType));
-	const [yearCheck, setYearCheck] = useState({ start: 1970, end: thisYear });
-	const [optionCheck, setOptionCheck] = useState('all');
+
+	const [guestsCount, setGuestsCount] = useState(initialInput.search.guestsCount?.toString() ?? '');
+	const guestError =
+		guestsCount !== '' &&
+		(!Number.isInteger(Number(guestsCount)) || Number(guestsCount) < 1 || Number(guestsCount) > 2147483647);
 
 	/** LIFECYCLES **/
 	useEffect(() => {
@@ -196,36 +198,6 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 		[searchFilter],
 	);
 
-	const propertyOptionSelectHandler = useCallback(
-		async (e: any) => {
-			try {
-				const value = e.target.value;
-				setOptionCheck(value);
-
-				if (value !== 'all') {
-					setSearchFilter({
-						...searchFilter,
-						search: {
-							...searchFilter.search,
-							options: [value],
-						},
-					});
-				} else {
-					delete searchFilter.search.options;
-					setSearchFilter({
-						...searchFilter,
-						search: {
-							...searchFilter.search,
-						},
-					});
-				}
-			} catch (err: any) {
-				console.log('ERROR, propertyOptionSelectHandler:', err);
-			}
-		},
-		[searchFilter],
-	);
-
 	const propertySquareHandler = useCallback(
 		async (e: any, type: string) => {
 			const value = e.target.value;
@@ -253,62 +225,23 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 		[searchFilter],
 	);
 
-	const yearStartChangeHandler = async (event: any) => {
-		setYearCheck({ ...yearCheck, start: Number(event.target.value) });
-
-		setSearchFilter({
-			...searchFilter,
-			search: {
-				...searchFilter.search,
-				periodsRange: { start: Number(event.target.value), end: yearCheck.end },
-			},
-		});
-	};
-
-	const yearEndChangeHandler = async (event: any) => {
-		setYearCheck({ ...yearCheck, end: Number(event.target.value) });
-
-		setSearchFilter({
-			...searchFilter,
-			search: {
-				...searchFilter.search,
-				periodsRange: { start: yearCheck.start, end: Number(event.target.value) },
-			},
-		});
-	};
-
 	const resetFilterHandler = () => {
-		setSearchFilter(initialInput);
-		setOptionCheck('all');
-		setYearCheck({ start: 1970, end: thisYear });
+		setSearchFilter(normalizePropertySearch(initialInput, initialInput));
+		setGuestsCount('');
 	};
 
 	const pushSearchHandler = async () => {
+		if (guestError) {
+			setOpenAdvancedFilter(true);
+			return;
+		}
 		try {
-			if (searchFilter?.search?.locationList?.length == 0) {
-				delete searchFilter.search.locationList;
-			}
-
-			if (searchFilter?.search?.typeList?.length == 0) {
-				delete searchFilter.search.typeList;
-			}
-
-			if (searchFilter?.search?.roomsList?.length == 0) {
-				delete searchFilter.search.roomsList;
-			}
-
-			if (searchFilter?.search?.options?.length == 0) {
-				delete searchFilter.search.options;
-			}
-
-			if (searchFilter?.search?.bedsList?.length == 0) {
-				delete searchFilter.search.bedsList;
-			}
-
-			await router.push(
-				`/property?input=${JSON.stringify(searchFilter)}`,
-				`/property?input=${JSON.stringify(searchFilter)}`,
-			);
+			const input = normalizePropertySearch({
+				...searchFilter,
+				page: 1,
+				search: { ...searchFilter.search, guestsCount: guestsCount === '' ? undefined : Number(guestsCount) },
+			}, initialInput);
+			await router.push({ pathname: '/property', query: { input: JSON.stringify(input) } });
 		} catch (err: any) {
 			console.log('ERROR, pushSearchHandler:', err);
 		}
@@ -436,64 +369,15 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 											))}
 										</div>
 									</div>
-									<div className={'box'}>
-										<span>options</span>
-										<div className={'inside'}>
-											<FormControl>
-												<Select
-													value={optionCheck}
-													onChange={propertyOptionSelectHandler}
-													displayEmpty
-													inputProps={{ 'aria-label': 'Without label' }}
-												>
-													<MenuItem value={'all'}>All Options</MenuItem>
-													<MenuItem value={'propertyBarter'}>Barter</MenuItem>
-													<MenuItem value={'propertyRent'}>Rent</MenuItem>
-												</Select>
-											</FormControl>
-										</div>
+									<div className="box guest-filter">
+										<label htmlFor="homepage-guests">Guests</label>
+										<input id="homepage-guests" type="number" min={1} max={2147483647} step={1}
+											placeholder="Any" value={guestsCount} onChange={(e) => setGuestsCount(e.target.value)}
+											aria-invalid={guestError} aria-describedby={guestError ? 'homepage-guests-error' : undefined} />
+										{guestError && <p id="homepage-guests-error" role="alert">Enter a positive whole number of guests.</p>}
 									</div>
 								</div>
 								<div className={'row-box'} style={{ marginTop: '44px' }}>
-									<div className={'box'}>
-										<span>Year Built</span>
-										<div className={'inside space-between align-center'}>
-											<FormControl sx={{ width: '122px' }}>
-												<Select
-													value={yearCheck.start.toString()}
-													onChange={yearStartChangeHandler}
-													displayEmpty
-													inputProps={{ 'aria-label': 'Without label' }}
-													MenuProps={MenuProps}
-												>
-													{propertyYears?.slice(0)?.map((year: number) => (
-														<MenuItem value={year} disabled={yearCheck.end <= year} key={year}>
-															{year}
-														</MenuItem>
-													))}
-												</Select>
-											</FormControl>
-											<div className={'minus-line'}></div>
-											<FormControl sx={{ width: '122px' }}>
-												<Select
-													value={yearCheck.end.toString()}
-													onChange={yearEndChangeHandler}
-													displayEmpty
-													inputProps={{ 'aria-label': 'Without label' }}
-													MenuProps={MenuProps}
-												>
-													{propertyYears
-														?.slice(0)
-														.reverse()
-														.map((year: number) => (
-															<MenuItem value={year} disabled={yearCheck.start >= year} key={year}>
-																{year}
-															</MenuItem>
-														))}
-												</Select>
-											</FormControl>
-										</div>
-									</div>
 									<div className={'box'}>
 										<span>square meter</span>
 										<div className={'inside space-between align-center'}>
@@ -549,6 +433,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 								<Button
 									startIcon={<img src={'/img/icons/search.svg'} />}
 									className={'search-btn'}
+									disabled={guestError}
 									onClick={pushSearchHandler}
 								>
 									Search
@@ -570,10 +455,6 @@ HeaderFilter.defaultProps = {
 			squaresRange: {
 				start: 0,
 				end: 500,
-			},
-			pricesRange: {
-				start: 0,
-				end: 2000000,
 			},
 		},
 	},
