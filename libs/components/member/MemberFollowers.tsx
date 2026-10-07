@@ -55,6 +55,7 @@ const MemberFollowers = (props: MemberFollowsProps) => {
 	}, [router]);
 
 	useEffect(() => {
+		if (!followInquiry?.search?.followingId) return;
 		getMemberFollowersRefetch({ input: followInquiry }).then();
 	}, [followInquiry]);
 
@@ -113,15 +114,11 @@ const MemberFollowers = (props: MemberFollowsProps) => {
 										{follower?.meLiked && follower?.meLiked[0]?.myFavorite ? (
 											<FavoriteIcon
 												color="primary"
-												onClick={() =>
-													likeMemberHandler(follower?.followerData?._id, getMemberFollowersRefetch, followInquiry)
-												}
+												onClick={() => likeMemberHandler(follower?.followerData?._id, getMemberFollowersRefetch, followInquiry)}
 											/>
 										) : (
 											<FavoriteBorderIcon
-												onClick={() =>
-													likeMemberHandler(follower?.followerData?._id, getMemberFollowersRefetch, followInquiry)
-												}
+												onClick={() => likeMemberHandler(follower?.followerData?._id, getMemberFollowersRefetch, followInquiry)}
 											/>
 										)}
 										<span>({follower?.followerData?.memberLikes})</span>
@@ -135,9 +132,7 @@ const MemberFollowers = (props: MemberFollowsProps) => {
 												<Button
 													variant="outlined"
 													sx={{ background: '#ed5858', ':hover': { background: '#ee7171' } }}
-													onClick={() =>
-														unsubscribeHandler(follower?.followerData?._id, getMemberFollowersRefetch, followInquiry)
-													}
+													onClick={() => unsubscribeHandler(follower?.followerData?._id, getMemberFollowersRefetch, followInquiry)}
 												>
 													Unfollow
 												</Button>
@@ -146,9 +141,7 @@ const MemberFollowers = (props: MemberFollowsProps) => {
 											<Button
 												variant="contained"
 												sx={{ background: '#60eb60d4', ':hover': { background: '#60eb60d4' } }}
-												onClick={() =>
-													subscribeHandler(follower?.followerData?._id, getMemberFollowersRefetch, followInquiry)
-												}
+												onClick={() => subscribeHandler(follower?.followerData?._id, getMemberFollowersRefetch, followInquiry)}
 											>
 												Follow
 											</Button>

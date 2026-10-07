@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import ModeIcon from '@mui/icons-material/Mode';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Property } from '../../types/property/property';
-import { formatterStr } from '../../utils';
+import { formatKRW } from '../../utils';
 import Moment from 'react-moment';
 import { useRouter } from 'next/router';
 import { PropertyStatus } from '../../enums/property.enum';
@@ -26,7 +26,6 @@ export const PropertyCard = (props: PropertyCardProps) => {
 
 	/** HANDLERS **/
 	const pushEditProperty = async (id: string) => {
-		console.log('+pushEditProperty: ', id);
 		await router.push({
 			pathname: '/mypage',
 			query: { category: 'addProperty', propertyId: id },
@@ -62,7 +61,8 @@ export const PropertyCard = (props: PropertyCardProps) => {
 					<Typography className="name">{property.propertyTitle}</Typography>
 					<Typography className="address">{property.propertyAddress}</Typography>
 					<Typography className="price">
-						<strong>${formatterStr(property?.propertyPrice)}</strong>
+						<strong>{formatKRW(property?.pricePerNight)} / night</strong>
+						<span>Up to {property.maxGuests} guests</span>
 					</Typography>
 				</Stack>
 				<Stack className="date-box">
@@ -77,7 +77,7 @@ export const PropertyCard = (props: PropertyCardProps) => {
 						</Typography>
 					</Stack>
 				</Stack>
-				{!memberPage && property.propertyStatus !== 'SOLD' && (
+				{!memberPage && (
 					<Menu
 						anchorEl={anchorEl}
 						open={open}
@@ -98,18 +98,27 @@ export const PropertyCard = (props: PropertyCardProps) => {
 							},
 						}}
 					>
-						{property.propertyStatus === 'ACTIVE' && (
-							<>
-								<MenuItem
-									disableRipple
-									onClick={() => {
-										handleClose();
-										updatePropertyHandler(PropertyStatus.SOLD, property?._id);
-									}}
-								>
-									Sold
-								</MenuItem>
-							</>
+						{property.propertyStatus === PropertyStatus.ACTIVE && (
+							<MenuItem
+								disableRipple
+								onClick={() => {
+									handleClose();
+									updatePropertyHandler(PropertyStatus.INACTIVE, property?._id);
+								}}
+							>
+								Deactivate
+							</MenuItem>
+						)}
+						{property.propertyStatus === PropertyStatus.INACTIVE && (
+							<MenuItem
+								disableRipple
+								onClick={() => {
+									handleClose();
+									updatePropertyHandler(PropertyStatus.ACTIVE, property?._id);
+								}}
+							>
+								Reactivate
+							</MenuItem>
 						)}
 					</Menu>
 				)}

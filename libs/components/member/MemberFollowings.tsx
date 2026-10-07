@@ -6,6 +6,7 @@ import { FollowInquiry } from '../../types/follow/follow.input';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_MEMBER_FOLLOWINGS } from '../../../apollo/user/query';
 import { Following } from '../../types/follow/follow';
+import type { T } from '../../types/common';
 import { REACT_APP_API_URL } from '../../config';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -54,6 +55,7 @@ const MemberFollowings = (props: MemberFollowingsProps) => {
 	}, [router]);
 
 	useEffect(() => {
+		if (!followInquiry?.search?.followerId) return;
 		getMemberFollowingsRefetch({ input: followInquiry }).then();
 	}, [followInquiry]);
 
@@ -112,15 +114,11 @@ const MemberFollowings = (props: MemberFollowingsProps) => {
 										{follower?.meLiked && follower?.meLiked[0]?.myFavorite ? (
 											<FavoriteIcon
 												color="primary"
-												onClick={() =>
-													likeMemberHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)
-												}
+												onClick={() => likeMemberHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)}
 											/>
 										) : (
 											<FavoriteBorderIcon
-												onClick={() =>
-													likeMemberHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)
-												}
+												onClick={() => likeMemberHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)}
 											/>
 										)}
 										<span>({follower?.followingData?.memberLikes})</span>
@@ -134,9 +132,7 @@ const MemberFollowings = (props: MemberFollowingsProps) => {
 												<Button
 													variant="outlined"
 													sx={{ background: '#f78181', ':hover': { background: '#f06363' } }}
-													onClick={() =>
-														unsubscribeHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)
-													}
+													onClick={() => unsubscribeHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)}
 												>
 													Unfollow
 												</Button>
@@ -145,9 +141,7 @@ const MemberFollowings = (props: MemberFollowingsProps) => {
 											<Button
 												variant="contained"
 												sx={{ background: '#60eb60d4', ':hover': { background: '#60eb60d4' } }}
-												onClick={() =>
-													subscribeHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)
-												}
+												onClick={() => subscribeHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)}
 											>
 												Follow
 											</Button>

@@ -46,7 +46,16 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 	};
 
 	const changeStatusHandler = (value: PropertyStatus) => {
-		setSearchFilter({ ...searchFilter, search: { propertyStatus: value } });
+		setSearchFilter({ ...searchFilter, page: 1, search: { propertyStatus: value } });
+	};
+
+	/** After a listing leaves the current tab, step back if the page became empty. **/
+	const refetchAfterChange = async () => {
+		const result = await getAgentPropertiesRefetch({ input: searchFilter });
+		const list = result?.data?.getAgentProperties?.list ?? [];
+		if (list.length === 0 && searchFilter.page > 1) {
+			setSearchFilter({ ...searchFilter, page: searchFilter.page - 1 });
+		}
 	};
 
 	const deletePropertyHandler = async (id: string) => {
@@ -61,16 +70,20 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 					},
 				});
 
-				await getAgentPropertiesRefetch({ input: searchFilter });
+				await refetchAfterChange();
 			}
 		} catch (err: any) {
 			await sweetErrorHandling(err);
 		}
 	};
 
-	const updatePropertyHandler = async (status: string, id: string) => {
+	const updatePropertyHandler = async (status: PropertyStatus, id: string) => {
 		try {
-			if (await sweetConfirmAlert(`Are you sure change to ${status} status?`)) {
+			const message =
+				status === PropertyStatus.INACTIVE
+					? 'Deactivate this listing? It will be hidden from guests until you reactivate it.'
+					: 'Reactivate this listing? It will be visible to guests again.';
+			if (await sweetConfirmAlert(message)) {
 				await updateProperty({
 					variables: {
 						input: {
@@ -79,7 +92,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 						},
 					},
 				});
-				await getAgentPropertiesRefetch({ input: searchFilter });
+				await refetchAfterChange();
 			}
 		} catch (err: any) {
 			await sweetErrorHandling(err);
@@ -107,13 +120,13 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 							onClick={() => changeStatusHandler(PropertyStatus.ACTIVE)}
 							className={searchFilter.search.propertyStatus === 'ACTIVE' ? 'active-tab-name' : 'tab-name'}
 						>
-							On Sale
+							Active
 						</Typography>
 						<Typography
-							onClick={() => changeStatusHandler(PropertyStatus.SOLD)}
-							className={searchFilter.search.propertyStatus === 'SOLD' ? 'active-tab-name' : 'tab-name'}
+							onClick={() => changeStatusHandler(PropertyStatus.INACTIVE)}
+							className={searchFilter.search.propertyStatus === 'INACTIVE' ? 'active-tab-name' : 'tab-name'}
 						>
-							On Sold
+							Inactive
 						</Typography>
 					</Stack>
 					<Stack className="list-box">
@@ -136,6 +149,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 							agentProperties.map((property: Property) => {
 								return (
 									<PropertyCard
+										key={property._id}
 										property={property}
 										deletePropertyHandler={deletePropertyHandler}
 										updatePropertyHandler={updatePropertyHandler}

@@ -314,3 +314,10 @@
 		}
 	}
 }
+
+#pc-wrap .property-big-card-box {
+	.card-img .price { max-width: calc(100% - 40px); }
+	.info .bott { gap: 12px; }
+	.info .bott > div:first-child { width: auto; flex: 1; }
+	.info .bott > div:first-child > span { margin-left: 0; color: #181a20; }
+}

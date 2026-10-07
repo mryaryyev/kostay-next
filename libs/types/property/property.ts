@@ -18,7 +18,8 @@ export interface Property {
 	propertyLocation: PropertyLocation;
 	propertyAddress: string;
 	propertyTitle: string;
-	propertyPrice: number;
+	pricePerNight: number;
+	maxGuests: number;
 	propertySquare: number;
 	propertyBeds: number;
 	propertyRooms: number;
@@ -28,10 +29,7 @@ export interface Property {
 	propertyRank: number;
 	propertyImages: string[];
 	propertyDesc?: string;
-	propertyBarter: boolean;
-	propertyRent: boolean;
 	memberId: string;
-	soldAt?: Date;
 	deletedAt?: Date;
 	constructedAt?: Date;
 	createdAt: Date;

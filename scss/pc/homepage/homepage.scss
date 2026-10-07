@@ -972,3 +972,12 @@
 		}
 	}
 }
+
+#pc-wrap .home-page {
+	.trend-card-box, .popular-card-box, .top-card-box {
+		.card-img > div { max-width: calc(100% - 40px); }
+		.info .bott { gap: 8px; }
+		.info .bott > p { flex: 1; min-width: 0; line-height: 1.4; }
+		.info .bott .view-like-box { flex-shrink: 0; }
+	}
+}
