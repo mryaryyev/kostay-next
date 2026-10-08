@@ -56,7 +56,7 @@ const withLayoutMain = (Component: any) => {
 						<title>Kostay</title>
 						<meta name={'title'} content={`Kostay`} />
 					</Head>
-					<Stack id="pc-wrap">
+					<Stack id="pc-wrap" className={'is-home'}>
 						<Stack id={'top'}>
 							<Top />
 						</Stack>

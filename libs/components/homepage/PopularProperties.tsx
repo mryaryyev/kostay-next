@@ -87,10 +87,16 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 						<Box component={'div'} className={'empty-list'}>
 							No popular stays yet
 						</Box>
-					) : (
+					) : popularProperties.length >= 5 ? (
 						<div className={'popular-bento'}>
 							<PopularPropertyCard property={featured} featured />
 							{rest.slice(0, 4).map((property: Property) => (
+								<PopularPropertyCard key={property._id} property={property} compact />
+							))}
+						</div>
+					) : (
+						<div className={'popular-grid'}>
+							{popularProperties.map((property: Property) => (
 								<PopularPropertyCard key={property._id} property={property} />
 							))}
 						</div>
