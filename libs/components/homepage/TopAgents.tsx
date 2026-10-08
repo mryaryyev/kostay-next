@@ -1,3 +1,6 @@
+import SectionHeader from './SectionHeader';
+import Link from 'next/link';
+import EastIcon from '@mui/icons-material/East';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Stack, Box } from '@mui/material';
@@ -69,18 +72,17 @@ const TopAgents = (props: TopAgentsProps) => {
 		return (
 			<Stack className={'top-agents'}>
 				<Stack className={'container'}>
-					<Stack className={'info-box'}>
-						<Box component={'div'} className={'left'}>
-							<span>Top Hosts</span>
-							<p>Our top hosts are always ready to welcome you</p>
-						</Box>
-						<Box component={'div'} className={'right'}>
-							<div className={'more-box'}>
-								<span>See All Hosts</span>
-								<img src="/img/icons/rightup.svg" alt="" />
-							</div>
-						</Box>
-					</Stack>
+					<SectionHeader
+						eyebrow={'Hosts'}
+						title={'Top Hosts'}
+						subtitle={'Our top Hosts are ready to welcome you'}
+						action={
+							<Link href={'/agent'} className={'home-link'}>
+								See all Hosts
+								<EastIcon aria-hidden="true" />
+							</Link>
+						}
+					/>
 					<Stack className={'wrapper'}>
 						<Box component={'div'} className={'switch-btn swiper-agents-prev'}>
 							<ArrowBackIosNewIcon />

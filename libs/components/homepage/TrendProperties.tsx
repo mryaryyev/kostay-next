@@ -1,3 +1,4 @@
+import SectionHeader from './SectionHeader';
 import React, { useState } from 'react';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -102,19 +103,22 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 		return (
 			<Stack className={'trend-properties'}>
 				<Stack className={'container'}>
-					<Stack className={'info-box'}>
-						<Box component={'div'} className={'left'}>
-							<span>Trending Stays</span>
-							<p>Trend is based on likes</p>
-						</Box>
-						<Box component={'div'} className={'right'}>
-							<div className={'pagination-box'}>
-								<WestIcon className={'swiper-trend-prev'} />
+					<SectionHeader
+						eyebrow={'Liked most'}
+						title={'Trending Stays'}
+						subtitle={'Ranked by likes from guests'}
+						action={
+							<div className={'home-pager'}>
+								<button type={'button'} className={'swiper-trend-prev'} aria-label={'Previous stays'}>
+									<WestIcon />
+								</button>
 								<div className={'swiper-trend-pagination'}></div>
-								<EastIcon className={'swiper-trend-next'} />
+								<button type={'button'} className={'swiper-trend-next'} aria-label={'Next stays'}>
+									<EastIcon />
+								</button>
 							</div>
-						</Box>
-					</Stack>
+						}
+					/>
 					<Stack className={'card-box'}>
 						{trendProperties.length === 0 ? (
 							<Box component={'div'} className={'empty-list'}>

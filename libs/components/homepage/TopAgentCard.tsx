@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { Stack } from '@mui/material';
@@ -28,12 +29,14 @@ const TopAgentCard = (props: TopAgentProps) => {
 		);
 	} else {
 		return (
-			<Stack className="top-agent-card">
-				<img src={agentImage} alt="" />
-
+			<Link href={{ pathname: '/agent/detail', query: { agentId: agent?._id } }} className="home-host-card">
+				<img src={agentImage} alt="" loading="lazy" />
 				<strong>{agent?.memberNick}</strong>
-				<span>{agent?.memberType}</span>
-			</Stack>
+				<span>{agent?.memberFullName ?? 'Host'}</span>
+				<em>
+					{agent?.memberProperties ?? 0} {agent?.memberProperties === 1 ? 'stay' : 'stays'}
+				</em>
+			</Link>
 		);
 	}
 };
