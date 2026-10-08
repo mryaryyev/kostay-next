@@ -1,9 +1,9 @@
+import SectionHeader from './SectionHeader';
 import React, { useState } from 'react';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper';
-import WestIcon from '@mui/icons-material/West';
+import { Autoplay } from 'swiper';
 import EastIcon from '@mui/icons-material/East';
 import PopularPropertyCard from './PopularPropertyCard';
 import { Property } from '../../types/property/property';
@@ -68,51 +68,33 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 			</Stack>
 		);
 	} else {
+		const [featured, ...rest] = popularProperties;
 		return (
 			<Stack className={'popular-properties'}>
 				<Stack className={'container'}>
-					<Stack className={'info-box'}>
-						<Box component={'div'} className={'left'}>
-							<span>Popular stays</span>
-							<p>Popularity is based on views</p>
+					<SectionHeader
+						eyebrow={'Most viewed'}
+						title={'Popular Stays'}
+						subtitle={'The stays guests look at most'}
+						action={
+							<Link href={'/property'} className={'home-link'}>
+								View all stays
+								<EastIcon aria-hidden="true" />
+							</Link>
+						}
+					/>
+					{!featured ? (
+						<Box component={'div'} className={'empty-list'}>
+							No popular stays yet
 						</Box>
-						<Box component={'div'} className={'right'}>
-							<div className={'more-box'}>
-								<Link href={'/property'}>
-									<span>See All Categories</span>
-								</Link>
-								<img src="/img/icons/rightup.svg" alt="" />
-							</div>
-						</Box>
-					</Stack>
-					<Stack className={'card-box'}>
-						<Swiper
-							className={'popular-property-swiper'}
-							slidesPerView={'auto'}
-							spaceBetween={25}
-							modules={[Autoplay, Navigation, Pagination]}
-							navigation={{
-								nextEl: '.swiper-popular-next',
-								prevEl: '.swiper-popular-prev',
-							}}
-							pagination={{
-								el: '.swiper-popular-pagination',
-							}}
-						>
-							{popularProperties.map((property: Property) => {
-								return (
-									<SwiperSlide key={property._id} className={'popular-property-slide'}>
-										<PopularPropertyCard property={property} />
-									</SwiperSlide>
-								);
-							})}
-						</Swiper>
-					</Stack>
-					<Stack className={'pagination-box'}>
-						<WestIcon className={'swiper-popular-prev'} />
-						<div className={'swiper-popular-pagination'}></div>
-						<EastIcon className={'swiper-popular-next'} />
-					</Stack>
+					) : (
+						<div className={'popular-bento'}>
+							<PopularPropertyCard property={featured} featured />
+							{rest.slice(0, 4).map((property: Property) => (
+								<PopularPropertyCard key={property._id} property={property} />
+							))}
+						</div>
+					)}
 				</Stack>
 			</Stack>
 		);

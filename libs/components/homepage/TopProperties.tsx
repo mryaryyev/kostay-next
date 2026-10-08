@@ -1,3 +1,4 @@
+import SectionHeader from './SectionHeader';
 import React, { useState } from 'react';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -92,19 +93,22 @@ const TopProperties = (props: TopPropertiesProps) => {
 		return (
 			<Stack className={'top-properties'}>
 				<Stack className={'container'}>
-					<Stack className={'info-box'}>
-						<Box component={'div'} className={'left'}>
-							<span>Top stays</span>
-							<p>Check out our top stays</p>
-						</Box>
-						<Box component={'div'} className={'right'}>
-							<div className={'pagination-box'}>
-								<WestIcon className={'swiper-top-prev'} />
+					<SectionHeader
+						eyebrow={'Top rated'}
+						title={'Top Stays'}
+						subtitle={'The highest-ranked stays on Kostay'}
+						action={
+							<div className={'home-pager'}>
+								<button type={'button'} className={'swiper-top-prev'} aria-label={'Previous stays'}>
+									<WestIcon />
+								</button>
 								<div className={'swiper-top-pagination'}></div>
-								<EastIcon className={'swiper-top-next'} />
+								<button type={'button'} className={'swiper-top-next'} aria-label={'Next stays'}>
+									<EastIcon />
+								</button>
 							</div>
-						</Box>
-					</Stack>
+						}
+					/>
 					<Stack className={'card-box'}>
 						<Swiper
 							className={'top-property-swiper'}

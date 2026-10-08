@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
-import { Box } from '@mui/material';
 import Moment from 'react-moment';
 import { BoardArticle } from '../../types/board-article/board-article';
 
@@ -21,35 +20,22 @@ const CommunityCard = (props: CommunityCardProps) => {
 	if (device === 'mobile') {
 		return <div>COMMUNITY CARD (MOBILE)</div>;
 	} else {
-		if (vertical) {
-			return (
-				<Link href={`/community/detail?articleCategory=${article?.articleCategory}&id=${article?._id}`}>
-					<Box component={'div'} className={'vertical-card'}>
-						<div className={'community-img'} style={{ backgroundImage: `url(${articleImage})` }}>
-							<div>{index + 1}</div>
-						</div>
-						<strong>{article?.articleTitle}</strong>
-						<span>Free Board</span>
-					</Box>
-				</Link>
-			);
-		} else {
-			return (
-				<>
-					<Link href={`/community/detail?articleCategory=${article?.articleCategory}&id=${article?._id}`}>
-						<Box component={'div'} className="horizontal-card">
-							<img src={articleImage} alt="" />
-							<div>
-								<strong>{article.articleTitle}</strong>
-								<span>
-									<Moment format="DD.MM.YY">{article?.createdAt}</Moment>
-								</span>
-							</div>
-						</Box>
-					</Link>
-				</>
-			);
-		}
+		return (
+			<Link
+				href={`/community/detail?articleCategory=${article?.articleCategory}&id=${article?._id}`}
+				className={`home-article${vertical ? ' is-ranked' : ''}`}
+			>
+				<span className={'article-thumb'} style={{ backgroundImage: `url(${articleImage})` }}>
+					{vertical && <b>{index + 1}</b>}
+				</span>
+				<span className={'article-body'}>
+					<strong>{article?.articleTitle}</strong>
+					<span>
+						<Moment format="YYYY-MM-DD">{article?.createdAt}</Moment> · {article?.articleViews ?? 0} views
+					</span>
+				</span>
+			</Link>
+		);
 	}
 };
 
