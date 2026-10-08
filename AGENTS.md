@@ -13,19 +13,12 @@ This client project is being migrated from nestar-next to kostay-next.
 
 ## Backend facts
 
+Backend project is in ../kostay/
+
 - Kostay is a booking platform: properties have `pricePerNight` and `maxGuests`.
 - `propertyStatus` is ACTIVE / INACTIVE / DELETE. A booking never changes it.
 - Bookings and payments live in PostgreSQL; the frontend only talks to GraphQL.
 - Booking dates are plain `YYYY-MM-DD` strings (no time, no `toISOString()`).
-
-## Docs (read only when the task needs it, not at the start of every session)
-
-Docs are in ../kostay/docs/ai:
-
-- Booking screens or booking/payment API: FRONTEND_MIGRATION.md ("Booking contract" section only)
-- Product or domain decisions: DECISIONS.md
-- What is left to do: NEXT_STEPS.md
-- Do not read COMPLETED_TASKS.md or BACKEND_MIGRATION.md unless asked. Only append to COMPLETED_TASKS.md after a step is verified.
 
 ## Workflow
 
