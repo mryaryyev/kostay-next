@@ -349,6 +349,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 								id: 'location',
 								label: t('Location'),
 								value: searchFilter.search.locationList?.[0] || 'Where to?',
+				filled: Boolean(searchFilter.search.locationList?.[0]),
 								open: openLocation,
 								toggle: locationStateChangeHandler,
 							},
@@ -356,14 +357,23 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 								id: 'type',
 								label: 'Stay type',
 								value: searchFilter.search.typeList?.[0] || 'Any stay',
+				filled: Boolean(searchFilter.search.typeList?.[0]),
 								open: openType,
 								toggle: typeStateChangeHandler,
 							},
-							{ id: 'dates', label: 'Dates', value: datesLabel, open: openDates, toggle: datesStateChangeHandler },
+							{
+								id: 'dates',
+								label: 'Dates',
+								value: datesLabel,
+								filled: Boolean(checkIn && checkOut),
+								open: openDates,
+								toggle: datesStateChangeHandler,
+							},
 							{
 								id: 'guests',
 								label: 'Guests',
 								value: guestsNumber ? `${guestsNumber} guest${guestsNumber > 1 ? 's' : ''}` : 'Add guests',
+				filled: Boolean(guestsNumber),
 								open: openGuests,
 								toggle: guestsStateChangeHandler,
 							},
@@ -371,6 +381,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 								id: 'rooms',
 								label: t('Rooms'),
 								value: searchFilter.search.roomsList?.[0] ? `${searchFilter.search.roomsList[0]} rooms` : 'Any rooms',
+				filled: Boolean(searchFilter.search.roomsList?.[0]),
 								open: openRooms,
 								toggle: roomStateChangeHandler,
 							},
@@ -379,7 +390,10 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 								type="button"
 								key={field.id}
 								id={`home-search-${field.id}`}
-								className={`box ${field.open ? 'on' : ''} ${field.id === 'dates' && datesError ? 'invalid' : ''}`}
+								className={`box ${field.filled ? 'is-filled' : 'is-empty'} ${field.open ? 'on' : ''} ${
+									field.id === 'dates' && datesError ? 'invalid' : ''
+								}`}
+								aria-label={`${field.label}${field.filled ? `: ${field.value}` : ''}`}
 								aria-expanded={field.open}
 								aria-controls={field.open ? `home-panel-${field.id}` : undefined}
 								onClick={field.toggle}
@@ -393,7 +407,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							>
 								<span className="field-copy">
 									<span className="field-label">{field.label}</span>
-									<span className="field-value">{field.value}</span>
+									{field.filled && <span className="field-value">{field.value}</span>}
 								</span>
 								<ExpandMoreIcon />
 							</motion.button>
@@ -417,6 +431,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							{...feedback}
 						>
 							<img src="/img/icons/search_white.svg" alt="" />
+							<span>Search</span>
 						</motion.button>
 					</Stack>
 

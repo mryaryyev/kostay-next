@@ -171,24 +171,24 @@ const Top = () => {
 							</Link>
 						</Box>
 						<Box component={'div'} className={'router-box'}>
-							<Link href={'/'}>
+							<Link href={'/'} aria-current={router.pathname === '/' ? 'page' : undefined}>
 								<div>{t('Home')}</div>
 							</Link>
-							<Link href={'/property'}>
+							<Link href={'/property'} aria-current={router.pathname === '/property' ? 'page' : undefined}>
 								<div>{t('Properties')}</div>
 							</Link>
-							<Link href={'/agent'}>
+							<Link href={'/agent'} aria-current={router.pathname === '/agent' ? 'page' : undefined}>
 								<div> {t('Agents')} </div>
 							</Link>
-							<Link href={'/community?articleCategory=FREE'}>
+							<Link href={'/community?articleCategory=FREE'} aria-current={router.pathname === '/community' ? 'page' : undefined}>
 								<div> {t('Community')} </div>
 							</Link>
 							{user?._id && (
-								<Link href={'/mypage'}>
+								<Link href={'/mypage'} aria-current={router.pathname === '/mypage' ? 'page' : undefined}>
 									<div> {t('My Page')} </div>
 								</Link>
 							)}
-							<Link href={'/cs'}>
+							<Link href={'/cs'} aria-current={router.pathname === '/cs' ? 'page' : undefined}>
 								<div> {t('CS')} </div>
 							</Link>
 						</Box>

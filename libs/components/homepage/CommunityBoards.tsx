@@ -1,5 +1,6 @@
 import SectionHeader from './SectionHeader';
 import EastIcon from '@mui/icons-material/East';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -68,10 +69,13 @@ const CommunityBoards = () => {
 					/>
 					<div className={'community-columns'}>
 						<div className={'community-column'}>
-							<Link href={'/community?articleCategory=NEWS'} className={'column-title'}>
-								News
-							</Link>
-							<div className={'article-list is-two-col'}>
+							<div className={'column-head'}>
+								<h3>News</h3>
+								<Link href={'/community?articleCategory=NEWS'} aria-label={'All News articles'}>
+									<ChevronRightIcon />
+								</Link>
+							</div>
+							<div className={'article-list is-grid'}>
 								{newsArticles.length === 0 ? (
 									<p className={'empty-list'}>No news yet</p>
 								) : (
@@ -82,9 +86,12 @@ const CommunityBoards = () => {
 							</div>
 						</div>
 						<div className={'community-column'}>
-							<Link href={'/community?articleCategory=FREE'} className={'column-title'}>
-								Free board
-							</Link>
+							<div className={'column-head'}>
+								<h3>Free</h3>
+								<Link href={'/community?articleCategory=FREE'} aria-label={'All Free board posts'}>
+									<ChevronRightIcon />
+								</Link>
+							</div>
 							<div className={'article-list'}>
 								{freeArticles.length === 0 ? (
 									<p className={'empty-list'}>No posts yet</p>
