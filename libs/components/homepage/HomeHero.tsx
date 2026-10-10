@@ -1,4 +1,5 @@
 import React from 'react';
+import PlaceIcon from '@mui/icons-material/Place';
 
 const collage = [
 	{ city: 'Seoul', src: '/img/banner/cities/SEOUL.webp' },
@@ -23,7 +24,10 @@ const HomeHero = () => {
 				{collage.map((item) => (
 					<figure key={item.city}>
 						<img src={item.src} alt="" decoding="async" />
-						<figcaption>{item.city}</figcaption>
+						<figcaption>
+							<PlaceIcon />
+							{item.city}
+						</figcaption>
 					</figure>
 				))}
 			</div>

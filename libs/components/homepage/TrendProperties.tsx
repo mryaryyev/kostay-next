@@ -2,8 +2,8 @@ import SectionHeader from './SectionHeader';
 import React, { useState } from 'react';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
-import WestIcon from '@mui/icons-material/West';
-import EastIcon from '@mui/icons-material/East';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper';
 import { Property } from '../../types/property/property';
@@ -106,15 +106,13 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 					<SectionHeader
 						eyebrow={'Liked most'}
 						title={'Trending Stays'}
-						subtitle={'Ranked by likes from guests'}
 						action={
 							<div className={'home-pager'}>
 								<button type={'button'} className={'swiper-trend-prev'} aria-label={'Previous stays'}>
-									<WestIcon />
+									<ChevronLeftIcon />
 								</button>
-								<div className={'swiper-trend-pagination'}></div>
 								<button type={'button'} className={'swiper-trend-next'} aria-label={'Next stays'}>
-									<EastIcon />
+									<ChevronRightIcon />
 								</button>
 							</div>
 						}
@@ -128,14 +126,11 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 							<Swiper
 								className={'trend-property-swiper'}
 								slidesPerView={'auto'}
-								spaceBetween={15}
+								spaceBetween={24}
 								modules={[Autoplay, Navigation, Pagination]}
 								navigation={{
 									nextEl: '.swiper-trend-next',
 									prevEl: '.swiper-trend-prev',
-								}}
-								pagination={{
-									el: '.swiper-trend-pagination',
 								}}
 							>
 								{trendProperties.map((property: Property) => {

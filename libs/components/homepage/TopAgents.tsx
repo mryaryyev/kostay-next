@@ -5,7 +5,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper';
 import TopAgentCard from './TopAgentCard';
@@ -83,15 +84,15 @@ const TopAgents = (props: TopAgentsProps) => {
 							</Link>
 						}
 					/>
-					<Stack className={'wrapper'}>
-						<Box component={'div'} className={'switch-btn swiper-agents-prev'}>
-							<ArrowBackIosNewIcon />
-						</Box>
+					<Stack className={'wrapper sx-hosts-row'}>
+						<button type={'button'} className={'sx-host-nav is-prev swiper-agents-prev'} aria-label={'Previous host'}>
+							<ChevronLeftIcon />
+						</button>
 						<Box component={'div'} className={'card-wrapper'}>
 							<Swiper
 								className={'top-agents-swiper'}
 								slidesPerView={'auto'}
-								spaceBetween={29}
+								spaceBetween={24}
 								modules={[Autoplay, Navigation, Pagination]}
 								navigation={{
 									nextEl: '.swiper-agents-next',
@@ -107,9 +108,9 @@ const TopAgents = (props: TopAgentsProps) => {
 								})}
 							</Swiper>
 						</Box>
-						<Box component={'div'} className={'switch-btn swiper-agents-next'}>
-							<ArrowBackIosNewIcon />
-						</Box>
+						<button type={'button'} className={'sx-host-nav is-next swiper-agents-next'} aria-label={'Next host'}>
+							<ChevronRightIcon />
+						</button>
 					</Stack>
 				</Stack>
 			</Stack>
