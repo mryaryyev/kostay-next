@@ -2,8 +2,8 @@ import SectionHeader from './SectionHeader';
 import React, { useState } from 'react';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
-import WestIcon from '@mui/icons-material/West';
-import EastIcon from '@mui/icons-material/East';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper';
 import TopPropertyCard from './TopPropertyCard';
@@ -96,15 +96,13 @@ const TopProperties = (props: TopPropertiesProps) => {
 					<SectionHeader
 						eyebrow={'Top rated'}
 						title={'Top Stays'}
-						subtitle={'The highest-ranked stays on Kostay'}
 						action={
 							<div className={'home-pager'}>
 								<button type={'button'} className={'swiper-top-prev'} aria-label={'Previous stays'}>
-									<WestIcon />
+									<ChevronLeftIcon />
 								</button>
-								<div className={'swiper-top-pagination'}></div>
 								<button type={'button'} className={'swiper-top-next'} aria-label={'Next stays'}>
-									<EastIcon />
+									<ChevronRightIcon />
 								</button>
 							</div>
 						}
@@ -113,14 +111,11 @@ const TopProperties = (props: TopPropertiesProps) => {
 						<Swiper
 							className={'top-property-swiper'}
 							slidesPerView={'auto'}
-							spaceBetween={15}
+							spaceBetween={24}
 							modules={[Autoplay, Navigation, Pagination]}
 							navigation={{
 								nextEl: '.swiper-top-next',
 								prevEl: '.swiper-top-prev',
-							}}
-							pagination={{
-								el: '.swiper-top-pagination',
 							}}
 						>
 							{topProperties.map((property: Property) => {

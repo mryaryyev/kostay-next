@@ -10,8 +10,11 @@ import { Property } from '../../types/property/property';
 import Link from 'next/link';
 import { PropertiesInquiry } from '../../types/property/property.input';
 import { GET_PROPERTIES } from '../../../apollo/user/query';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { T } from '../../types/common';
+import { LIKE_TARGET_PROPERTY } from '../../../apollo/user/mutation';
+import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../sweetAlert';
+import { Message } from '../../enums/common.enum';
 
 interface PopularPropertiesProps {
 	initialInput: PropertiesInquiry;
@@ -23,6 +26,8 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 	const [popularProperties, setPopularProperties] = useState<Property[]>([]);
 
 	/** APOLLO REQUESTS **/
+	const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY, {});
+
 	const {
 		loading: getPropertiesLoading,
 		data: getPropertiesData,
@@ -37,6 +42,23 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 		},
 	});
 	/** HANDLERS **/
+	const likePropertyHandler = async (user: T, id: string) => {
+		try {
+			if (!id) return;
+			if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
+
+			await likeTargetProperty({
+				variables: { input: id },
+			});
+
+			await getPropertiesRefetch({ input: initialInput });
+
+			await sweetTopSmallSuccessAlert('success', 800);
+		} catch (err: any) {
+			console.log('ERROR, likePropertyHandler:', err);
+			sweetMixinErrorAlert(err.message).then();
+		}
+	};
 
 	if (!popularProperties) return null;
 
@@ -68,14 +90,13 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 			</Stack>
 		);
 	} else {
-		const [featured, ...rest] = popularProperties;
+		const visibleProperties = popularProperties.slice(0, 3);
 		return (
 			<Stack className={'popular-properties'}>
 				<Stack className={'container'}>
 					<SectionHeader
 						eyebrow={'Most viewed'}
 						title={'Popular Stays'}
-						subtitle={'The stays guests look at most'}
 						action={
 							<Link href={'/property'} className={'home-link'}>
 								View all stays
@@ -83,21 +104,18 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 							</Link>
 						}
 					/>
-					{!featured ? (
+					{visibleProperties.length === 0 ? (
 						<Box component={'div'} className={'empty-list'}>
 							No popular stays yet
 						</Box>
-					) : popularProperties.length >= 5 ? (
-						<div className={'popular-bento'}>
-							<PopularPropertyCard property={featured} featured />
-							{rest.slice(0, 4).map((property: Property) => (
-								<PopularPropertyCard key={property._id} property={property} compact />
-							))}
-						</div>
 					) : (
-						<div className={'popular-grid'}>
-							{popularProperties.map((property: Property) => (
-								<PopularPropertyCard key={property._id} property={property} />
+						<div className={'sx-grid-3'}>
+							{visibleProperties.map((property: Property) => (
+								<PopularPropertyCard
+									key={property._id}
+									property={property}
+									likePropertyHandler={likePropertyHandler}
+								/>
 							))}
 						</div>
 					)}

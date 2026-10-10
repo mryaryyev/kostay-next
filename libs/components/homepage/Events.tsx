@@ -1,5 +1,7 @@
 import SectionHeader from './SectionHeader';
 import React from 'react';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 
 interface EventData {
@@ -13,12 +15,12 @@ const eventsData: EventData[] = [
 		eventTitle: 'Paradise City Theme Park',
 		city: 'Incheon',
 		description:
-			'Experience magic and wonder in Incheon with a visit to the night-themed indoor theme park Wonderbox at Paradise City!',
+			'Experience magic and wonder in Incheon with a visit to the night-themed indoor theme park wonderbox.',
 		imageSrc: '/img/events/INCHEON.webp',
 	},
 	{
 		eventTitle: 'Taebaeksan Snow Festival',
-		city: 'Seoul',
+		city: 'Seoul / Gangwon',
 		description: 'If you have the opportunity to travel to South Korea, do not miss the Taebaeksan Snow Festival!',
 		imageSrc: '/img/events/SEOUL.webp',
 	},
@@ -32,7 +34,7 @@ const eventsData: EventData[] = [
 		eventTitle: 'Sand Festival',
 		city: 'Busan',
 		description:
-			'Haeundae Sand Festival, the nation’s largest eco-friendly exhibition on sand, is held at Haeundae Beach!',
+			"Haeundae Sand Festival, the nation's largest eco-friendly exhibition on sand, is held at Haeundae Beach!",
 		imageSrc: '/img/events/BUSAN.webp',
 	},
 ];
@@ -45,7 +47,7 @@ const EventCard = ({ event }: { event: EventData }) => {
 	} else {
 		return (
 			<article className="home-event-card">
-				<img src={event?.imageSrc} alt="" loading="lazy" />
+				<img src={event?.imageSrc} alt={event?.eventTitle} loading="lazy" />
 				<div className={'event-copy'}>
 					<span className={'event-city'}>{event?.city}</span>
 					<strong>{event?.eventTitle}</strong>
@@ -65,7 +67,21 @@ const Events = () => {
 		return (
 			<section className={'events'}>
 				<div className={'container'}>
-					<SectionHeader eyebrow={'Happening now'} title={'Events'} subtitle={'Festivals worth planning a stay around'} />
+					<SectionHeader
+						eyebrow={'Happening now'}
+						title={'Events & Festivals'}
+						subtitle={'Festivals worth planning an authentic seasonal stay around'}
+						action={
+							<div className={'home-pager'}>
+								<button type={'button'} aria-label={'Previous festival'} disabled>
+									<ChevronLeftIcon />
+								</button>
+								<button type={'button'} aria-label={'Next festival'} disabled>
+									<ChevronRightIcon />
+								</button>
+							</div>
+						}
+					/>
 					<div className={'events-grid'}>
 						{eventsData.map((event: EventData) => {
 							return <EventCard event={event} key={event?.eventTitle} />;

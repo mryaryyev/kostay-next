@@ -1,23 +1,26 @@
 import React from 'react';
-import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
-import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 
 const items = [
 	{
-		icon: <VerifiedUserOutlinedIcon />,
+		icon: <VerifiedIcon />,
+		tone: 'is-accent',
 		title: 'Verified Hosts',
-		text: 'Every Host is reviewed before their first listing.',
+		text: 'Every Host and residence is visited and approved before their first listing.',
 	},
 	{
 		icon: <PaymentsOutlinedIcon />,
-		title: 'Clear nightly prices',
-		text: 'Prices are shown in KRW per night, with nothing added at checkout.',
+		tone: 'is-navy',
+		title: 'Clear Nightly Prices',
+		text: 'Prices are shown in KRW per night, with nothing unexpected added at checkout.',
 	},
 	{
-		icon: <EventAvailableOutlinedIcon />,
-		title: 'Flexible dates',
-		text: 'Pick your check-in and check-out days and see who can host you.',
+		icon: <EventRepeatIcon />,
+		tone: 'is-neutral',
+		title: 'Flexible Dates',
+		text: 'Pick your dates and explore hosts with lenient cancellation terms across South Korea.',
 	},
 ];
 
@@ -27,7 +30,7 @@ const HomeTrustStrip = () => {
 			<div className="container">
 				{items.map((item) => (
 					<div className="trust-item" key={item.title}>
-						<span className="trust-icon" aria-hidden="true">
+						<span className={`trust-icon ${item.tone}`} aria-hidden="true">
 							{item.icon}
 						</span>
 						<div>

@@ -1,6 +1,5 @@
 import SectionHeader from './SectionHeader';
 import EastIcon from '@mui/icons-material/East';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -53,12 +52,16 @@ const CommunityBoards = () => {
 	if (device === 'mobile') {
 		return <div>COMMUNITY BOARDS (MOBILE)</div>;
 	} else {
+		const [featured, ...others] = [...newsArticles, ...freeArticles].sort(
+			(a, b) => (b?.articleViews ?? 0) - (a?.articleViews ?? 0),
+		);
+
 		return (
 			<section className={'community-board'}>
 				<div className={'container'}>
 					<SectionHeader
 						eyebrow={'From guests'}
-						title={'Community'}
+						title={'Community Travel Notes'}
 						subtitle={'Travel notes and news from the Kostay community'}
 						action={
 							<Link href={'/community'} className={'home-link'}>
@@ -67,42 +70,18 @@ const CommunityBoards = () => {
 							</Link>
 						}
 					/>
-					<div className={'community-columns'}>
-						<div className={'community-column'}>
-							<div className={'column-head'}>
-								<h3>News</h3>
-								<Link href={'/community?articleCategory=NEWS'} aria-label={'All News articles'}>
-									<ChevronRightIcon />
-								</Link>
-							</div>
-							<div className={'article-list is-grid'}>
-								{newsArticles.length === 0 ? (
-									<p className={'empty-list'}>No news yet</p>
-								) : (
-									newsArticles.map((article, index) => (
-										<CommunityCard vertical={true} article={article} index={index} key={article?._id} />
-									))
-								)}
+					{!featured ? (
+						<p className={'empty-list'}>No articles yet</p>
+					) : (
+						<div className={'sx-community'}>
+							<CommunityCard vertical={true} article={featured} index={0} />
+							<div className={'sx-community-list'}>
+								{others.slice(0, 3).map((article, index) => (
+									<CommunityCard vertical={false} article={article} index={index + 1} key={article?._id} />
+								))}
 							</div>
 						</div>
-						<div className={'community-column'}>
-							<div className={'column-head'}>
-								<h3>Free</h3>
-								<Link href={'/community?articleCategory=FREE'} aria-label={'All Free board posts'}>
-									<ChevronRightIcon />
-								</Link>
-							</div>
-							<div className={'article-list'}>
-								{freeArticles.length === 0 ? (
-									<p className={'empty-list'}>No posts yet</p>
-								) : (
-									freeArticles.map((article, index) => (
-										<CommunityCard vertical={false} article={article} index={index} key={article?._id} />
-									))
-								)}
-							</div>
-						</div>
-					</div>
+					)}
 				</div>
 			</section>
 		);

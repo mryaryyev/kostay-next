@@ -1,5 +1,73 @@
 /** VARIABLES **/
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700;1,800&display=swap');
 
 $font: 'Poppins', sans-serif;
+// Stitch typeface; currently used by the homepage only.
+$font-display: 'Plus Jakarta Sans', sans-serif;
+
+/** DESIGN TOKENS (Stitch: Kostay Homepage Desktop) **/
+
+// Colors
+$color-primary: #e04f32;
+$color-primary-hover: #b83822;
+$color-primary-soft: #fbe6e0;
+$color-ink: #1c1c18;
+$color-ink-dark: #131722;
+$color-ink-2: #232938;
+$color-muted: #64748b;
+$color-muted-2: #94a3b8;
+$color-canvas: #fdf9f3;
+$color-surface: #ffffff;
+$color-surface-low: #f7f3ed;
+$color-line: #e6e2dc;
+$color-success: #27ae60;
+$color-error: #ba1a1a;
+
+// Radii
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+$radius-pill: 9999px;
+
+// Spacing
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 40px;
+$gutter: 24px;
+$section-gap: 96px;
+
+// Shadows
+$shadow-1: 0 4px 20px rgba(26, 43, 76, 0.04);
+$shadow-2: 0 12px 28px rgba(26, 43, 76, 0.08);
+$shadow-3: 0 20px 45px rgba(26, 43, 76, 0.08);
+
+// Motion
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin hover-lift($shadow: $shadow-2) {
+	transition: transform 220ms $ease-out, box-shadow 220ms ease;
+	@media (hover: hover) {
+		&:hover {
+			transform: translateY(-4px);
+			box-shadow: $shadow;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+		&:hover {
+			transform: none;
+		}
+	}
+}
+
+@mixin focus-ring($color: $color-primary) {
+	&:focus-visible {
+		outline: 3px solid $color;
+		outline-offset: 3px;
+	}
+}

@@ -13,12 +13,11 @@ import { userVar } from '../../../apollo/store';
 
 interface PopularPropertyCardProps {
 	property: Property;
-	featured?: boolean;
-	compact?: boolean;
+	likePropertyHandler?: any;
 }
 
 const PopularPropertyCard = (props: PopularPropertyCardProps) => {
-	const { property, featured = false, compact = false } = props;
+	const { property, likePropertyHandler } = props;
 	const device = useDeviceDetect();
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
@@ -82,7 +81,7 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 			</Stack>
 		);
 	} else {
-		return <HomeStayCard property={property} featured={featured} compact={compact} />;
+		return <HomeStayCard property={property} likePropertyHandler={likePropertyHandler} variant={'popular'} />;
 	}
 };
 

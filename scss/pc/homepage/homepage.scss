@@ -1,15 +1,16 @@
 /** HOMEPAGE (PC) **/
 
-$home-paper: #f7f4ef;
-$home-surface: #fffdfa;
-$home-ink: #1f1b17;
-$home-muted: #837c73;
-$home-line: #e7e1d8;
-$home-clay: #b5562f;
-$home-clay-dark: #9b431e;
-$home-clay-soft: #f3e3d9;
-$home-shadow: 0 18px 40px -20px rgba(31, 27, 23, 0.28);
-$home-ease: cubic-bezier(0.22, 1, 0.36, 1);
+$home-paper: $color-canvas;
+$home-surface: $color-surface;
+$home-ink: $color-ink;
+$home-muted: $color-muted;
+$home-line: $color-line;
+$home-clay: $color-primary;
+$home-clay-dark: $color-primary-hover;
+$home-clay-soft: $color-primary-soft;
+$home-shadow: $shadow-2;
+$home-ease: $ease-out;
+$home-font: $font-display;
 
 @mixin home-focus {
 	&:focus-visible {
@@ -38,9 +39,10 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 			padding: 8px 8px 8px 12px;
 			gap: 8px;
 			border: 0;
-			border-radius: 24px;
-			background: #fff;
-			box-shadow: 0 24px 56px -24px rgba(31, 27, 23, 0.38), 0 2px 6px rgba(31, 27, 23, 0.06);
+			border: 1px solid $home-line;
+			border-radius: $radius-xl;
+			background: $home-surface;
+			box-shadow: $shadow-3;
 
 			.select-box {
 				margin-right: 0;
@@ -50,15 +52,16 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 					flex: 1 1 0;
 					height: 64px;
 					padding: 0 18px;
-					border: 0;
-					border-radius: 16px;
-					background: $home-clay-soft;
-					transition: background 160ms ease, box-shadow 160ms ease;
+					border: 1px solid $home-line;
+					border-radius: $radius-pill;
+					background: $home-surface;
+					transition: background 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 					&:nth-child(3) {
 						flex: 1.2 1 0;
 					}
 					&:hover {
-						background: #ecd3c3;
+						background: $color-surface-low;
+						border-color: $color-muted-2;
 						svg {
 							color: $home-clay;
 						}
@@ -110,9 +113,9 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 					height: 64px;
 					min-height: 0;
 					padding: 0 18px;
-					border: 0;
-					border-radius: 16px;
-					background: $home-clay-soft;
+					border: 1px solid $home-line;
+					border-radius: $radius-pill;
+					background: $home-surface;
 					transition: background 160ms ease;
 					img {
 						opacity: 0.8;
@@ -123,7 +126,7 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 						color: $home-ink;
 					}
 					&:hover {
-						background: #ecd3c3;
+						background: $color-surface-low;
 						span {
 							color: $home-clay;
 						}
@@ -137,7 +140,7 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 					display: inline-flex;
 					align-items: center;
 					border: 0;
-					border-radius: 18px;
+					border-radius: $radius-pill;
 					background: $home-clay;
 					box-shadow: 0 10px 24px -10px rgba(181, 86, 47, 0.7);
 					color: #fff;
@@ -171,17 +174,17 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	.home-hero-copy {
-		font-family: $font;
+		font-family: $home-font;
 		color: $home-ink;
 		h1 {
 			margin: 16px 0 0;
-			font-size: 64px;
-			line-height: 1.05;
-			font-weight: 600;
-			letter-spacing: -2px;
+			font-size: 60px;
+			line-height: 1.1;
+			font-weight: 800;
+			letter-spacing: -0.03em;
 			text-wrap: balance;
 			em {
-				font-style: normal;
+				font-style: italic;
 				color: $home-clay;
 			}
 		}
@@ -203,7 +206,7 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 			position: relative;
 			margin: 0;
 			overflow: hidden;
-			border-radius: 22px;
+			border-radius: $radius-xl;
 			background: $home-line;
 			&:first-child {
 				grid-row: span 2;
@@ -223,7 +226,7 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 			border-radius: 999px;
 			background: rgba(31, 27, 23, 0.45);
 			color: #fff;
-			font-family: $font;
+			font-family: $home-font;
 			font-size: 12px;
 			font-weight: 500;
 		}
@@ -231,9 +234,9 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
 	/* ---------- Shared homepage pieces ---------- */
 	.home-eyebrow {
-		font-family: $font;
+		font-family: $home-font;
 		font-size: 12px;
-		font-weight: 600;
+		font-weight: 700;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: $home-clay;
@@ -246,13 +249,13 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 		justify-content: space-between;
 		gap: 24px;
 		margin-bottom: 32px;
-		font-family: $font;
+		font-family: $home-font;
 		h2 {
 			margin: 8px 0 0;
 			font-size: 36px;
 			line-height: 1.15;
-			font-weight: 600;
-			letter-spacing: -1px;
+			font-weight: 800;
+			letter-spacing: -0.02em;
 			color: $home-ink;
 		}
 		p {
@@ -268,7 +271,7 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 		gap: 6px;
 		padding-bottom: 2px;
 		border-bottom: 1px solid currentColor;
-		font-family: $font;
+		font-family: $home-font;
 		font-size: 14px;
 		font-weight: 500;
 		color: $home-ink;
@@ -294,7 +297,7 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 		padding: 13px 24px;
 		border-radius: 999px;
 		border: 1px solid transparent;
-		font-family: $font;
+		font-family: $home-font;
 		font-size: 14px;
 		font-weight: 500;
 		text-decoration: none;
@@ -378,7 +381,7 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 		height: auto;
 		padding-bottom: 32px;
 		background: $home-paper;
-		font-family: $font;
+		font-family: $home-font;
 
 		> section,
 		> div {
@@ -451,10 +454,11 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 		box-sizing: border-box;
 		overflow: hidden;
 		border: 1px solid $home-line;
-		border-radius: 20px;
+		border-radius: $radius-xl;
 		background: $home-surface;
+		box-shadow: $shadow-1;
 		color: $home-ink;
-		font-family: $font;
+		font-family: $home-font;
 		transition: transform 220ms $home-ease, box-shadow 220ms ease;
 		a {
 			color: inherit;
@@ -606,8 +610,8 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 			min-width: 0;
 			strong {
 				font-size: 18px;
-				font-weight: 600;
-				letter-spacing: -0.4px;
+				font-weight: 800;
+				letter-spacing: -0.01em;
 				font-variant-numeric: tabular-nums;
 			}
 		}
@@ -1111,46 +1115,6 @@ $home-ease: cubic-bezier(0.22, 1, 0.36, 1);
 			margin: 10px 0 0;
 			font-size: 15px;
 			opacity: 0.7;
-		}
-	}
-
-	/* ---------- Navbar on the homepage: white bar in every scroll state ---------- */
-	&.is-home #top .navbar .navbar-main {
-		&,
-		&.transparent {
-			background-color: #fbf8f3;
-		}
-		border-bottom: 1px solid $home-line;
-		box-shadow: 0 6px 20px -12px rgba(31, 27, 23, 0.18);
-		.kostay-logo text {
-			fill: $home-ink;
-		}
-		.container .router-box a {
-			text-decoration: none;
-			border-radius: 4px;
-			@include home-focus;
-			> div {
-				padding-bottom: 4px;
-				border-bottom: 2px solid transparent;
-				color: $home-ink;
-				transition: color 160ms ease;
-			}
-			&:hover > div {
-				color: $home-clay;
-			}
-			&[aria-current='page'] > div {
-				border-bottom-color: currentColor;
-			}
-		}
-		.container .user-box .join-box {
-			border-color: $home-ink;
-			svg,
-			span {
-				color: $home-ink;
-			}
-		}
-		.container .lan-box .notification-icon {
-			color: $home-ink;
 		}
 	}
 

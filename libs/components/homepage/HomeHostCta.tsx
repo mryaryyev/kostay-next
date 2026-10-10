@@ -6,7 +6,8 @@ const HomeHostCta = () => {
 		<section className="home-host-cta">
 			<div className="container">
 				<div className="cta-panel">
-					<div>
+					<span className="cta-glow" aria-hidden="true" />
+					<div className="cta-copy">
 						<h2>Have a room, a hanok or a villa to share?</h2>
 						<p>Become a Host and welcome guests from all over the world.</p>
 					</div>
