@@ -8,6 +8,7 @@ import { Stack } from '@mui/material';
 import { getJwtToken, updateUserInfo } from '../../auth';
 import Chat from '../Chat';
 import StaysHero from '../property/StaysHero';
+import HostsHero from '../agent/HostsHero';
 import HomeFooter from '../homepage/HomeFooter';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
@@ -125,7 +126,9 @@ const withLayoutBasic = (Component: any) => {
 							<Top />
 						</Stack>
 
-						{router.pathname === '/property' ? (
+						{router.pathname === '/agent' ? (
+							<HostsHero />
+						) : router.pathname === '/property' ? (
 							<StaysHero />
 						) : (
 							<Stack
@@ -150,7 +153,7 @@ const withLayoutBasic = (Component: any) => {
 						<Chat />
 
 						<Stack id={'footer'}>
-							{router.pathname === '/property' ? <HomeFooter /> : <Footer />}
+							<HomeFooter />
 						</Stack>
 					</Stack>
 				</>
