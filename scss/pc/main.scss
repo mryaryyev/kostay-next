@@ -57,16 +57,19 @@ body::-webkit-scrollbar {
 				align-items: center;
 				box-sizing: border-box;
 				z-index: 99;
-				border-bottom: 1px solid rgba(197, 198, 207, 0.3);
-				background-color: rgba(253, 249, 243, 0.85);
-				backdrop-filter: blur(24px);
-				-webkit-backdrop-filter: blur(24px);
-				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+				// Solid bar so it looks identical on every page (no see-through to light or dark heroes)
+				// and stays distinct from the cream page background when scrolling.
+				border-bottom: 1px solid rgba(197, 198, 207, 0.6);
+				background-color: #e6e2dc;
+				box-shadow: 0 2px 8px rgba(26, 43, 76, 0.06);
 				&.transparent {
-					background-color: rgba(253, 249, 243, 0.85);
+					background-color: #e6e2dc;
 				}
-				.kostay-logo text {
+				// Explicit font so the homepage's Plus Jakarta Sans override doesn't change the logo.
+				.kostay-logo text,
+				.kostay-logo tspan {
 					fill: #1c1c18;
+					font-family: $font;
 					font-weight: 800;
 				}
 				.container {
@@ -102,9 +105,9 @@ body::-webkit-scrollbar {
 						flex-direction: row;
 						gap: 4px;
 						padding: 6px;
-						border: 1px solid rgba(197, 198, 207, 0.4);
+						border: 1px solid rgba(197, 198, 207, 0.6);
 						border-radius: 9999px;
-						background: #f1ede7;
+						background: #fbf9f5;
 						a {
 							border-radius: 9999px;
 						}
@@ -123,7 +126,8 @@ body::-webkit-scrollbar {
 							font-weight: 600;
 							letter-spacing: 0.01em;
 							cursor: pointer;
-							transition: color 200ms ease, background 200ms ease, box-shadow 200ms ease;
+							transition: color 200ms ease, background 200ms ease, box-shadow 200ms ease,
+								transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 							.community_menu {
 								position: absolute;
 								left: -177%;
@@ -151,6 +155,27 @@ body::-webkit-scrollbar {
 						}
 						a:hover > div {
 							color: #1c1c18;
+						}
+						// Hover: lift slightly and pick up a soft tint; press settles back down.
+						a:not([aria-current='page']):hover > div {
+							background: #efebe4;
+							transform: translateY(-2px);
+							box-shadow: 0 4px 10px -4px rgba(26, 43, 76, 0.18);
+						}
+						a[aria-current='page']:hover > div {
+							transform: translateY(-2px);
+							box-shadow: 0 8px 16px -4px rgba(3, 22, 54, 0.45);
+						}
+						a:active > div {
+							transform: translateY(0) scale(0.97);
+						}
+						@media (prefers-reduced-motion: reduce) {
+							div,
+							a:hover > div,
+							a:active > div {
+								transform: none !important;
+								transition: color 200ms ease, background 200ms ease;
+							}
 						}
 						a[aria-current='page'] > div {
 							background: #031636;
@@ -212,9 +237,9 @@ body::-webkit-scrollbar {
 						.lang-switch {
 							display: inline-flex;
 							padding: 3px;
-							border: 1px solid rgba(197, 198, 207, 0.4);
+							border: 1px solid rgba(197, 198, 207, 0.6);
 							border-radius: 9999px;
-							background: #f1ede7;
+							background: #fbf9f5;
 							button {
 								min-width: 36px;
 								padding: 5px 10px;
