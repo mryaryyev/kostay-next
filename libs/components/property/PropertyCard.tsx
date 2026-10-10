@@ -11,16 +11,35 @@ import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import IconButton from '@mui/material/IconButton';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import VillaOutlinedIcon from '@mui/icons-material/VillaOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import TempleBuddhistOutlinedIcon from '@mui/icons-material/TempleBuddhistOutlined';
+import BedOutlinedIcon from '@mui/icons-material/BedOutlined';
+import MeetingRoomOutlinedIcon from '@mui/icons-material/MeetingRoomOutlined';
+import SquareFootIcon from '@mui/icons-material/SquareFoot';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
+import { PropertyType } from '../../enums/property.enum';
 
 interface PropertyCardType {
 	property: Property;
 	likePropertyHandler?: any;
 	myFavorites?: boolean;
 	recentlyVisited?: boolean;
+	/** 'stays' renders the Stitch "Find A Stay" card used on /property. */
+	variant?: 'default' | 'stays';
 }
 
+const typeIcons: Record<PropertyType, JSX.Element> = {
+	[PropertyType.APARTMENT]: <ApartmentIcon />,
+	[PropertyType.VILLA]: <VillaOutlinedIcon />,
+	[PropertyType.HOUSE]: <HomeOutlinedIcon />,
+	[PropertyType.HANOK]: <TempleBuddhistOutlinedIcon />,
+};
+
 const PropertyCard = (props: PropertyCardType) => {
-	const { property, likePropertyHandler, myFavorites, recentlyVisited } = props;
+	const { property, likePropertyHandler, myFavorites, recentlyVisited, variant = 'default' } = props;
 	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
 	const imagePath: string = property?.propertyImages[0]
@@ -29,6 +48,76 @@ const PropertyCard = (props: PropertyCardType) => {
 
 	if (device === 'mobile') {
 		return <div>PROPERTY CARD</div>;
+	} else if (variant === 'stays') {
+		const detailHref = { pathname: '/property/detail', query: { id: property?._id } };
+		const isFavorite = Boolean(property?.meLiked?.[0]?.myFavorite);
+
+		return (
+			<article className="sx-stay">
+				<div className="sx-stay-photo">
+					<Link href={detailHref} aria-label={`View ${property.propertyTitle}`}>
+						<img src={imagePath} alt={property.propertyTitle} loading="lazy" />
+					</Link>
+					<span className="sx-stay-type">
+						{typeIcons[property.propertyType]}
+						{property.propertyType}
+					</span>
+					<button
+						type="button"
+						className={`sx-stay-fav${isFavorite ? ' is-on' : ''}`}
+						aria-label={`${isFavorite ? 'Remove' : 'Save'} ${property.propertyTitle} ${isFavorite ? 'from' : 'to'} favorites`}
+						aria-pressed={isFavorite}
+						onClick={() => likePropertyHandler(user, property?._id)}
+					>
+						{isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+					</button>
+					<span className="sx-stay-price">
+						<strong>{formatKRW(property?.pricePerNight)}</strong>
+						<small> / night</small>
+					</span>
+				</div>
+				<div className="sx-stay-content">
+					<div>
+						<span className="sx-stay-address">
+							{property.propertyAddress}, {property.propertyLocation}
+						</span>
+						<h3>
+							<Link href={detailHref}>{property.propertyTitle}</Link>
+						</h3>
+						<div className="sx-stay-specs">
+							<span>
+								<BedOutlinedIcon aria-hidden="true" />
+								{property.propertyBeds} bed
+							</span>
+							<span>
+								<MeetingRoomOutlinedIcon aria-hidden="true" />
+								{property.propertyRooms} room
+							</span>
+							<span>
+								<SquareFootIcon aria-hidden="true" />
+								{property.propertySquare} m²
+							</span>
+						</div>
+					</div>
+					<div className="sx-stay-foot">
+						<span className="sx-stay-guests">
+							<GroupOutlinedIcon aria-hidden="true" />
+							Up to {property.maxGuests} guests
+						</span>
+						<span className="sx-stay-stats">
+							<span aria-label={`${property?.propertyViews} views`}>
+								<VisibilityOutlinedIcon aria-hidden="true" />
+								{property?.propertyViews}
+							</span>
+							<span aria-label={`${property?.propertyLikes} likes`}>
+								<FavoriteBorderIcon aria-hidden="true" />
+								{property?.propertyLikes}
+							</span>
+						</span>
+					</div>
+				</div>
+			</article>
+		);
 	} else {
 		return (
 			<Stack className="card-config">

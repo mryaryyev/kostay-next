@@ -7,6 +7,8 @@ import Footer from '../Footer';
 import { Stack } from '@mui/material';
 import { getJwtToken, updateUserInfo } from '../../auth';
 import Chat from '../Chat';
+import StaysHero from '../property/StaysHero';
+import HomeFooter from '../homepage/HomeFooter';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import { useTranslation } from 'next-i18next';
@@ -123,19 +125,23 @@ const withLayoutBasic = (Component: any) => {
 							<Top />
 						</Stack>
 
-						<Stack
-							className={`header-basic ${authHeader && 'auth'}`}
-							style={{
-								backgroundImage: `url(${memoizedValues.bgImage})`,
-								backgroundSize: 'cover',
-								boxShadow: 'inset 10px 40px 150px 40px rgb(24 22 36)',
-							}}
-						>
-							<Stack className={'container'}>
-								<strong>{t(memoizedValues.title)}</strong>
-								<span>{t(memoizedValues.desc)}</span>
+						{router.pathname === '/property' ? (
+							<StaysHero />
+						) : (
+							<Stack
+								className={`header-basic ${authHeader && 'auth'}`}
+								style={{
+									backgroundImage: `url(${memoizedValues.bgImage})`,
+									backgroundSize: 'cover',
+									boxShadow: 'inset 10px 40px 150px 40px rgb(24 22 36)',
+								}}
+							>
+								<Stack className={'container'}>
+									<strong>{t(memoizedValues.title)}</strong>
+									<span>{t(memoizedValues.desc)}</span>
+								</Stack>
 							</Stack>
-						</Stack>
+						)}
 
 						<Stack id={'main'}>
 							<Component {...props} />
@@ -144,7 +150,7 @@ const withLayoutBasic = (Component: any) => {
 						<Chat />
 
 						<Stack id={'footer'}>
-							<Footer />
+							{router.pathname === '/property' ? <HomeFooter /> : <Footer />}
 						</Stack>
 					</Stack>
 				</>
