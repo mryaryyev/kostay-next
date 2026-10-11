@@ -322,3 +322,33 @@ export const UNSUBSCRIBE = gql`
 		}
 	}
 `;
+
+/**************************
+ *      NOTIFICATION      *
+ *************************/
+
+export const MARK_NOTIFICATION_READ = gql`
+	mutation MarkNotificationRead($input: String!) {
+		markNotificationRead(input: $input) {
+			_id
+			notificationStatus
+		}
+	}
+`;
+
+export const MARK_ALL_NOTIFICATIONS_READ = gql`
+	mutation MarkAllNotificationsRead {
+		markAllNotificationsRead
+	}
+`;
+
+export const SEND_MESSAGE_TO_HOST = gql`
+	mutation SendMessageToHost($input: MessageInput!) {
+		sendMessageToHost(input: $input) {
+			_id
+			notificationType
+			notificationTitle
+			createdAt
+		}
+	}
+`;
