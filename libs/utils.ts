@@ -87,6 +87,92 @@ export const normalizePropertySearch = (input: unknown, defaults: PropertiesInqu
 	};
 };
 
+/* ---------- Stays URL: flat, readable params (?location=SEOUL,BUSAN&guests=2&page=2) ---------- */
+
+type QueryValue = string | string[] | undefined;
+const firstValue = (value: QueryValue) => (Array.isArray(value) ? value[0] : value);
+const toNumber = (value: QueryValue) => {
+	const text = firstValue(value);
+	return text !== undefined && /^\d+$/.test(text) ? Number(text) : undefined;
+};
+const toList = (value: QueryValue) => (firstValue(value) ?? '').split(',').filter(Boolean);
+
+/** URL → PropertiesInquiry. Old `?input={...}` links still work; every value is re-validated by normalizePropertySearch. */
+export const parsePropertyQuery = (query: Record<string, QueryValue>, defaults: PropertiesInquiry): PropertiesInquiry => {
+	if (query.input) return normalizePropertySearch(firstValue(query.input), defaults);
+
+	const sortParam = firstValue(query.sort);
+	const sortMap: Record<string, Pick<PropertiesInquiry, 'sort' | 'direction'>> = {
+		lowest: { sort: 'pricePerNight', direction: Direction.ASC },
+		highest: { sort: 'pricePerNight', direction: Direction.DESC },
+	};
+	const sizeMin = toNumber(query.sizeMin);
+	const sizeMax = toNumber(query.sizeMax);
+	const priceMin = toNumber(query.priceMin);
+	const priceMax = toNumber(query.priceMax);
+
+	return normalizePropertySearch(
+		{
+			page: toNumber(query.page),
+			limit: defaults.limit,
+			...(sortParam && sortMap[sortParam]
+				? sortMap[sortParam]
+				: { sort: sortParam, direction: firstValue(query.direction) }),
+			search: {
+				text: firstValue(query.q),
+				locationList: toList(query.location),
+				typeList: toList(query.type),
+				roomsList: toList(query.rooms).map(Number),
+				bedsList: toList(query.beds).map(Number),
+				guestsCount: toNumber(query.guests),
+				checkIn: firstValue(query.checkIn),
+				checkOut: firstValue(query.checkOut),
+				squaresRange:
+					sizeMin !== undefined || sizeMax !== undefined
+						? { start: sizeMin ?? 0, end: sizeMax ?? 500 }
+						: defaults.search.squaresRange,
+				pricesRange: priceMin !== undefined && priceMax !== undefined ? { start: priceMin, end: priceMax } : undefined,
+			},
+		},
+		defaults,
+	);
+};
+
+/** PropertiesInquiry → URL params. Only values that differ from the defaults are written, so a clean list is just /property. */
+export const buildPropertyQuery = (input: PropertiesInquiry, defaults: PropertiesInquiry): Record<string, string> => {
+	const { search } = normalizePropertySearch(input, defaults);
+	const query: Record<string, string> = {};
+	const sort = input.sort ?? 'createdAt';
+	const direction = input.direction ?? Direction.DESC;
+
+	if (search.text) query.q = search.text;
+	if (search.locationList?.length) query.location = search.locationList.join(',');
+	if (search.typeList?.length) query.type = search.typeList.join(',');
+	if (search.roomsList?.length) query.rooms = search.roomsList.join(',');
+	if (search.bedsList?.length) query.beds = search.bedsList.join(',');
+	if (search.checkIn && search.checkOut) {
+		query.checkIn = search.checkIn;
+		query.checkOut = search.checkOut;
+	}
+	if (search.guestsCount) query.guests = String(search.guestsCount);
+	if (search.pricesRange) {
+		query.priceMin = String(search.pricesRange.start);
+		query.priceMax = String(search.pricesRange.end);
+	}
+	const size = search.squaresRange;
+	if (size && (size.start !== 0 || size.end !== 500)) {
+		query.sizeMin = String(size.start);
+		query.sizeMax = String(size.end);
+	}
+	if (sort === 'pricePerNight') query.sort = direction === Direction.ASC ? 'lowest' : 'highest';
+	else if (sort !== (defaults.sort ?? 'createdAt') || direction !== (defaults.direction ?? Direction.DESC)) {
+		query.sort = sort;
+		query.direction = direction;
+	}
+	if (input.page > 1) query.page = String(input.page);
+	return query;
+};
+
 export const formatterStr = (value: number | undefined): string => {
 	return numeral(value).format('0,0') != '0' ? numeral(value).format('0,0') : '';
 };

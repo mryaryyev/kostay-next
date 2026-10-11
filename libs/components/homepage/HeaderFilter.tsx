@@ -11,7 +11,7 @@ import { PropertyLocation, PropertyType } from '../../enums/property.enum';
 import { PropertiesInquiry } from '../../types/property/property.input';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { normalizePropertySearch } from '../../utils';
+import { buildPropertyQuery, normalizePropertySearch } from '../../utils';
 import moment from 'moment';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
