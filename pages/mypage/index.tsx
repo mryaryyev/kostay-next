@@ -13,6 +13,7 @@ import MyArticles from '../../libs/components/mypage/MyArticles';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { userVar } from '../../apollo/store';
 import MyMenu from '../../libs/components/mypage/MyMenu';
+import MyIdentityCard from '../../libs/components/mypage/MyIdentityCard';
 import WriteArticle from '../../libs/components/mypage/WriteArticle';
 import MemberFollowers from '../../libs/components/member/MemberFollowers';
 import { Messages } from '../../libs/config';
@@ -112,11 +113,12 @@ const MyPage: NextPage = () => {
 			<div id="my-page" style={{ position: 'relative' }}>
 				<div className="container">
 					<Stack className={'my-page'}>
+						<MyIdentityCard />
 						<Stack className={'back-frame'}>
 							<Stack className={'left-config'}>
 								<MyMenu />
 							</Stack>
-							<Stack className="main-config" mb={'76px'}>
+							<Stack className="main-config">
 								<Stack className={'list-config'}>
 									{category === 'addProperty' && <AddProperty />}
 									{category === 'myProperties' && <MyProperties />}

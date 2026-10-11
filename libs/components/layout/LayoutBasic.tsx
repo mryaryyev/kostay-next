@@ -9,6 +9,8 @@ import { getJwtToken, updateUserInfo } from '../../auth';
 import Chat from '../Chat';
 import StaysHero from '../property/StaysHero';
 import HostsHero from '../agent/HostsHero';
+import CommunityHero from '../community/CommunityHero';
+import MyPageHero from '../mypage/MyPageHero';
 import HomeFooter from '../homepage/HomeFooter';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
@@ -126,10 +128,14 @@ const withLayoutBasic = (Component: any) => {
 							<Top />
 						</Stack>
 
-						{router.pathname === '/agent' ? (
+						{router.pathname === '/community' ? (
+							<CommunityHero />
+						) : router.pathname === '/agent' ? (
 							<HostsHero />
 						) : router.pathname === '/property' ? (
 							<StaysHero />
+						) : router.pathname === '/mypage' ? (
+							<MyPageHero />
 						) : (
 							<Stack
 								className={`header-basic ${authHeader && 'auth'}`}
