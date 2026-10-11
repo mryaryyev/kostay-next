@@ -139,7 +139,7 @@ const withLayoutBasic = (Component: any) => {
 							<MyPageHero />
 						) : router.pathname === '/cs' ? (
 							<CsHero />
-						) : (
+						) : router.pathname === '/account/join' || router.pathname === '/agent/detail' ? null : (
 							<Stack
 								className={`header-basic ${authHeader && 'auth'}`}
 								style={{
