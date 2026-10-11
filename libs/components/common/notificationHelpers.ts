@@ -2,6 +2,9 @@ import { Notification } from '../../types/notification/notification';
 import { NotificationGroup, NotificationType } from '../../enums/notification.enum';
 import { REACT_APP_API_URL } from '../../config';
 
+/** Titles set by the booking service for notifications the host receives. */
+const HOST_BOOKING_TITLES = ['requested to book your stay', 'cancelled their booking'];
+
 /** Who did it: full name, nick, or a neutral fallback. */
 export const notificationAuthor = (notification: Notification): string =>
 	notification.authorData?.memberFullName || notification.authorData?.memberNick || 'Someone';
@@ -19,6 +22,11 @@ export const notificationAvatar = (notification: Notification): string =>
 export const notificationHref = (notification: Notification) => {
 	if (notification.notificationType === NotificationType.MESSAGE) {
 		return { pathname: '/mypage', query: { category: 'notifications' } };
+	}
+	if (notification.notificationType === NotificationType.BOOKING) {
+		// Requests and guest cancellations go to the host; confirmations and declines go to the guest.
+		const forHost = HOST_BOOKING_TITLES.includes(notification.notificationTitle);
+		return { pathname: '/mypage', query: { category: forHost ? 'reservations' : 'myBookings' } };
 	}
 	if (notification.notificationGroup === NotificationGroup.PROPERTY && notification.propertyId) {
 		return { pathname: '/property/detail', query: { id: notification.propertyId } };
