@@ -304,13 +304,18 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 				{
 					...searchFilter,
 					page: 1,
-					search: { ...searchFilter.search, guestsCount: guestsCount === '' ? undefined : Number(guestsCount) },
+					search: {
+						...searchFilter.search,
+						guestsCount: guestsCount === '' ? undefined : Number(guestsCount),
+						checkIn: checkIn && checkOut ? checkIn : undefined,
+						checkOut: checkIn && checkOut ? checkOut : undefined,
+					},
 				},
 				initialInput,
 			);
 			await router.push({
 				pathname: '/property',
-				query: { input: JSON.stringify(input), ...(checkIn && checkOut ? { checkIn, checkOut } : {}) },
+				query: buildPropertyQuery(input, initialInput),
 			});
 		} catch (err: any) {
 			console.log('ERROR, pushSearchHandler:', err);

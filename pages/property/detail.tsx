@@ -172,6 +172,16 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		setSlideImage('');
 		setCommentInquiry((current) => ({ ...current, page: 1, search: { commentRefId: id } }));
 		setInsertCommentData((current) => ({ ...current, commentRefId: id }));
+		// Dates picked on Stays fill the booking box (plain YYYY-MM-DD, check-in not in the past).
+		const { checkIn: queryCheckIn, checkOut: queryCheckOut } = router.query;
+		const isYMD = (value: unknown): value is string => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+		if (isYMD(queryCheckIn) && isYMD(queryCheckOut) && queryCheckIn >= toYMD(new Date()) && queryCheckOut > queryCheckIn) {
+			setCheckIn(queryCheckIn);
+			setCheckOut(queryCheckOut);
+		} else {
+			setCheckIn('');
+			setCheckOut('');
+		}
 	}, [router.query.id]);
 
 	useEffect(() => {

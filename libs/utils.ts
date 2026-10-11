@@ -47,6 +47,12 @@ export const normalizePropertySearch = (input: unknown, defaults: PropertiesInqu
 	}
 	if (typeof rawSearch.text === 'string' && rawSearch.text.trim()) search.text = rawSearch.text.trim();
 	if (isGraphQLInt(rawSearch.guestsCount) && rawSearch.guestsCount > 0) search.guestsCount = rawSearch.guestsCount;
+	// Availability dates: plain YYYY-MM-DD; check-out only kept after a valid check-in.
+	const isYMD = (item: unknown): item is string => typeof item === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item);
+	if (isYMD(rawSearch.checkIn)) {
+		search.checkIn = rawSearch.checkIn;
+		if (isYMD(rawSearch.checkOut) && rawSearch.checkOut > rawSearch.checkIn) search.checkOut = rawSearch.checkOut;
+	}
 
 	const locations = Array.isArray(rawSearch.locationList)
 		? rawSearch.locationList.filter((item): item is PropertyLocation => Object.values(PropertyLocation).includes(item))

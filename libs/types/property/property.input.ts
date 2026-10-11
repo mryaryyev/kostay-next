@@ -27,6 +27,8 @@ interface PISearch {
 	pricesRange?: Range;
 	squaresRange?: Range;
 	text?: string;
+	checkIn?: string;
+	checkOut?: string;
 }
 
 export interface PropertiesInquiry {
