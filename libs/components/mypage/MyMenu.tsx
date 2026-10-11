@@ -1,7 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useReactiveVar } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { GET_UNREAD_NOTIFICATION_COUNT } from '../../../apollo/user/query';
 import { userVar } from '../../../apollo/store';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { logOut } from '../../auth';
@@ -14,6 +15,7 @@ import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import HistoryIcon from '@mui/icons-material/History';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
@@ -34,6 +36,11 @@ const MyMenu = () => {
 	const router = useRouter();
 	const category: any = router.query?.category ?? 'myProfile';
 	const user = useReactiveVar(userVar);
+	const { data: unreadData } = useQuery(GET_UNREAD_NOTIFICATION_COUNT, {
+		fetchPolicy: 'cache-and-network',
+		skip: !user?._id,
+	});
+	const unreadCount: number = unreadData?.getUnreadNotificationCount ?? 0;
 	const isHost = user.memberType === 'AGENT';
 
 	/** HANDLERS **/
@@ -96,6 +103,13 @@ const MyMenu = () => {
 			title: 'Account',
 			items: [
 				{ label: 'My Profile', icon: <BadgeOutlinedIcon />, category: 'myProfile' },
+				{
+					label: 'Notifications',
+					icon: <NotificationsOutlinedIcon />,
+					category: 'notifications',
+					badge: unreadCount || undefined,
+					badgeClass: 'is-alert',
+				},
 				// TODO: backend — wallet and password/security pages
 				{ label: 'Payments & Wallet', icon: <AccountBalanceWalletOutlinedIcon /> },
 				{ label: 'Security', icon: <ShieldOutlinedIcon /> },

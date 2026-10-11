@@ -231,8 +231,40 @@ body::-webkit-scrollbar {
 						display: flex;
 						align-items: center;
 						gap: 12px;
-						.notification-icon {
+						.sx-bell {
+							position: relative;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							width: 40px;
+							height: 40px;
+							padding: 0;
+							border: 0;
+							border-radius: 50%;
+							background: transparent;
 							color: #44474e;
+							cursor: pointer;
+							transition: background 160ms ease;
+							&:hover {
+								background: rgba(3, 22, 54, 0.06);
+							}
+						}
+						.sx-bell-badge {
+							position: absolute;
+							top: 4px;
+							right: 2px;
+							min-width: 18px;
+							height: 18px;
+							padding: 0 5px;
+							border: 2px solid #fdf9f3;
+							border-radius: 999px;
+							background: #e05d38;
+							color: #fff;
+							font-family: $font-display;
+							font-size: 10px;
+							font-weight: 800;
+							line-height: 14px;
+							text-align: center;
 						}
 						.lang-switch {
 							display: inline-flex;
@@ -1478,3 +1510,133 @@ body::-webkit-scrollbar {
 
 /** HOMEPAGE (Stitch) — loaded last so it wins over the shared rules above **/
 @import '/scss/pc/homepage/homeStitch';
+
+/* Notification bell dropdown (MUI Menu renders in a portal, outside #pc-wrap). */
+.sx-bell-menu {
+	width: 380px;
+	margin-top: 8px;
+	border: 1px solid #e6e2dc;
+	border-radius: 20px !important;
+	box-shadow: 0 20px 40px rgba(26, 43, 76, 0.12) !important;
+	&,
+	* {
+		font-family: $font-display;
+	}
+	button {
+		font-family: inherit;
+		cursor: pointer;
+	}
+	.sx-bell-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 16px 20px 12px;
+		border-bottom: 1px solid #e6e2dc;
+		strong {
+			color: #031636;
+			font-size: 16px;
+			font-weight: 800;
+		}
+		button {
+			padding: 0;
+			border: 0;
+			background: none;
+			color: #aa3614;
+			font-size: 12px;
+			font-weight: 700;
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+	.sx-bell-empty {
+		margin: 0;
+		padding: 28px 20px;
+		color: #75777f;
+		font-size: 13px;
+		text-align: center;
+	}
+	.sx-bell-list {
+		max-height: 380px;
+		margin: 0;
+		padding: 6px;
+		overflow-y: auto;
+		list-style: none;
+		button {
+			position: relative;
+			width: 100%;
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			padding: 12px 28px 12px 12px;
+			border: 0;
+			border-radius: 14px;
+			background: transparent;
+			text-align: left;
+			&:hover {
+				background: #f7f3ed;
+			}
+			&.is-unread {
+				background: #fff6f2;
+				&::after {
+					content: '';
+					position: absolute;
+					top: 18px;
+					right: 12px;
+					width: 8px;
+					height: 8px;
+					border-radius: 50%;
+					background: #e05d38;
+				}
+			}
+		}
+		img {
+			width: 40px;
+			height: 40px;
+			flex-shrink: 0;
+			border-radius: 50%;
+			object-fit: cover;
+		}
+	}
+	.sx-bell-text {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+		> span {
+			color: #44474e;
+			font-size: 13px;
+			line-height: 19px;
+			b {
+				color: #031636;
+				font-weight: 700;
+			}
+		}
+		em {
+			overflow: hidden;
+			color: #75777f;
+			font-size: 12px;
+			font-style: normal;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+		small {
+			color: #aa3614;
+			font-size: 11px;
+			font-weight: 600;
+		}
+	}
+	.sx-bell-all {
+		display: block;
+		padding: 14px 20px;
+		border-top: 1px solid #e6e2dc;
+		color: #031636;
+		font-size: 13px;
+		font-weight: 700;
+		text-align: center;
+		text-decoration: none;
+		&:hover {
+			background: #f7f3ed;
+		}
+	}
+}

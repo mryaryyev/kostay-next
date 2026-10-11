@@ -103,6 +103,10 @@
 				background: #fff4d6;
 				color: #92600a;
 			}
+			&.is-alert {
+				background: $mp-cta-bright;
+				color: #fff;
+			}
 		}
 		&:hover {
 			background: $mp-low;
@@ -434,6 +438,237 @@
 			opacity: 0.5;
 			cursor: not-allowed;
 			box-shadow: none;
+		}
+	}
+
+	/* ---------- Notifications ---------- */
+	.sx-notifications {
+		width: 100%;
+		padding: 28px 32px 32px;
+		border: 1px solid $mp-line;
+		border-radius: 20px;
+		background: $mp-surface;
+		box-shadow: $mp-shadow-md;
+	}
+
+	.sx-notifications-head {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+		h2 {
+			margin: 0;
+			color: $mp-navy;
+			font-size: 26px;
+			line-height: 34px;
+			font-weight: 800;
+			letter-spacing: -0.02em;
+		}
+		p {
+			margin: 4px 0 0;
+			color: $mp-body;
+			font-size: 14px;
+		}
+	}
+
+	.sx-notifications-filters {
+		display: flex;
+		gap: 8px;
+		margin: 22px 0 16px;
+		button {
+			padding: 8px 16px;
+			border: 1px solid $mp-line;
+			border-radius: 999px;
+			background: $mp-surface;
+			color: $mp-body;
+			font-size: 13px;
+			font-weight: 600;
+			transition: background 160ms ease, color 160ms ease;
+			&:hover {
+				border-color: $mp-navy;
+			}
+			&.active {
+				border-color: $mp-navy;
+				background: $mp-navy;
+				color: #fff;
+			}
+		}
+	}
+
+	.sx-notifications-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 6px;
+		padding: 56px 24px;
+		border: 1.5px dashed #d6d2cb;
+		border-radius: 16px;
+		text-align: center;
+		svg {
+			width: 40px;
+			height: 40px;
+			color: $mp-outline;
+		}
+		strong {
+			color: $mp-navy;
+			font-size: 16px;
+		}
+		p {
+			margin: 0;
+			color: $mp-body;
+			font-size: 13px;
+		}
+	}
+
+	.sx-notifications-list {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		li {
+			border: 1px solid $mp-line;
+			border-radius: 16px;
+			background: $mp-surface;
+			transition: border-color 160ms ease;
+			&:hover {
+				border-color: #d6d2cb;
+			}
+			&.is-unread {
+				border-color: #f6c9b8;
+				background: #fff8f5;
+			}
+		}
+	}
+
+	.sx-notification-main {
+		width: 100%;
+		display: flex;
+		align-items: flex-start;
+		gap: 14px;
+		padding: 16px 18px;
+		border: 0;
+		background: transparent;
+		text-align: left;
+	}
+
+	.sx-notification-avatar {
+		position: relative;
+		flex-shrink: 0;
+		img {
+			width: 46px;
+			height: 46px;
+			border-radius: 50%;
+			object-fit: cover;
+		}
+	}
+
+	.sx-type {
+		position: absolute;
+		right: -4px;
+		bottom: -4px;
+		width: 22px;
+		height: 22px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 2px solid #fff;
+		border-radius: 50%;
+		background: $mp-navy;
+		color: #fff;
+		svg {
+			width: 12px;
+			height: 12px;
+		}
+		&.is-like {
+			background: #e11d48;
+		}
+		&.is-message {
+			background: $mp-cta-bright;
+		}
+		&.is-follow {
+			background: #15803d;
+		}
+	}
+
+	.sx-notification-body {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 3px;
+		min-width: 0;
+		em {
+			overflow: hidden;
+			color: $mp-outline;
+			font-size: 13px;
+			font-style: normal;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	}
+
+	.sx-notification-line {
+		color: $mp-body;
+		font-size: 14px;
+		line-height: 21px;
+		b {
+			color: $mp-navy;
+			font-weight: 700;
+		}
+	}
+
+	.sx-notification-subject {
+		color: $mp-navy;
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	.sx-notification-message {
+		margin-top: 6px;
+		padding: 12px 14px;
+		border-radius: 12px;
+		background: $mp-low;
+		color: $mp-ink;
+		font-size: 14px;
+		line-height: 22px;
+		white-space: pre-line;
+	}
+
+	.sx-notification-time {
+		margin-top: 2px;
+		color: $mp-cta;
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	.sx-unread-dot {
+		width: 9px;
+		height: 9px;
+		flex-shrink: 0;
+		margin-top: 6px;
+		border-radius: 50%;
+		background: $mp-cta-bright;
+	}
+
+	.sx-notification-link {
+		display: inline-block;
+		margin: -4px 0 14px 78px;
+		color: $mp-cta;
+		font-size: 13px;
+		font-weight: 700;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	.sx-notifications-pagination {
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
+		.Mui-selected {
+			background: $mp-navy !important;
+			color: #fff;
 		}
 	}
 }

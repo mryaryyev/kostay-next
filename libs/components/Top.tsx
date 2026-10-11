@@ -8,12 +8,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import useDeviceDetect from '../hooks/useDeviceDetect';
 import Link from 'next/link';
-import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../apollo/store';
 import { Logout } from '@mui/icons-material';
 import { REACT_APP_API_URL } from '../config';
 import KostayLogo from './common/KostayLogo';
+import NotificationBell from './common/NotificationBell';
 
 const languages = ['en', 'kr', 'ru'];
 
@@ -187,7 +187,7 @@ const Top = () => {
 							)}
 
 							<div className={'lan-box'}>
-								{user?._id && <NotificationsOutlinedIcon className={'notification-icon'} />}
+								<NotificationBell />
 								<div className={'lang-switch'} role={'group'} aria-label={'Language'}>
 									{languages.map((code) => (
 										<button
