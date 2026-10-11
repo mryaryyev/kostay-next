@@ -277,3 +277,50 @@ export const GET_WAITING_INQUIRY_COUNT = gql`
 		}
 	}
 `;
+
+/**************************
+ *        BOOKING         *
+ *************************/
+
+export const GET_ALL_BOOKINGS_BY_ADMIN = gql`
+	query GetAllBookingsByAdmin($input: AllBookingsInquiry!) {
+		getAllBookingsByAdmin(input: $input) {
+			list {
+				id
+				propertyId
+				memberId
+				checkIn
+				checkOut
+				guestsCount
+				totalPrice
+				status
+				paymentStatus
+				paymentMethod
+				createdAt
+				updatedAt
+				propertyData {
+					_id
+					propertyTitle
+					propertyImage
+					propertyLocation
+				}
+				guestData {
+					_id
+					memberNick
+					memberFullName
+					memberImage
+					memberPhone
+				}
+			}
+			total
+			statusCounter {
+				status
+				count
+			}
+			paymentSummary {
+				paidTotal
+				refundedTotal
+			}
+		}
+	}
+`;

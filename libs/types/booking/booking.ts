@@ -27,6 +27,7 @@ export interface Booking {
 	totalPrice: number;
 	status: BookingStatus;
 	paymentStatus?: PaymentStatus;
+	paymentMethod?: string;
 	createdAt: Date;
 	updatedAt: Date;
 	propertyData?: BookingPropertyData;
@@ -36,6 +37,9 @@ export interface Booking {
 export interface Bookings {
 	list: Booking[];
 	total: number;
+	/** Admin only */
+	statusCounter?: { status: BookingStatus; count: number }[];
+	paymentSummary?: { paidTotal: number; refundedTotal: number };
 }
 
 export interface BookedRange {
