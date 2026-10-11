@@ -230,3 +230,50 @@ export const GET_ALL_NOTICES_BY_ADMIN = gql`
 	}
 `;
 
+/**************************
+ *        INQUIRY         *
+ *************************/
+
+export const GET_ALL_INQUIRIES_BY_ADMIN = gql`
+	query GetAllInquiriesByAdmin($input: AllInquiriesInquiry!) {
+		getAllInquiriesByAdmin(input: $input) {
+			list {
+				_id
+				inquiryTopic
+				inquiryStatus
+				inquiryTitle
+				inquiryContent
+				memberId
+				answerContent
+				answeredAt
+				createdAt
+				updatedAt
+				memberData {
+					_id
+					memberNick
+					memberFullName
+					memberImage
+					memberType
+				}
+			}
+			metaCounter {
+				total
+			}
+			statusCounter {
+				_id
+				count
+			}
+		}
+	}
+`;
+
+/** Admin sidebar badge: how many inquiries wait for an answer. */
+export const GET_WAITING_INQUIRY_COUNT = gql`
+	query GetWaitingInquiryCount($input: AllInquiriesInquiry!) {
+		getAllInquiriesByAdmin(input: $input) {
+			metaCounter {
+				total
+			}
+		}
+	}
+`;

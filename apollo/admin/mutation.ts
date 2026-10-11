@@ -198,3 +198,40 @@ export const REMOVE_NOTICE = gql`
 	}
 `;
 
+/**************************
+ *        INQUIRY         *
+ *************************/
+
+export const ANSWER_INQUIRY = gql`
+	mutation AnswerInquiry($input: AnswerInquiryInput!) {
+		answerInquiry(input: $input) {
+			_id
+			inquiryTopic
+			inquiryStatus
+			inquiryTitle
+			inquiryContent
+			memberId
+			answerContent
+			answeredAt
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+export const UPDATE_INQUIRY_BY_ADMIN = gql`
+	mutation UpdateInquiryByAdmin($input: InquiryUpdate!) {
+		updateInquiryByAdmin(input: $input) {
+			_id
+			inquiryTopic
+			inquiryStatus
+			inquiryTitle
+			inquiryContent
+			memberId
+			answerContent
+			answeredAt
+			createdAt
+			updatedAt
+		}
+	}
+`;

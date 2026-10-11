@@ -9,6 +9,9 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import { ChatsCircle, Headset, User, UserCircleGear } from 'phosphor-react';
 import cookies from 'js-cookie';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
+import { useQuery } from '@apollo/client';
+import { GET_WAITING_INQUIRY_COUNT } from '../../../apollo/admin/query';
+import { InquiryStatus } from '../../enums/inquiry.enum';
 
 const AdminMenuList = (props: any) => {
 	const router = useRouter();
@@ -24,6 +27,21 @@ const AdminMenuList = (props: any) => {
 	} = props;
 
 	const pathnames = pathname.split('/').filter((x: any) => x);
+
+	/** APOLLO REQUESTS **/
+	// Questions still waiting for an answer; shown next to Cs and 1:1 Inquiry.
+	const { data: waitingData } = useQuery(GET_WAITING_INQUIRY_COUNT, {
+		fetchPolicy: 'cache-and-network',
+		variables: { input: { page: 1, limit: 1, search: { inquiryStatus: InquiryStatus.WAITING } } },
+		pollInterval: 30000,
+	});
+	const waitingCount: number = waitingData?.getAllInquiriesByAdmin?.metaCounter?.[0]?.total ?? 0;
+	const badge = (count: number) =>
+		count > 0 ? (
+			<span className={'admin-menu-badge'} aria-label={`${count} waiting`}>
+				{count > 99 ? '99+' : count}
+			</span>
+		) : null;
 
 	/** LIFECYCLES **/
 	useEffect(() => {
@@ -107,6 +125,7 @@ const AdminMenuList = (props: any) => {
 		Cs: [
 			{ title: 'FAQ', url: '/_admin/cs/faq' },
 			{ title: 'Notice', url: '/_admin/cs/notice' },
+			{ title: '1:1 Inquiry', url: '/_admin/cs/inquiry' },
 		],
 	};
 
@@ -134,6 +153,7 @@ const AdminMenuList = (props: any) => {
 							{item.icon}
 						</ListItemIcon>
 						<ListItemText>{item.title}</ListItemText>
+						{item.title === 'Cs' && badge(waitingCount)}
 						{clickMenu.find((menu: string) => item.title === menu) ? <ExpandLess /> : <ExpandMore />}
 					</ListItemButton>
 					<Collapse
@@ -154,6 +174,7 @@ const AdminMenuList = (props: any) => {
 											<Typography variant={sub.title} component={'span'}>
 												{sub.title}
 											</Typography>
+											{sub.url === '/_admin/cs/inquiry' && badge(waitingCount)}
 										</ListItemButton>
 									</Link>
 								))}

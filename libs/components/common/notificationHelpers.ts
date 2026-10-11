@@ -5,9 +5,16 @@ import { REACT_APP_API_URL } from '../../config';
 /** Titles set by the booking service for notifications the host receives. */
 const HOST_BOOKING_TITLES = ['booked your stay', 'cancelled their booking'];
 
+/** Set by the inquiry service on the notification each admin gets for a new question. */
+const NEW_INQUIRY_TITLE = 'sent an inquiry';
+const isAnswerFromHelp = (notification: Notification) =>
+	notification.notificationType === NotificationType.INQUIRY && notification.notificationTitle !== NEW_INQUIRY_TITLE;
+
 /** Who did it: full name, nick, or a neutral fallback. */
 export const notificationAuthor = (notification: Notification): string =>
-	notification.authorData?.memberFullName || notification.authorData?.memberNick || 'Someone';
+	isAnswerFromHelp(notification)
+		? 'Kostay Help'
+		: notification.authorData?.memberFullName || notification.authorData?.memberNick || 'Someone';
 
 /** "liked your stay", "sent you a message", ... (the author's name is rendered separately in bold). */
 export const notificationAction = (notification: Notification): string =>
@@ -22,6 +29,12 @@ export const notificationAvatar = (notification: Notification): string =>
 export const notificationHref = (notification: Notification) => {
 	if (notification.notificationType === NotificationType.MESSAGE) {
 		return { pathname: '/mypage', query: { category: 'notifications' } };
+	}
+	if (notification.notificationType === NotificationType.INQUIRY) {
+		// Admins open the 1:1 Inquiry page; members see the answer in Help → Inquiry.
+		return isAnswerFromHelp(notification)
+			? { pathname: '/cs', query: { tab: 'inquiry' } }
+			: { pathname: '/_admin/cs/inquiry' };
 	}
 	if (notification.notificationType === NotificationType.BOOKING) {
 		// New bookings and guest cancellations go to the host (Reservations); anything else to the guest.

@@ -738,3 +738,28 @@ export const GET_NOTICES = gql`
 	}
 `;
 
+/**************************
+ *        INQUIRY         *
+ *************************/
+
+export const GET_MY_INQUIRIES = gql`
+	query GetMyInquiries($input: MyInquiriesInquiry!) {
+		getMyInquiries(input: $input) {
+			list {
+				_id
+				inquiryTopic
+				inquiryStatus
+				inquiryTitle
+				inquiryContent
+				memberId
+				answerContent
+				answeredAt
+				createdAt
+				updatedAt
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
