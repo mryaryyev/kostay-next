@@ -6,7 +6,7 @@ import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Filter from '../../libs/components/property/Filter';
 import { useRouter } from 'next/router';
-import { normalizePropertySearch } from '../../libs/utils';
+import { buildPropertyQuery, parsePropertyQuery } from '../../libs/utils';
 import { PropertiesInquiry } from '../../libs/types/property/property.input';
 import { Property } from '../../libs/types/property/property';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -33,16 +33,14 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	const device = useDeviceDetect();
 	const router = useRouter();
 	const searchFilter = useMemo(
-		() => normalizePropertySearch(router.query.input, initialInput),
-		[router.query.input, initialInput],
+		() => parsePropertyQuery(router.query, initialInput),
+		[router.query, initialInput],
 	);
 	const currentPage = searchFilter.page;
-	// Dates come from the home search as separate URL params; getProperties cannot filter by them yet.
-	const isPlainDate = (value: unknown): value is string =>
-		typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && moment(value, 'YYYY-MM-DD', true).isValid();
-	const { checkIn, checkOut } = router.query;
+	// Availability dates live in search (home search or the Dates filter); getProperties hides booked stays.
+	const { checkIn, checkOut } = searchFilter.search;
 	const stayDates =
-		isPlainDate(checkIn) && isPlainDate(checkOut) && checkOut > checkIn
+		checkIn && checkOut
 			? `${moment(checkIn, 'YYYY-MM-DD').format('MMM D')} – ${moment(checkOut, 'YYYY-MM-DD').format('MMM D, YYYY')}`
 			: null;
 	const sortKey =
@@ -59,7 +57,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 			await router.push(
 				{
 					pathname: '/property',
-					query: { ...router.query, input: JSON.stringify(normalizePropertySearch(input, initialInput)) },
+					query: buildPropertyQuery(input, initialInput),
 				},
 				undefined,
 				{ scroll: false },
@@ -74,7 +72,8 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 
 	const {
 		loading: getPropertiesLoading,
-		data: getPropertiesData,
+		data: currentPropertiesData,
+		previousData: previousPropertiesData,
 		error: getPropertiesError,
 		refetch: getPropertiesRefetch,
 	} = useQuery(GET_PROPERTIES, {
@@ -83,6 +82,9 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 		notifyOnNetworkStatusChange: true,
 		skip: !router.isReady,
 	});
+	// Keep the last list on screen while a filter change loads, so the page does not jump.
+	const getPropertiesData = currentPropertiesData ?? previousPropertiesData;
+	const isUpdating = getPropertiesLoading && Boolean(getPropertiesData);
 	const properties: Property[] = getPropertiesData?.getProperties?.list ?? [];
 	const total: number = getPropertiesData?.getProperties?.metaCounter?.[0]?.total ?? 0;
 
@@ -159,11 +161,11 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 
 						{stayDates && (
 							<p className={'stay-dates-note'}>
-								Dates: <strong>{stayDates}</strong> · availability filtering is coming soon
+								Available for <strong>{stayDates}</strong>
 							</p>
 						)}
 
-						{!router.isReady || getPropertiesLoading ? (
+						{!router.isReady || (getPropertiesLoading && !getPropertiesData) ? (
 							<div className="no-data" role="status">
 								Loading stays…
 							</div>
@@ -178,12 +180,13 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 								<p>No stays found!</p>
 							</div>
 						) : (
-							<div className="sx-stays-grid">
+							<div className={`sx-stays-grid ${isUpdating ? 'is-updating' : ''}`} aria-busy={isUpdating}>
 								{properties.map((property: Property) => (
 									<PropertyCard
 										property={property}
 										likePropertyHandler={likePropertyHandler}
 										variant={'stays'}
+										stayDates={{ checkIn, checkOut }}
 										key={property?._id}
 									/>
 								))}
