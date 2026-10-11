@@ -113,7 +113,7 @@ const Top = () => {
 					<div> {t('Community')} </div>
 				</Link>
 				<Link href={'/cs'}>
-					<div> {t('CS')} </div>
+					<div> {t('Help')} </div>
 				</Link>
 			</Stack>
 		);
@@ -146,7 +146,7 @@ const Top = () => {
 								</Link>
 							)}
 							<Link href={'/cs'} aria-current={isActive('/cs') ? 'page' : undefined}>
-								<div> {t('CS / Support')} </div>
+								<div> {t('Help')} </div>
 							</Link>
 						</Box>
 						<Box component={'div'} className={'user-box'}>

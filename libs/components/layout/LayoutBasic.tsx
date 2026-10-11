@@ -11,6 +11,7 @@ import StaysHero from '../property/StaysHero';
 import HostsHero from '../agent/HostsHero';
 import CommunityHero from '../community/CommunityHero';
 import MyPageHero from '../mypage/MyPageHero';
+import CsHero from '../cs/CsHero';
 import HomeFooter from '../homepage/HomeFooter';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
@@ -136,6 +137,8 @@ const withLayoutBasic = (Component: any) => {
 							<StaysHero />
 						) : router.pathname === '/mypage' ? (
 							<MyPageHero />
+						) : router.pathname === '/cs' ? (
+							<CsHero />
 						) : (
 							<Stack
 								className={`header-basic ${authHeader && 'auth'}`}

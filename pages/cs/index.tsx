@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Box, Stack } from '@mui/material';
+import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
+import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
+import SearchIcon from '@mui/icons-material/Search';
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
+import LuggageOutlinedIcon from '@mui/icons-material/LuggageOutlined';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Notice from '../../libs/components/cs/Notice';
@@ -14,61 +21,121 @@ export const getStaticProps = async ({ locale }: any) => ({
 	},
 });
 
+const tabs = [
+	{ key: 'notice', label: 'Notice', icon: <CampaignOutlinedIcon /> },
+	{ key: 'faq', label: 'FAQ', icon: <HelpOutlineRoundedIcon /> },
+];
+
+/** Help Center: Notice and FAQ content is written by the admin (CS management) and read with getNotices. */
 const CS: NextPage = () => {
 	const device = useDeviceDetect();
 	const router = useRouter();
+	const tab = router.query.tab === 'faq' ? 'faq' : 'notice';
+	const [searchInput, setSearchInput] = useState<string>('');
+	const [text, setText] = useState<string>('');
+
+	/** LIFECYCLES **/
+	useEffect(() => {
+		// A new tab starts with an empty search.
+		setSearchInput('');
+		setText('');
+	}, [tab]);
 
 	/** HANDLERS **/
-	const changeTabHandler = (tab: string) => {
-		router.push(
-			{
-				pathname: '/cs',
-				query: { tab: tab },
-			},
-			undefined,
-			{ scroll: false },
-		);
+	const changeTabHandler = (value: string) => {
+		router.push({ pathname: '/cs', query: { tab: value } }, undefined, { scroll: false });
 	};
-	const tab = router.query.tab ?? 'notice';
 
 	if (device === 'mobile') {
 		return <h1>CS PAGE MOBILE</h1>;
 	} else {
 		return (
-			<Stack className={'cs-page'}>
-				<Stack className={'container'}>
-					<Box component={'div'} className={'cs-main-info'}>
-						<Box component={'div'} className={'info'}>
-							<span>Cs center</span>
-							<p>I will answer your questions</p>
-						</Box>
-						<Box component={'div'} className={'btns'}>
-							<div
-								className={tab == 'notice' ? 'active' : ''}
-								onClick={() => {
-									changeTabHandler('notice');
-								}}
-							>
-								Notice
+			<div id="cs-page">
+				<div className="container">
+					<div className="sx-cs-layout">
+						<main className="sx-cs-main">
+							<div className="sx-cs-toolbar">
+								<div className="sx-cs-tabs" role="tablist" aria-label="Help Center sections">
+									{tabs.map((item) => (
+										<button
+											type="button"
+											role="tab"
+											key={item.key}
+											aria-selected={tab === item.key}
+											className={tab === item.key ? 'active' : ''}
+											onClick={() => changeTabHandler(item.key)}
+										>
+											{item.icon}
+											{item.label}
+										</button>
+									))}
+								</div>
+								<label className="sx-cs-search">
+									<SearchIcon aria-hidden="true" />
+									<input
+										type="text"
+										value={searchInput}
+										placeholder={tab === 'faq' ? 'Search questions' : 'Search notices'}
+										aria-label={tab === 'faq' ? 'Search questions' : 'Search notices'}
+										onChange={(e) => setSearchInput(e.target.value)}
+										onKeyDown={(e) => e.key === 'Enter' && setText(searchInput.trim())}
+									/>
+									{searchInput && (
+										<button
+											type="button"
+											aria-label="Clear search"
+											onClick={() => {
+												setSearchInput('');
+												setText('');
+											}}
+										>
+											<CancelRoundedIcon />
+										</button>
+									)}
+								</label>
 							</div>
-							<div
-								className={tab == 'faq' ? 'active' : ''}
-								onClick={() => {
-									changeTabHandler('faq');
-								}}
-							>
-								FAQ
+
+							{tab === 'notice' ? <Notice text={text} /> : <Faq text={text} />}
+						</main>
+
+						<aside className="sx-cs-aside">
+							<div className="sx-cs-help">
+								<h3>Still need help?</h3>
+								<p>Most answers about your trip live in your account.</p>
+								<Link href={{ pathname: '/mypage', query: { category: 'myBookings' } }}>
+									<LuggageOutlinedIcon aria-hidden="true" />
+									<span>
+										<strong>My Bookings</strong>
+										<small>Dates, payments and cancellations</small>
+									</span>
+								</Link>
+								<Link href="/property">
+									<HomeWorkOutlinedIcon aria-hidden="true" />
+									<span>
+										<strong>Message a host</strong>
+										<small>Use the contact box on any stay page</small>
+									</span>
+								</Link>
+								<Link href="/community">
+									<ForumOutlinedIcon aria-hidden="true" />
+									<span>
+										<strong>Community</strong>
+										<small>Ask other travelers and hosts</small>
+									</span>
+								</Link>
 							</div>
-						</Box>
-					</Box>
-
-					<Box component={'div'} className={'cs-content'}>
-						{tab === 'notice' && <Notice />}
-
-						{tab === 'faq' && <Faq />}
-					</Box>
-				</Stack>
-			</Stack>
+							<div className="sx-cs-times">
+								<span>House times</span>
+								<p>
+									Check-in from <strong>13:00</strong>
+									<br />
+									Check-out by <strong>11:00</strong>
+								</p>
+							</div>
+						</aside>
+					</div>
+				</div>
+			</div>
 		);
 	}
 };
