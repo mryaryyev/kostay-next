@@ -357,15 +357,18 @@ export const SEND_MESSAGE_TO_HOST = gql`
  *         BOOKING        *
  *************************/
 
-export const CREATE_BOOKING = gql`
-	mutation CreateBooking($input: BookingInput!) {
-		createBooking(input: $input) {
+/** Instant Book from the checkout page: saves a CONFIRMED booking and its payment together. */
+export const BOOK_AND_PAY = gql`
+	mutation BookAndPay($input: BookAndPayInput!) {
+		bookAndPay(input: $input) {
 			id
+			propertyId
 			checkIn
 			checkOut
 			guestsCount
 			totalPrice
 			status
+			paymentStatus
 		}
 	}
 `;
@@ -375,37 +378,6 @@ export const CANCEL_BOOKING = gql`
 		cancelBooking(bookingId: $bookingId) {
 			id
 			status
-		}
-	}
-`;
-
-export const CONFIRM_BOOKING = gql`
-	mutation ConfirmBooking($bookingId: String!) {
-		confirmBooking(bookingId: $bookingId) {
-			id
-			status
-		}
-	}
-`;
-
-export const DECLINE_BOOKING = gql`
-	mutation DeclineBooking($bookingId: String!) {
-		declineBooking(bookingId: $bookingId) {
-			id
-			status
-		}
-	}
-`;
-
-export const CREATE_PAYMENT = gql`
-	mutation CreatePayment($input: PaymentInput!) {
-		createPayment(input: $input) {
-			id
-			bookingId
-			amount
-			currency
-			status
-			paidAt
 		}
 	}
 `;

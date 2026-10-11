@@ -10,7 +10,8 @@ import { REACT_APP_API_URL } from '../../config';
 import { formatKRW } from '../../utils';
 
 const statusLabels: Record<BookingStatus, string> = {
-	[BookingStatus.PENDING]: 'Waiting for host',
+	// Only bookings made before Instant Book can still be PENDING (never paid); they can only be cancelled.
+	[BookingStatus.PENDING]: 'Not paid',
 	[BookingStatus.CONFIRMED]: 'Confirmed',
 	[BookingStatus.CANCELLED]: 'Cancelled',
 	[BookingStatus.COMPLETED]: 'Completed',
