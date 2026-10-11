@@ -19,7 +19,7 @@ import { GET_BOOKED_DATES, GET_PROPERTY } from '../../apollo/user/query';
 import { BOOK_AND_PAY } from '../../apollo/user/mutation';
 import { Property } from '../../libs/types/property/property';
 import { BookedRange, Booking } from '../../libs/types/booking/booking';
-import { REACT_APP_API_URL } from '../../libs/config';
+import { CHECK_IN_TIME, CHECK_OUT_TIME, REACT_APP_API_URL } from '../../libs/config';
 import { formatKRW } from '../../libs/utils';
 import { sweetErrorHandling } from '../../libs/sweetAlert';
 
@@ -173,6 +173,12 @@ const Checkout: NextPage = () => {
 											<dt>Dates</dt>
 											<dd>
 												{validQuery ? `${checkIn} → ${checkOut}` : '—'} · {nights} {nights === 1 ? 'night' : 'nights'}
+											</dd>
+										</div>
+										<div>
+											<dt>Times</dt>
+											<dd>
+												Check-in from {CHECK_IN_TIME} · Check-out by {CHECK_OUT_TIME}
 											</dd>
 										</div>
 										<div>
