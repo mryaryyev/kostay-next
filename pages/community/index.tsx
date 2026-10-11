@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Stack, Tab, Typography, Button, Pagination } from '@mui/material';
-import CommunityCard from '../../libs/components/common/CommunityCard';
+import CommunityCard, { boardLabels } from '../../libs/components/common/CommunityCard';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import SearchIcon from '@mui/icons-material/Search';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import { BoardArticle } from '../../libs/types/board-article/board-article';
@@ -11,7 +16,8 @@ import { T } from '../../libs/types/common';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { BoardArticlesInquiry } from '../../libs/types/board-article/board-article.input';
 import { BoardArticleCategory } from '../../libs/enums/board-article.enum';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import { userVar } from '../../apollo/store';
 import { GET_BOARD_ARTICLES } from '../../apollo/user/query';
 import { Messages } from '../../libs/config';
 import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
@@ -26,12 +32,10 @@ export const getStaticProps = async ({ locale }: any) => ({
 const Community: NextPage = ({ initialInput, ...props }: T) => {
 	const device = useDeviceDetect();
 	const router = useRouter();
+	const user = useReactiveVar(userVar);
 	const { query } = router;
-	const articleCategory = query?.articleCategory as string;
 	const [searchCommunity, setSearchCommunity] = useState<BoardArticlesInquiry>(initialInput);
-	const [boardArticles, setBoardArticles] = useState<BoardArticle[]>([]);
-	const [totalCount, setTotalCount] = useState<number>(0);
-	if (articleCategory) initialInput.search.articleCategory = articleCategory;
+	const [searchText, setSearchText] = useState<string>('');
 
 	/** APOLLO REQUESTS **/
 	const [likeTargetBoardArticle] = useMutation(LIKE_TARGET_BOARD_ARTICLE);
@@ -47,14 +51,32 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 			input: searchCommunity,
 		},
 		notifyOnNetworkStatusChange: true,
-		onCompleted: (data: T) => {
-			setBoardArticles(data?.getBoardArticles?.list);
-			setTotalCount(data?.getBoardArticles?.metaCounter[0]?.total);
-		},
 	});
+	// Read straight from the query result: onCompleted does not fire reliably when variables change.
+	const boardArticles: BoardArticle[] = boardArticlesData?.getBoardArticles?.list ?? [];
+	const totalCount: number = boardArticlesData?.getBoardArticles?.metaCounter?.[0]?.total ?? 0;
+
+	// Per-board totals for the sidebar counters (limit 1: only metaCounter is read).
+	const countQuery = (articleCategory: BoardArticleCategory) => ({
+		fetchPolicy: 'cache-and-network' as const,
+		variables: { input: { page: 1, limit: 1, search: { articleCategory } } },
+	});
+	const { data: freeCountData } = useQuery(GET_BOARD_ARTICLES, countQuery(BoardArticleCategory.FREE));
+	const { data: recommendCountData } = useQuery(GET_BOARD_ARTICLES, countQuery(BoardArticleCategory.RECOMMEND));
+	const { data: newsCountData } = useQuery(GET_BOARD_ARTICLES, countQuery(BoardArticleCategory.NEWS));
+	const { data: humorCountData } = useQuery(GET_BOARD_ARTICLES, countQuery(BoardArticleCategory.HUMOR));
+	const boardCounts: Record<string, number> = {
+		FREE: freeCountData?.getBoardArticles?.metaCounter?.[0]?.total ?? 0,
+		RECOMMEND: recommendCountData?.getBoardArticles?.metaCounter?.[0]?.total ?? 0,
+		NEWS: newsCountData?.getBoardArticles?.metaCounter?.[0]?.total ?? 0,
+		HUMOR: humorCountData?.getBoardArticles?.metaCounter?.[0]?.total ?? 0,
+	};
+
 
 	/** LIFECYCLES **/
 	useEffect(() => {
+		// Wait for hydration: before isReady the query is always empty, which used to force FREE on every deep link.
+		if (!router.isReady) return;
 		if (!query?.articleCategory)
 			router.push(
 				{
@@ -64,12 +86,23 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 				router.pathname,
 				{ shallow: true },
 			);
-	}, []);
+	}, [router.isReady]);
+
+	// The URL category is only known after hydration; sync it into the inquiry so deep links open the right board.
+	useEffect(() => {
+		const category = query?.articleCategory as BoardArticleCategory | undefined;
+		if (
+			category &&
+			Object.values(BoardArticleCategory).includes(category) &&
+			category !== searchCommunity.search.articleCategory
+		) {
+			setSearchCommunity({ ...searchCommunity, page: 1, search: { articleCategory: category } });
+		}
+	}, [query?.articleCategory]);
 
 	/** HANDLERS **/
 	const tabChangeHandler = async (e: T, value: string) => {
-		console.log(value);
-
+		setSearchText('');
 		setSearchCommunity({ ...searchCommunity, page: 1, search: { articleCategory: value as BoardArticleCategory } });
 		await router.push(
 			{
@@ -107,180 +140,198 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 	if (device === 'mobile') {
 		return <h1>COMMUNITY PAGE MOBILE</h1>;
 	} else {
+		const activeBoard = searchCommunity.search.articleCategory;
+		const activeMeta = boardMeta[activeBoard] ?? boardMeta.FREE;
+		const pageCount = Math.ceil(totalCount / searchCommunity.limit);
+		const goWrite = async () => {
+			// Writing needs an account; tell logged-out visitors why instead of a silent bounce from /mypage.
+			if (!user?._id) {
+				await sweetMixinErrorAlert(Messages.error2, 2000);
+				await router.push('/');
+				return;
+			}
+			await router.push({ pathname: '/mypage', query: { category: 'writeArticle' } });
+		};
+
 		return (
 			<div id="community-list-page">
-				<div className="container">
-					<TabContext value={searchCommunity.search.articleCategory}>
-						<Stack className="main-box">
-							<Stack className="left-config">
-								<Stack className={'image-info'}>
-									<img src={'/img/logo/logoText.svg'} />
-									<Stack className={'community-name'}>
-										<Typography className={'name'}>Kostay Community</Typography>
-									</Stack>
-								</Stack>
+				<div className="container sx-community-layout">
+					<aside className="sx-community-side">
+						<div className="sx-board-menu">
+							<div className="sx-board-brand">
+								<span aria-hidden="true">
+									<HomeOutlinedIcon />
+								</span>
+								<div>
+									<strong>Kostay</strong>
+									<small>Community Lounge</small>
+								</div>
+							</div>
+							<nav aria-label="Boards">
+								{Object.values(BoardArticleCategory).map((category) => (
+									<button
+										type="button"
+										key={category}
+										className={category === activeBoard ? 'is-active' : ''}
+										aria-current={category === activeBoard ? 'page' : undefined}
+										onClick={() => tabChangeHandler({}, category)}
+									>
+										<span>{boardLabels[category]}</span>
+										<em>{boardCounts[category] ?? 0}</em>
+									</button>
+								))}
+							</nav>
+						</div>
 
-								<TabList
-									orientation="vertical"
-									aria-label="lab API tabs example"
-									TabIndicatorProps={{
-										style: { display: 'none' },
-									}}
-									onChange={tabChangeHandler}
-								>
-									<Tab
-										value={'FREE'}
-										label={'Free Board'}
-										className={`tab-button ${searchCommunity.search.articleCategory == 'FREE' ? 'active' : ''}`}
-									/>
-									<Tab
-										value={'RECOMMEND'}
-										label={'Recommendation'}
-										className={`tab-button ${searchCommunity.search.articleCategory == 'RECOMMEND' ? 'active' : ''}`}
-									/>
-									<Tab
-										value={'NEWS'}
-										label={'News'}
-										className={`tab-button ${searchCommunity.search.articleCategory == 'NEWS' ? 'active' : ''}`}
-									/>
-									<Tab
-										value={'HUMOR'}
-										label={'Humor'}
-										className={`tab-button ${searchCommunity.search.articleCategory == 'HUMOR' ? 'active' : ''}`}
-									/>
-								</TabList>
-							</Stack>
-							<Stack className="right-config">
-								<Stack className="panel-config">
-									<Stack className="title-box">
-										<Stack className="left">
-											<Typography className="title">{searchCommunity.search.articleCategory} BOARD</Typography>
-											<Typography className="sub-title">
-												Express your opinions freely here without content restrictions
-											</Typography>
-										</Stack>
-										<Button
-											onClick={() =>
-												router.push({
-													pathname: '/mypage',
-													query: {
-														category: 'writeArticle',
-													},
-												})
+						<div className="sx-etiquette">
+							<h3>
+								<HandshakeIcon aria-hidden="true" />
+								Community Etiquette
+							</h3>
+							<p>
+								Korean hospitality thrives on mutual respect (<em>Jeong</em>). Please share truthful accounts, respect fellow
+								hosts and travelers, and avoid commercial spam.
+							</p>
+						</div>
+					</aside>
+
+					<section className="sx-community-main">
+						<div className="sx-board-head">
+							<div>
+								<h2>{activeMeta.title}</h2>
+								<p>{activeMeta.description}</p>
+							</div>
+							<div className="sx-board-actions">
+								<label className="sx-board-search">
+									<SearchIcon aria-hidden="true" />
+									<input
+										type="text"
+										placeholder={activeMeta.placeholder}
+										aria-label={'Search articles'}
+										value={searchText}
+										onChange={(e) => setSearchText(e.target.value)}
+										onKeyDown={(event) => {
+											if (event.key === 'Enter') {
+												setSearchCommunity({
+													...searchCommunity,
+													page: 1,
+													search: { ...searchCommunity.search, text: searchText },
+												});
 											}
-											className="right"
+										}}
+									/>
+								</label>
+								<button type="button" className="sx-write" onClick={goWrite}>
+									<EditNoteIcon aria-hidden="true" />
+									Write
+								</button>
+							</div>
+						</div>
+
+						{boardArticlesLoading && boardArticles.length === 0 ? (
+							<div className={'no-data'} role="status">
+								Loading articles…
+							</div>
+						) : totalCount ? (
+							<div className="sx-post-grid">
+								{boardArticles?.map((boardArticle: BoardArticle) => (
+									<CommunityCard
+										boardArticle={boardArticle}
+										key={boardArticle?._id}
+										likeArticleHandler={likeArticleHandler}
+										variant={'board'}
+									/>
+								))}
+							</div>
+						) : (
+							<div className={'no-data'}>
+								<img src="/img/icons/icoAlert.svg" alt="" />
+								<p>No Article found!</p>
+							</div>
+						)}
+
+						{totalCount > 0 && (
+							<div className="sx-community-pagination">
+								{pageCount > 1 && (
+									<nav aria-label="Pagination">
+										<button
+											type="button"
+											aria-label="Previous page"
+											disabled={searchCommunity.page <= 1}
+											onClick={() => paginationHandler({}, searchCommunity.page - 1)}
 										>
-											Write
-										</Button>
-									</Stack>
-
-									<TabPanel value="FREE">
-										<Stack className="list-box">
-											{totalCount ? (
-												boardArticles?.map((boardArticle: BoardArticle) => {
-													return (
-														<CommunityCard
-															boardArticle={boardArticle}
-															key={boardArticle?._id}
-															likeArticleHandler={likeArticleHandler}
-														/>
-													);
-												})
-											) : (
-												<Stack className={'no-data'}>
-													<img src="/img/icons/icoAlert.svg" alt="" />
-													<p>No Article found!</p>
-												</Stack>
-											)}
-										</Stack>
-									</TabPanel>
-									<TabPanel value="RECOMMEND">
-										<Stack className="list-box">
-											{totalCount ? (
-												boardArticles?.map((boardArticle: BoardArticle) => {
-													return (
-														<CommunityCard
-															boardArticle={boardArticle}
-															key={boardArticle?._id}
-															likeArticleHandler={likeArticleHandler}
-														/>
-													);
-												})
-											) : (
-												<Stack className={'no-data'}>
-													<img src="/img/icons/icoAlert.svg" alt="" />
-													<p>No Article found!</p>
-												</Stack>
-											)}
-										</Stack>
-									</TabPanel>
-									<TabPanel value="NEWS">
-										<Stack className="list-box">
-											{totalCount ? (
-												boardArticles?.map((boardArticle: BoardArticle) => {
-													return (
-														<CommunityCard
-															boardArticle={boardArticle}
-															key={boardArticle?._id}
-															likeArticleHandler={likeArticleHandler}
-														/>
-													);
-												})
-											) : (
-												<Stack className={'no-data'}>
-													<img src="/img/icons/icoAlert.svg" alt="" />
-													<p>No Article found!</p>
-												</Stack>
-											)}
-										</Stack>
-									</TabPanel>
-									<TabPanel value="HUMOR">
-										<Stack className="list-box">
-											{totalCount ? (
-												boardArticles?.map((boardArticle: BoardArticle) => {
-													return (
-														<CommunityCard
-															boardArticle={boardArticle}
-															key={boardArticle?._id}
-															likeArticleHandler={likeArticleHandler}
-														/>
-													);
-												})
-											) : (
-												<Stack className={'no-data'}>
-													<img src="/img/icons/icoAlert.svg" alt="" />
-													<p>No Article found!</p>
-												</Stack>
-											)}
-										</Stack>
-									</TabPanel>
-								</Stack>
-							</Stack>
-						</Stack>
-					</TabContext>
-
-					{totalCount > 0 && (
-						<Stack className="pagination-config">
-							<Stack className="pagination-box">
-								<Pagination
-									count={Math.ceil(totalCount / searchCommunity.limit)}
-									page={searchCommunity.page}
-									shape="circular"
-									color="primary"
-									onChange={paginationHandler}
-								/>
-							</Stack>
-							<Stack className="total-result">
-								<Typography>
+											<ChevronLeftIcon />
+										</button>
+										{Array.from({ length: pageCount }, (_, index) => index + 1).map((page) => (
+											<button
+												type="button"
+												key={page}
+												className={page === searchCommunity.page ? 'is-active' : ''}
+												aria-current={page === searchCommunity.page ? 'page' : undefined}
+												onClick={() => paginationHandler({}, page)}
+											>
+												{page}
+											</button>
+										))}
+										<button
+											type="button"
+											aria-label="Next page"
+											disabled={searchCommunity.page >= pageCount}
+											onClick={() => paginationHandler({}, searchCommunity.page + 1)}
+										>
+											<ChevronRightIcon />
+										</button>
+									</nav>
+								)}
+								<p>
 									Total {totalCount} article{totalCount > 1 ? 's' : ''} available
-								</Typography>
-							</Stack>
-						</Stack>
-					)}
+								</p>
+							</div>
+						)}
+
+						<div className="sx-share">
+							<div className="sx-share-copy">
+								<span aria-hidden="true">
+									<RateReviewOutlinedIcon />
+								</span>
+								<div>
+									<h3>Have a memorable moment from your Korean stay?</h3>
+									<p>Whether an unexpected Hanok discovery or a subway turnstile mystery, fellow travelers want to hear it.</p>
+								</div>
+							</div>
+							<button type="button" onClick={goWrite}>
+								Share Your Experience
+							</button>
+						</div>
+					</section>
 				</div>
 			</div>
 		);
 	}
+};
+
+const boardMeta: Record<string, { title: string; description: string; placeholder: string }> = {
+	FREE: {
+		title: 'FREE BOARD',
+		description: 'Talk about anything from your stay — questions, stories and everyday moments across Korea.',
+		placeholder: 'Search the free board...',
+	},
+	RECOMMEND: {
+		title: 'RECOMMENDATION',
+		description: 'Favourite stays, neighbourhoods, cafés and day trips recommended by fellow travelers.',
+		placeholder: 'Search recommendations...',
+	},
+	NEWS: {
+		title: 'NEWS & GUIDES',
+		description: 'Seasonal guides, local events and practical news for staying in Korea.',
+		placeholder: 'Search news and guides...',
+	},
+	HUMOR: {
+		title: 'HUMOR BOARD',
+		description:
+			'Express your opinions freely here without content restrictions. Funny travel moments, ondol fails & delightful memes.',
+		placeholder: 'Search funny stories...',
+	},
 };
 
 Community.defaultProps = {
