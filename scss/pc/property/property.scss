@@ -576,16 +576,151 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 
 	.sx-filter-head {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: space-between;
-		margin-bottom: 16px;
+		gap: 12px;
 		h2 {
 			margin: 0;
 			color: $st-navy;
 			font-size: 20px;
 			line-height: 28px;
-			font-weight: 600;
+			font-weight: 700;
 			letter-spacing: -0.01em;
+		}
+		p {
+			margin: 2px 0 0;
+			color: $st-outline;
+			font-size: 13px;
+		}
+	}
+
+	.sx-reset {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 6px 10px;
+		border: 0;
+		border-radius: 999px;
+		background: transparent;
+		color: $st-cta;
+		font-size: 13px;
+		font-weight: 700;
+		transition: background 200ms ease;
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+		&:hover:not(:disabled) {
+			background: #fde6dc;
+		}
+		&:disabled {
+			color: $st-outline;
+			opacity: 0.5;
+			cursor: default;
+		}
+	}
+
+	// "Your trip": dates + guests in a soft canvas card at the top of the filter.
+	.sx-filter-trip {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 16px;
+		border-radius: 16px;
+		background: $st-low;
+		.sx-filter-label {
+			margin-bottom: 2px;
+		}
+		.sx-booking-dates {
+			background: $st-surface;
+		}
+		.sx-stepper {
+			padding: 10px 14px;
+			border: 1px solid #d6d2cb;
+			border-radius: 14px;
+			background: $st-surface;
+			> span {
+				display: flex;
+				flex-direction: column;
+				color: $st-navy;
+				font-size: 10px;
+				font-weight: 800;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				small {
+					color: $st-outline;
+					font-size: 12px;
+					font-weight: 400;
+					letter-spacing: 0;
+					text-transform: none;
+				}
+			}
+			button {
+				border: 1px solid $st-container-high;
+				box-shadow: none;
+			}
+		}
+		.sx-calendar {
+			width: 100%;
+			min-width: 280px;
+		}
+	}
+
+	// Each section after the trip card is separated by a hairline.
+	.sx-filter > .sx-filter-block {
+		padding-top: 20px;
+		border-top: 1px solid $st-container-high;
+	}
+
+	.sx-filter-sub + .sx-filter-sub {
+		margin-top: 14px;
+	}
+
+	.sx-filter-sublabel {
+		display: block;
+		margin-bottom: 8px;
+		color: $st-body;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.sx-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	// Checkbox kept for keyboard and screen readers; the pill is the visible control.
+	.sx-chip {
+		position: relative;
+		cursor: pointer;
+		input {
+			position: absolute;
+			opacity: 0;
+			pointer-events: none;
+		}
+		span {
+			display: inline-block;
+			padding: 7px 14px;
+			border: 1px solid #d6d2cb;
+			border-radius: 999px;
+			background: $st-surface;
+			color: $st-body;
+			font-size: 13px;
+			font-weight: 600;
+			transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+		}
+		&:hover span {
+			border-color: $st-navy;
+			color: $st-navy;
+		}
+		input:checked + span {
+			border-color: $st-navy;
+			background: $st-navy;
+			color: #fff;
+		}
+		input:focus-visible + span {
+			box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.35);
 		}
 	}
 
@@ -660,11 +795,12 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 	.sx-filter-label {
 		display: block;
 		margin-bottom: 12px;
-		color: $st-navy;
-		font-size: 12px;
-		line-height: 16px;
-		font-weight: 600;
-		letter-spacing: 0.08em;
+		// Same terracotta section titles as the My Page menu groups.
+		color: $st-cta;
+		font-size: 13px;
+		line-height: 18px;
+		font-weight: 800;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
 	}
 
@@ -850,18 +986,18 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 		margin-top: 16px;
 		.sx-apply {
 			flex: 1;
-			padding: 8px 0;
-			border: 0;
+			padding: 9px 0;
+			border: 1px solid $st-navy;
 			border-radius: 12px;
-			background: $st-cta;
-			box-shadow: $st-shadow-sm;
-			color: #fff;
+			background: $st-surface;
+			color: $st-navy;
 			font-size: 14px;
 			line-height: 20px;
 			font-weight: 600;
 			transition: background 200ms ease;
 			&:hover:not(:disabled) {
-				background: $st-cta-hover;
+				background: $st-navy;
+				color: #fff;
 			}
 			&:disabled {
 				opacity: 0.5;
@@ -1329,5 +1465,14 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 		.sx-stay-fav:hover {
 			transform: none;
 		}
+	}
+}
+
+// Filter change: old results stay visible (dimmed) until the new list arrives.
+#pc-wrap #property-list-page .sx-stays-grid {
+	transition: opacity 160ms ease;
+	&.is-updating {
+		opacity: 0.55;
+		pointer-events: none;
 	}
 }

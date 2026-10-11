@@ -29,6 +29,8 @@ interface PropertyCardType {
 	recentlyVisited?: boolean;
 	/** 'stays' renders the Stitch "Find A Stay" card used on /property. */
 	variant?: 'default' | 'stays';
+	/** Dates picked on Stays; passed on so the stay page opens with them filled in. */
+	stayDates?: { checkIn?: string; checkOut?: string };
 }
 
 const typeIcons: Record<PropertyType, JSX.Element> = {
@@ -39,7 +41,7 @@ const typeIcons: Record<PropertyType, JSX.Element> = {
 };
 
 const PropertyCard = (props: PropertyCardType) => {
-	const { property, likePropertyHandler, myFavorites, recentlyVisited, variant = 'default' } = props;
+	const { property, likePropertyHandler, myFavorites, recentlyVisited, variant = 'default', stayDates } = props;
 	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
 	const imagePath: string = property?.propertyImages[0]
@@ -49,7 +51,13 @@ const PropertyCard = (props: PropertyCardType) => {
 	if (device === 'mobile') {
 		return <div>PROPERTY CARD</div>;
 	} else if (variant === 'stays') {
-		const detailHref = { pathname: '/property/detail', query: { id: property?._id } };
+		const detailHref = {
+			pathname: '/property/detail',
+			query: {
+				id: property?._id,
+				...(stayDates?.checkIn && stayDates?.checkOut ? { checkIn: stayDates.checkIn, checkOut: stayDates.checkOut } : {}),
+			},
+		};
 		const isFavorite = Boolean(property?.meLiked?.[0]?.myFavorite);
 
 		return (

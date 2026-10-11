@@ -505,191 +505,10 @@ $dt-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 		}
 	}
 
-	.sx-booking-dates {
-		position: relative;
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		border: 1px solid #d6d2cb;
-		border-radius: 14px;
-	}
-
-	// Each half keeps the outer corner radius so the focus ring follows the rounded box.
-	.sx-date-field {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 2px;
-		padding: 10px 14px;
-		border: 0;
-		background: transparent;
-		text-align: left;
-		transition: background 160ms ease, box-shadow 160ms ease;
-		&:first-child {
-			border-radius: 13px 0 0 13px;
-		}
-		& + .sx-date-field {
-			border-left: 1px solid #d6d2cb;
-			border-radius: 0 13px 13px 0;
-		}
-		&:hover {
-			background: $dt-low;
-		}
-		&.is-open,
-		&:focus-visible {
-			outline: none;
-			background: $dt-low;
-			box-shadow: inset 0 0 0 2px $dt-cta-bright;
-		}
-		span {
-			color: $dt-navy;
-			font-size: 10px;
-			font-weight: 800;
-			letter-spacing: 0.08em;
-			text-transform: uppercase;
-		}
-		strong {
-			color: $dt-ink;
-			font-size: 14px;
-			font-weight: 600;
-			font-variant-numeric: tabular-nums;
-			&.is-empty {
-				color: $dt-outline;
-				font-weight: 400;
-			}
-		}
-	}
-
-	/* One-month calendar popover (BookingCalendar.tsx) */
-	.sx-calendar {
-		position: absolute;
-		top: calc(100% + 8px);
-		z-index: 20;
-		width: 312px;
-		padding: 16px;
-		border: 1px solid $dt-line;
-		border-radius: 18px;
-		background: $dt-surface;
-		box-shadow: $dt-shadow-lg;
-		&.is-checkIn {
-			left: 0;
-		}
-		&.is-checkOut {
-			right: 0;
-		}
-	}
-
-	.sx-calendar-head {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 10px;
-		strong {
-			color: $dt-navy;
-			font-size: 15px;
-			font-weight: 800;
-		}
-		button {
-			width: 32px;
-			height: 32px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			padding: 0;
-			border: 1px solid $dt-line;
-			border-radius: 50%;
-			background: $dt-surface;
-			color: $dt-navy;
-			&:hover:not(:disabled) {
-				border-color: $dt-navy;
-			}
-			&:disabled {
-				opacity: 0.3;
-				cursor: default;
-			}
-			svg {
-				width: 20px;
-				height: 20px;
-			}
-		}
-	}
-
-	.sx-calendar-grid {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		gap: 2px;
-		button {
-			height: 38px;
-			padding: 0;
-			border: 0;
-			border-radius: 10px;
-			background: transparent;
-			color: $dt-ink;
-			font-size: 14px;
-			font-weight: 600;
-			font-variant-numeric: tabular-nums;
-			&:hover:not(:disabled) {
-				background: $dt-container;
-			}
-			&:disabled {
-				color: #c5c6cf;
-				cursor: not-allowed;
-			}
-			&.is-taken:disabled {
-				background: #fff1ec;
-				color: #e8a48c;
-				text-decoration: line-through;
-			}
-			&.is-in-range {
-				border-radius: 0;
-				background: #fde6dc;
-			}
-			&.is-selected {
-				background: $dt-cta-bright;
-				color: #fff;
-			}
-		}
-	}
-
-	.sx-calendar-weekday {
-		padding: 4px 0 6px;
+	.sx-booking-times {
+		margin: -6px 0 0;
 		color: $dt-outline;
-		font-size: 11px;
-		font-weight: 700;
-		text-align: center;
-	}
-
-	.sx-calendar-foot {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: 10px;
-		padding-top: 10px;
-		border-top: 1px solid $dt-line;
-		span {
-			display: inline-flex;
-			align-items: center;
-			gap: 6px;
-			color: $dt-body;
-			font-size: 12px;
-		}
-		i.is-taken {
-			width: 12px;
-			height: 12px;
-			border-radius: 4px;
-			background: #fff1ec;
-			box-shadow: inset 0 0 0 1px #f0b8a3;
-		}
-		button {
-			padding: 0;
-			border: 0;
-			background: none;
-			color: $dt-cta;
-			font-size: 13px;
-			font-weight: 700;
-			&:hover {
-				text-decoration: underline;
-			}
-		}
+		font-size: 13px;
 	}
 
 	.sx-booking-guests {
@@ -1070,5 +889,200 @@ $dt-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 	a {
 		color: #aa3614;
 		font-weight: 700;
+	}
+}
+
+// Date fields + BookingCalendar popover: shared by the stay booking box and the Stays filter.
+#pc-wrap #property-detail-page,
+#pc-wrap #property-list-page {
+	.sx-booking-dates {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		border: 1px solid #d6d2cb;
+		border-radius: 14px;
+	}
+
+	// Each half keeps the outer corner radius so the focus ring follows the rounded box.
+	.sx-date-field {
+		font-family: inherit;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 2px;
+		padding: 10px 14px;
+		border: 0;
+		background: transparent;
+		text-align: left;
+		transition: background 160ms ease, box-shadow 160ms ease;
+		&:first-child {
+			border-radius: 13px 0 0 13px;
+		}
+		& + .sx-date-field {
+			border-left: 1px solid #d6d2cb;
+			border-radius: 0 13px 13px 0;
+		}
+		&:hover {
+			background: $dt-low;
+		}
+		&.is-open,
+		&:focus-visible {
+			outline: none;
+			background: $dt-low;
+			box-shadow: inset 0 0 0 2px $dt-cta-bright;
+		}
+		span {
+			color: $dt-navy;
+			font-size: 10px;
+			font-weight: 800;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+		}
+		strong {
+			color: $dt-ink;
+			font-size: 14px;
+			font-weight: 600;
+			font-variant-numeric: tabular-nums;
+			&.is-empty {
+				color: $dt-outline;
+				font-weight: 400;
+			}
+		}
+	}
+
+	/* One-month calendar popover (BookingCalendar.tsx) */
+	.sx-calendar {
+		button {
+			font-family: inherit;
+		}
+		position: absolute;
+		top: calc(100% + 8px);
+		z-index: 20;
+		width: 312px;
+		padding: 16px;
+		border: 1px solid $dt-line;
+		border-radius: 18px;
+		background: $dt-surface;
+		box-shadow: $dt-shadow-lg;
+		&.is-checkIn {
+			left: 0;
+		}
+		&.is-checkOut {
+			right: 0;
+		}
+	}
+
+	.sx-calendar-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 10px;
+		strong {
+			color: $dt-navy;
+			font-size: 15px;
+			font-weight: 800;
+		}
+		button {
+			width: 32px;
+			height: 32px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0;
+			border: 1px solid $dt-line;
+			border-radius: 50%;
+			background: $dt-surface;
+			color: $dt-navy;
+			&:hover:not(:disabled) {
+				border-color: $dt-navy;
+			}
+			&:disabled {
+				opacity: 0.3;
+				cursor: default;
+			}
+			svg {
+				width: 20px;
+				height: 20px;
+			}
+		}
+	}
+
+	.sx-calendar-grid {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		gap: 2px;
+		button {
+			height: 38px;
+			padding: 0;
+			border: 0;
+			border-radius: 10px;
+			background: transparent;
+			color: $dt-ink;
+			font-size: 14px;
+			font-weight: 600;
+			font-variant-numeric: tabular-nums;
+			&:hover:not(:disabled) {
+				background: $dt-container;
+			}
+			&:disabled {
+				color: #c5c6cf;
+				cursor: not-allowed;
+			}
+			&.is-taken:disabled {
+				background: #fff1ec;
+				color: #e8a48c;
+				text-decoration: line-through;
+			}
+			&.is-in-range {
+				border-radius: 0;
+				background: #fde6dc;
+			}
+			&.is-selected {
+				background: $dt-cta-bright;
+				color: #fff;
+			}
+		}
+	}
+
+	.sx-calendar-weekday {
+		padding: 4px 0 6px;
+		color: $dt-outline;
+		font-size: 11px;
+		font-weight: 700;
+		text-align: center;
+	}
+
+	.sx-calendar-foot {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: 10px;
+		padding-top: 10px;
+		border-top: 1px solid $dt-line;
+		span {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			color: $dt-body;
+			font-size: 12px;
+		}
+		i.is-taken {
+			width: 12px;
+			height: 12px;
+			border-radius: 4px;
+			background: #fff1ec;
+			box-shadow: inset 0 0 0 1px #f0b8a3;
+		}
+		button {
+			padding: 0;
+			border: 0;
+			background: none;
+			color: $dt-cta;
+			font-size: 13px;
+			font-weight: 700;
+			&:hover {
+				text-decoration: underline;
+			}
+		}
 	}
 }
