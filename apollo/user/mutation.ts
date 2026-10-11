@@ -381,3 +381,32 @@ export const CANCEL_BOOKING = gql`
 		}
 	}
 `;
+
+/**************************
+ *        INQUIRY         *
+ *************************/
+
+export const CREATE_INQUIRY = gql`
+	mutation CreateInquiry($input: InquiryInput!) {
+		createInquiry(input: $input) {
+			_id
+			inquiryTopic
+			inquiryStatus
+			inquiryTitle
+			inquiryContent
+			memberId
+			answerContent
+			answeredAt
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+export const REMOVE_MY_INQUIRY = gql`
+	mutation RemoveMyInquiry($input: String!) {
+		removeMyInquiry(inquiryId: $input) {
+			_id
+		}
+	}
+`;

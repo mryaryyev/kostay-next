@@ -4,6 +4,7 @@ export enum NotificationType {
 	FOLLOW = 'FOLLOW',
 	MESSAGE = 'MESSAGE',
 	BOOKING = 'BOOKING',
+	INQUIRY = 'INQUIRY',
 }
 
 export enum NotificationStatus {
@@ -16,4 +17,5 @@ export enum NotificationGroup {
 	ARTICLE = 'ARTICLE',
 	PROPERTY = 'PROPERTY',
 	BOOKING = 'BOOKING',
+	INQUIRY = 'INQUIRY',
 }

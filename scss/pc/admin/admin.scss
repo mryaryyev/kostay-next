@@ -544,3 +544,56 @@
     }
   }
 }
+
+// Waiting inquiries count in the admin sidebar (AdminMenuList).
+#pc-wrap .admin-menu-badge,
+.admin-menu-badge {
+	min-width: 20px;
+	height: 20px;
+	margin-left: 8px;
+	padding: 0 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: #aa3614;
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+// Answer box in InquiryAnswerDialog (rendered in a MUI Dialog portal, so not under #pc-wrap).
+.inquiry-answer-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	span {
+		color: #031636;
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	textarea {
+		width: 100%;
+		min-height: 160px;
+		padding: 12px 14px;
+		box-sizing: border-box;
+		border: 1px solid #d6d2cb;
+		border-radius: 10px;
+		outline: none;
+		font-family: inherit;
+		font-size: 15px;
+		line-height: 1.6;
+		resize: vertical;
+		&:focus {
+			border-color: #e05d38;
+			box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.2);
+		}
+	}
+	small {
+		color: #75777f;
+		font-size: 12px;
+	}
+}

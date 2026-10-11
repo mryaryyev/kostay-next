@@ -13,6 +13,8 @@ import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Notice from '../../libs/components/cs/Notice';
 import Faq from '../../libs/components/cs/Faq';
+import Inquiry from '../../libs/components/cs/Inquiry';
+import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 export const getStaticProps = async ({ locale }: any) => ({
@@ -24,13 +26,14 @@ export const getStaticProps = async ({ locale }: any) => ({
 const tabs = [
 	{ key: 'notice', label: 'Notice', icon: <CampaignOutlinedIcon /> },
 	{ key: 'faq', label: 'FAQ', icon: <HelpOutlineRoundedIcon /> },
+	{ key: 'inquiry', label: 'Inquiry', icon: <SupportAgentOutlinedIcon /> },
 ];
 
 /** Help Center: Notice and FAQ content is written by the admin (CS management) and read with getNotices. */
 const CS: NextPage = () => {
 	const device = useDeviceDetect();
 	const router = useRouter();
-	const tab = router.query.tab === 'faq' ? 'faq' : 'notice';
+	const tab = router.query.tab === 'faq' || router.query.tab === 'inquiry' ? router.query.tab : 'notice';
 	const [searchInput, setSearchInput] = useState<string>('');
 	const [text, setText] = useState<string>('');
 
@@ -70,32 +73,36 @@ const CS: NextPage = () => {
 										</button>
 									))}
 								</div>
-								<label className="sx-cs-search">
-									<SearchIcon aria-hidden="true" />
-									<input
-										type="text"
-										value={searchInput}
-										placeholder={tab === 'faq' ? 'Search questions' : 'Search notices'}
-										aria-label={tab === 'faq' ? 'Search questions' : 'Search notices'}
-										onChange={(e) => setSearchInput(e.target.value)}
-										onKeyDown={(e) => e.key === 'Enter' && setText(searchInput.trim())}
-									/>
-									{searchInput && (
-										<button
-											type="button"
-											aria-label="Clear search"
-											onClick={() => {
-												setSearchInput('');
-												setText('');
-											}}
-										>
-											<CancelRoundedIcon />
-										</button>
-									)}
-								</label>
+								{tab !== 'inquiry' && (
+									<label className="sx-cs-search">
+										<SearchIcon aria-hidden="true" />
+										<input
+											type="text"
+											value={searchInput}
+											placeholder={tab === 'faq' ? 'Search questions' : 'Search notices'}
+											aria-label={tab === 'faq' ? 'Search questions' : 'Search notices'}
+											onChange={(e) => setSearchInput(e.target.value)}
+											onKeyDown={(e) => e.key === 'Enter' && setText(searchInput.trim())}
+										/>
+										{searchInput && (
+											<button
+												type="button"
+												aria-label="Clear search"
+												onClick={() => {
+													setSearchInput('');
+													setText('');
+												}}
+											>
+												<CancelRoundedIcon />
+											</button>
+										)}
+									</label>
+								)}
 							</div>
 
-							{tab === 'notice' ? <Notice text={text} /> : <Faq text={text} />}
+							{tab === 'notice' && <Notice text={text} />}
+							{tab === 'faq' && <Faq text={text} />}
+							{tab === 'inquiry' && <Inquiry />}
 						</main>
 
 						<aside className="sx-cs-aside">
