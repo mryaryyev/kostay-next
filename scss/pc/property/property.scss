@@ -449,10 +449,14 @@ $st-container: #f1ede7;
 $st-container-high: #ebe8e2;
 $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 
+// Same 340px height as the other page heroes; Stays has no breadcrumb.
 #pc-wrap .sx-stays-hero {
 	position: relative;
+	height: 340px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
 	overflow: hidden;
-	padding: 128px 0 80px;
 	background: $st-navy;
 	&,
 	* {
@@ -489,13 +493,14 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 		z-index: 1;
 		flex-direction: column;
 		align-items: flex-start;
+		padding-bottom: 48px;
 	}
 	h1 {
 		margin: 0;
 		max-width: 672px;
 		color: #fff;
 		font-size: 56px;
-		line-height: 68px;
+		line-height: 1;
 		font-weight: 800;
 		letter-spacing: -0.03em;
 	}
@@ -511,7 +516,7 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 24px;
-		margin: 32px 0 0;
+		margin: 24px 0 0;
 		padding: 0;
 		list-style: none;
 		li {
