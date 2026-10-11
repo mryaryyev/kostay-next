@@ -1,263 +1,510 @@
-#pc-wrap {
-  .cs-page {
-    position: relative;
-    padding: 60px 0px 60px;
-    width: 100%;
-    height: auto;
-    .container {
-      display: flex;
-      flex-direction: column;
-      .cs-main-info {
-        display: flex;
-        flex-direction: column;
-        .info {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          span {
-            color: #000;
-            font-family: $font;
-            font-size: 35px;
-            font-style: normal;
-            font-weight: 700;
-            line-height: normal;
-            letter-spacing: 0.525px;
-          }
-          p {
-            color: #757575;
-            font-family: $font;
-            font-size: 16px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-          }
-        }
-        .btns {
-          margin-top: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: center;
-          :first-child {
-            border-radius: 4px 0 0 4px;
-          }
-          :last-child {
-            border-radius: 0 4px 4px 0;
-          }
-          div {
-            width: 204px;
-            height: 46px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #EEE;
-            cursor: pointer;
-            color: #BDBDBD;
-            font-family: $font;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 700;
-            line-height: normal;
-            letter-spacing: 0.42px;
-            &.active {
-              border: 1px solid #725CE8;
-              background: #EB6753;
-              color: #FFF;
-            }
-          }
-        }
-      }
-      .cs-content {
-        margin-top: 25px;
-        display: flex;
-        flex-direction: column;
-        .title {
-          margin-bottom: 25px;
-          color: #000;
-          font-family: $font;
-          font-size: 27px;
-          font-style: normal;
-          font-weight: 700;
-          line-height: normal;
-          letter-spacing: 0.54px;
-        }
-        .pagination {
-          margin-top: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: center;
-        }
-        .notice-content {
-          .notice-pagination {
-            margin-top: 24px;
-            align-self: center;
-          }
-          .main {
-            border: 1px solid #EEE;
-            .top {
-              padding: 25px 33px;
-              display: flex;
-              flex-direction: row;
-              justify-content: space-between;
-              span {
-                color: #000;
-                font-family: $font;
-                font-size: 14px;
-                font-style: normal;
-                font-weight: 400;
-                line-height: normal;
-                text-transform: capitalize;
-              }
-            }
-            .bottom {
-              display: flex;
-              flex-direction: column;
-              .notice-empty {
-                margin: 0;
-                padding: 32px;
-                color: #717171;
-                text-align: center;
-              }
-              // Rows open in place to show the notice text.
-              .notice-body {
-                margin: 0;
-                padding: 20px 30px 24px 87px;
-                border: 1px solid #EEE;
-                border-top: 0;
-                background: #fafafa;
-                color: #333;
-                font-family: $font;
-                font-size: 15px;
-                line-height: 1.6;
-                white-space: pre-line;
-              }
-              .notice-card {
-                width: 100%;
-                align-items: center;
-                background: #fff;
-                text-align: left;
-                cursor: pointer;
-                padding: 20px 14px 20px 30px;
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                border: 1px solid #EEE;
-                &.event {
-                  background: #F6D79A;
-                }
-                div {
-                  padding: 6px 9px;
-                  border-radius: 12px;
-                  border: 1px solid #EB6753;
-                  color: #EB6753;
-                  font-family: $font;
-                  font-size: 12px;
-                  font-style: normal;
-                  font-weight: 400;
-                }
-                .notice-number {
-                  margin-left: 18px;
-                  width: 39px;
-                  color: #BDBDBD;
-                  font-family: $font;
-                  font-size: 14px;
-                  font-style: normal;
-                  font-weight: 400;
-                  line-height: normal;
-                }
-                .notice-title {
-                  width: 1060px;
-                  color: #000;
-                  font-family: $font;
-                  font-size: 16px;
-                  font-style: normal;
-                  font-weight: 400;
-                  line-height: normal;
-                }
-                .notice-date {
-                  color: #BDBDBD;
-                  font-family: $font;
-                  font-size: 14px;
-                  font-style: normal;
-                  font-weight: 400;
-                  line-height: normal;
-                }
-              }
-            }
+// Help Center (/cs): Kostay palette, same as the Stays / My Page screens.
+$cs-navy: #031636;
+$cs-navy-soft: #1a2b4c;
+$cs-cta: #aa3614;
+$cs-cta-bright: #e05d38;
+$cs-ink: #1c1c18;
+$cs-body: #44474e;
+$cs-outline: #75777f;
+$cs-line: #e6e2dc;
+$cs-canvas: #fdf9f3;
+$cs-surface: #ffffff;
+$cs-low: #f7f3ed;
+$cs-container: #f1ede7;
+$cs-tint: #fde6dc;
+$cs-shadow-md: 0 4px 20px rgba(26, 43, 76, 0.06);
 
-          }
+/* ---------- Hero (340px, like the other pages) ---------- */
+#pc-wrap .sx-cs-hero {
+	position: relative;
+	height: 340px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	overflow: hidden;
+	background: $cs-navy;
+	&,
+	* {
+		font-family: $font-display;
+	}
+	.sx-cs-hero-bg {
+		position: absolute;
+		inset: 0;
+		background: url('/img/banner/cities/JEJU.webp') center / cover no-repeat;
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(to top, rgba(3, 22, 54, 0.95), rgba(3, 22, 54, 0.75), rgba(3, 22, 54, 0.45));
+		}
+	}
+	.container {
+		position: relative;
+		z-index: 1;
+		flex-direction: column;
+		gap: 12px;
+		padding-bottom: 48px;
+	}
+	.sx-cs-crumbs {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: #cbd5e1;
+		font-size: 12px;
+		font-weight: 600;
+		a {
+			color: inherit;
+			text-decoration: none;
+			&:hover {
+				color: #fff;
+			}
+		}
+		svg {
+			width: 14px;
+			height: 14px;
+			color: #94a3b8;
+		}
+		span {
+			color: #fff;
+		}
+	}
+	h1 {
+		margin: 0;
+		color: #fff;
+		font-size: 56px;
+		line-height: 1;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+	}
+	p {
+		margin: 8px 0 0;
+		max-width: 672px;
+		color: #e2e8f0;
+		font-size: 16px;
+		line-height: 24px;
+		font-weight: 300;
+	}
+}
 
-        }
-        .faq-content {
-          margin-top: 25px;
-          display: flex;
-          flex-direction: column;
-          .categories {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            div {
-              width: 14%;
-              height: 40px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              color: #BDBDBD;
-              text-align: center;
-              font-family: $font;
-              font-size: 15px;
-              font-style: normal;
-              font-weight: 400;
-              line-height: normal;
-              letter-spacing: -0.225px;
-              cursor: pointer;
-              &.active {
-                border-bottom: 1px solid #EB6753;
-                color: #EB6753;
-              }
-            }
-          }
-          .wrap {
-            margin-top: 50px;
-            .notice-empty {
-              padding: 32px;
-              color: #717171;
-              text-align: center;
-            }
-            .MuiTypography-root {
-              white-space: pre-line;
-            }
-            .MuiAccordionDetails-root {
-              padding: 30px 20px;
-              background: #FAFAFA;
-            }
-            .badge {
-              margin: 0 24px;
-              display: inline-block;
-              padding: 4px 10px;
-              border: 1px solid #725CE8;
-              border-radius: 7px;
-              color: #725CE8;
-            }
-            .question {
-              .badge {
-                background: #e92C28;
-                color: #fff;
-              }
-            }
-            .answer {
-              margin-left: 80px;
-              display: flex;
-              white-space: nowrap;
-              align-items: center;
-              flex-direction: row;
-              .badge {
-                color: #EB6753;
-                border: 1px solid #EB6753;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+/* ---------- Page ---------- */
+#pc-wrap #cs-page {
+	padding: 40px 0 96px;
+	background: $cs-canvas;
+	&,
+	* {
+		font-family: $font-display;
+	}
+	button {
+		font-family: inherit;
+		cursor: pointer;
+	}
+	a {
+		text-decoration: none;
+	}
+
+	.sx-cs-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 320px;
+		gap: 32px;
+		align-items: start;
+		width: 100%;
+	}
+
+	.sx-cs-main {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		min-width: 0;
+	}
+
+	.sx-cs-toolbar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+	}
+
+	// Tabs stretch up to the search box; both halves share the width.
+	.sx-cs-tabs {
+		flex: 1;
+		display: flex;
+		gap: 4px;
+		padding: 4px;
+		border-radius: 999px;
+		background: $cs-container;
+		button {
+			flex: 1;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 10px 20px;
+			border: 0;
+			border-radius: 999px;
+			background: transparent;
+			color: $cs-body;
+			font-size: 14px;
+			font-weight: 700;
+			transition: background 160ms ease, color 160ms ease;
+			svg {
+				width: 18px;
+				height: 18px;
+			}
+			&:hover {
+				color: $cs-navy;
+			}
+			&:focus-visible {
+				outline: none;
+				box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.35);
+			}
+			&.active {
+				background: $cs-navy;
+				color: #fff;
+			}
+		}
+	}
+
+	.sx-cs-search {
+		flex: 0 0 340px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 14px;
+		border: 1px solid $cs-line;
+		border-radius: 999px;
+		background: $cs-surface;
+		transition: box-shadow 160ms ease;
+		&:focus-within {
+			box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.25);
+		}
+		> svg {
+			width: 20px;
+			height: 20px;
+			color: $cs-outline;
+		}
+		input {
+			flex: 1;
+			min-width: 0;
+			border: 0;
+			outline: none;
+			background: transparent;
+			color: $cs-ink;
+			font-size: 14px;
+			&::placeholder {
+				color: $cs-outline;
+			}
+		}
+		button {
+			display: flex;
+			padding: 0;
+			border: 0;
+			background: none;
+			color: $cs-outline;
+			svg {
+				width: 18px;
+				height: 18px;
+			}
+		}
+	}
+
+	.sx-cs-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		padding: 28px;
+		border: 1px solid $cs-line;
+		border-radius: 24px;
+		background: $cs-surface;
+		box-shadow: $cs-shadow-md;
+	}
+
+	.sx-cs-panel-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+		h2 {
+			margin: 0;
+			color: $cs-navy;
+			font-size: 22px;
+			font-weight: 800;
+			letter-spacing: -0.01em;
+		}
+		span {
+			color: $cs-outline;
+			font-size: 13px;
+			font-weight: 600;
+		}
+	}
+
+	.sx-cs-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		padding: 48px 16px;
+		border-radius: 16px;
+		background: $cs-low;
+		color: $cs-body;
+		svg {
+			width: 32px;
+			height: 32px;
+			color: $cs-outline;
+		}
+	}
+
+	/* Notice rows */
+	.sx-notice-list,
+	.sx-faq-list {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		li {
+			border: 1px solid $cs-line;
+			border-radius: 16px;
+			background: $cs-surface;
+			transition: border-color 160ms ease, box-shadow 160ms ease;
+			&:hover {
+				border-color: #d6d2cb;
+			}
+			&.is-open {
+				border-color: $cs-navy;
+				box-shadow: $cs-shadow-md;
+			}
+		}
+		li > button {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			padding: 18px 20px;
+			border: 0;
+			border-radius: 16px;
+			background: transparent;
+			text-align: left;
+			strong {
+				flex: 1;
+				min-width: 0;
+				color: $cs-ink;
+				font-size: 15px;
+				font-weight: 700;
+				line-height: 1.4;
+			}
+			> svg {
+				flex-shrink: 0;
+				color: $cs-outline;
+				transition: transform 200ms ease;
+			}
+		}
+	}
+
+	.sx-notice-list {
+		li.is-event {
+			background: #fff8f4;
+			border-color: #f5c9b6;
+		}
+		li.is-open > button > svg {
+			transform: rotate(180deg);
+		}
+		.sx-notice-no {
+			width: 32px;
+			color: $cs-outline;
+			font-size: 13px;
+			font-weight: 700;
+			text-align: center;
+			font-variant-numeric: tabular-nums;
+		}
+		.sx-notice-badge {
+			width: 52px;
+			padding: 3px 0;
+			border-radius: 999px;
+			background: $cs-cta;
+			color: #fff;
+			font-size: 11px;
+			font-style: normal;
+			font-weight: 800;
+			letter-spacing: 0.06em;
+			text-align: center;
+			text-transform: uppercase;
+		}
+		time {
+			flex-shrink: 0;
+			color: $cs-outline;
+			font-size: 13px;
+		}
+		.sx-notice-body {
+			margin: 0;
+			padding: 0 20px 20px 68px;
+			color: $cs-body;
+			font-size: 15px;
+			line-height: 1.7;
+			white-space: pre-line;
+		}
+	}
+
+	/* FAQ */
+	.sx-faq-groups {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		button {
+			padding: 10px 20px;
+			border: 1.5px solid $cs-navy;
+			border-radius: 999px;
+			background: $cs-surface;
+			color: $cs-navy;
+			font-size: 14px;
+			font-weight: 800;
+			letter-spacing: 0.01em;
+			transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+			&:hover {
+				background: $cs-container;
+			}
+			&:focus-visible {
+				outline: none;
+				box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.35);
+			}
+			&.active {
+				border-color: $cs-cta;
+				background: $cs-cta;
+				color: #fff;
+			}
+		}
+	}
+
+	.sx-faq-list {
+		em {
+			flex-shrink: 0;
+			width: 30px;
+			height: 30px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 50%;
+			background: $cs-container;
+			color: $cs-navy;
+			font-size: 13px;
+			font-style: normal;
+			font-weight: 800;
+		}
+		li.is-open > button > svg {
+			transform: rotate(45deg);
+			color: $cs-cta;
+		}
+		small {
+			flex-shrink: 0;
+			padding: 3px 10px;
+			border-radius: 999px;
+			background: $cs-low;
+			color: $cs-body;
+			font-size: 12px;
+			font-weight: 600;
+		}
+		.sx-faq-answer {
+			display: flex;
+			gap: 16px;
+			padding: 0 20px 20px;
+			em {
+				background: $cs-tint;
+				color: $cs-cta;
+			}
+			p {
+				margin: 4px 0 0;
+				color: $cs-body;
+				font-size: 15px;
+				line-height: 1.7;
+				white-space: pre-line;
+			}
+		}
+	}
+
+	.sx-cs-pagination {
+		align-self: center;
+		margin-top: 8px;
+	}
+
+	/* Aside */
+	.sx-cs-aside {
+		position: sticky;
+		top: 112px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.sx-cs-help {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 24px;
+		border-radius: 24px;
+		background: linear-gradient(140deg, $cs-navy, $cs-navy-soft);
+		color: #fff;
+		h3 {
+			margin: 0;
+			font-size: 20px;
+			font-weight: 800;
+		}
+		> p {
+			margin: 0 0 6px;
+			color: #cbd5e1;
+			font-size: 14px;
+		}
+		a {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding: 12px 14px;
+			border-radius: 14px;
+			background: rgba(255, 255, 255, 0.08);
+			color: #fff;
+			transition: background 160ms ease;
+			&:hover {
+				background: rgba(255, 255, 255, 0.16);
+			}
+			> svg {
+				width: 22px;
+				height: 22px;
+				color: #ff9b78;
+			}
+			span {
+				display: flex;
+				flex-direction: column;
+			}
+			strong {
+				font-size: 14px;
+				font-weight: 700;
+			}
+			small {
+				color: #cbd5e1;
+				font-size: 12px;
+			}
+		}
+	}
+
+	.sx-cs-times {
+		padding: 20px 24px;
+		border: 1px solid $cs-line;
+		border-radius: 20px;
+		background: $cs-surface;
+		span {
+			color: $cs-cta;
+			font-size: 12px;
+			font-weight: 800;
+			letter-spacing: 0.1em;
+			text-transform: uppercase;
+		}
+		p {
+			margin: 8px 0 0;
+			color: $cs-body;
+			font-size: 14px;
+			line-height: 1.8;
+		}
+		strong {
+			color: $cs-navy;
+		}
+	}
 }

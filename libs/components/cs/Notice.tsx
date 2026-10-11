@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { Stack, Box, Pagination } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Pagination } from '@mui/material';
 import { useQuery } from '@apollo/client';
 import moment from 'moment';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { GET_NOTICES } from '../../../apollo/user/query';
 import { NoticeCategory } from '../../enums/notice.enum';
@@ -10,7 +12,7 @@ import { Notice as NoticeType } from '../../types/notice/notice';
 const PAGE_LIMIT = 10;
 
 /** CS → Notice: written by the admin (Notice Management); event notices are pinned on top. */
-const Notice = () => {
+const Notice = ({ text }: { text: string }) => {
 	const device = useDeviceDetect();
 	const [page, setPage] = useState<number>(1);
 	const [openId, setOpenId] = useState<string | null>(null);
@@ -18,52 +20,60 @@ const Notice = () => {
 	/** APOLLO REQUESTS **/
 	const { data, loading } = useQuery(GET_NOTICES, {
 		fetchPolicy: 'cache-and-network',
-		variables: { input: { page, limit: PAGE_LIMIT, search: { noticeCategory: NoticeCategory.NOTICE } } },
+		variables: {
+			input: { page, limit: PAGE_LIMIT, search: { noticeCategory: NoticeCategory.NOTICE, ...(text ? { text } : {}) } },
+		},
 	});
 	const notices: NoticeType[] = data?.getNotices?.list ?? [];
 	const total: number = data?.getNotices?.metaCounter?.[0]?.total ?? 0;
+
+	/** LIFECYCLES **/
+	useEffect(() => {
+		setPage(1);
+		setOpenId(null);
+	}, [text]);
 
 	if (device === 'mobile') {
 		return <div>NOTICE MOBILE</div>;
 	} else {
 		return (
-			<Stack className={'notice-content'}>
-				<span className={'title'}>Notice</span>
-				<Stack className={'main'}>
-					<Box component={'div'} className={'top'}>
-						<span>number</span>
-						<span>title</span>
-						<span>date</span>
-					</Box>
-					<Stack className={'bottom'}>
-						{!loading && notices.length === 0 && <p className={'notice-empty'}>No notices yet.</p>}
+			<section className="sx-cs-panel">
+				<header className="sx-cs-panel-head">
+					<h2>Notices</h2>
+					<span>{total} {total === 1 ? 'notice' : 'notices'}</span>
+				</header>
+
+				{!loading && notices.length === 0 ? (
+					<div className="sx-cs-empty">
+						<CampaignOutlinedIcon aria-hidden="true" />
+						<strong>{text ? 'No notices match your search' : 'No notices yet'}</strong>
+					</div>
+				) : (
+					<ul className="sx-notice-list">
 						{notices.map((notice, index) => {
 							const open = openId === notice._id;
 							return (
-								<div className={'notice-item'} key={notice._id}>
-									<button
-										type={'button'}
-										className={`notice-card ${notice.noticeEvent ? 'event' : ''}`}
-										aria-expanded={open}
-										onClick={() => setOpenId(open ? null : notice._id)}
-									>
+								<li key={notice._id} className={`${open ? 'is-open' : ''} ${notice.noticeEvent ? 'is-event' : ''}`}>
+									<button type="button" aria-expanded={open} onClick={() => setOpenId(open ? null : notice._id)}>
 										{notice.noticeEvent ? (
-											<div>event</div>
+											<em className="sx-notice-badge">Event</em>
 										) : (
-											<span className={'notice-number'}>{total - ((page - 1) * PAGE_LIMIT + index)}</span>
+											<span className="sx-notice-no">{total - ((page - 1) * PAGE_LIMIT + index)}</span>
 										)}
-										<span className={'notice-title'}>{notice.noticeTitle}</span>
-										<span className={'notice-date'}>{moment(notice.createdAt).format('YYYY.MM.DD')}</span>
+										<strong>{notice.noticeTitle}</strong>
+										<time>{moment(notice.createdAt).format('MMM D, YYYY')}</time>
+										<ExpandMoreRoundedIcon aria-hidden="true" />
 									</button>
-									{open && <p className={'notice-body'}>{notice.noticeContent}</p>}
-								</div>
+									{open && <p className="sx-notice-body">{notice.noticeContent}</p>}
+								</li>
 							);
 						})}
-					</Stack>
-				</Stack>
+					</ul>
+				)}
+
 				{total > PAGE_LIMIT && (
 					<Pagination
-						className={'notice-pagination'}
+						className="sx-cs-pagination"
 						page={page}
 						count={Math.ceil(total / PAGE_LIMIT)}
 						onChange={(_, value) => {
@@ -73,7 +83,7 @@ const Notice = () => {
 						shape="circular"
 					/>
 				)}
-			</Stack>
+			</section>
 		);
 	}
 };
