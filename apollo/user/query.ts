@@ -691,6 +691,18 @@ export const GET_MY_BOOKINGS = gql`
 	}
 `;
 
+export const GET_HOST_EARNINGS = gql`
+	query GetHostEarnings {
+		getHostEarnings {
+			monthRevenue
+			totalRevenue
+			activeBookings
+			upcomingCheckIns
+			nightsBooked
+		}
+	}
+`;
+
 export const GET_HOST_BOOKINGS = gql`
 	query GetHostBookings($input: BookingsInquiry!) {
 		getHostBookings(input: $input) {

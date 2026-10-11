@@ -46,3 +46,12 @@ export interface BookedRange {
 	checkIn: string;
 	checkOut: string;
 }
+
+/** Host summary on My Page → Reservations (own stays only, KRW). */
+export interface HostEarnings {
+	monthRevenue: number;
+	totalRevenue: number;
+	activeBookings: number;
+	upcomingCheckIns: number;
+	nightsBooked: number;
+}
