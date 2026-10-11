@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Pagination } from '@mui/material';
 import { useQuery } from '@apollo/client';
 import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
-import { GET_HOST_BOOKINGS } from '../../../apollo/user/query';
-import { Booking } from '../../types/booking/booking';
+import { GET_HOST_BOOKINGS, GET_HOST_EARNINGS } from '../../../apollo/user/query';
+import { Booking, HostEarnings } from '../../types/booking/booking';
+import { formatKRW } from '../../utils';
 import { BookingStatus } from '../../enums/booking.enum';
 import BookingCard from './BookingCard';
 import { bookingFilters } from './MyBookings';
@@ -22,7 +23,11 @@ const Reservations = () => {
 		notifyOnNetworkStatusChange: true,
 	});
 
+	const { data: earningsData } = useQuery(GET_HOST_EARNINGS, { fetchPolicy: 'network-only' });
+
 	const bookings: Booking[] = data?.getHostBookings?.list ?? [];
+	const earnings: HostEarnings | undefined = earningsData?.getHostEarnings;
+	const month = new Date().toLocaleDateString('en-US', { month: 'long' });
 	const total: number = data?.getHostBookings?.total ?? 0;
 
 	return (
@@ -33,6 +38,31 @@ const Reservations = () => {
 					<p>Guests who booked your stays.</p>
 				</div>
 			</header>
+
+			{earnings && (
+				<div className="sx-earnings">
+					<div className="sx-earnings-card is-accent">
+						<span>Earned in {month}</span>
+						<strong>{formatKRW(earnings.monthRevenue)}</strong>
+						<small>{formatKRW(earnings.totalRevenue)} all time</small>
+					</div>
+					<div className="sx-earnings-card">
+						<span>Active bookings</span>
+						<strong>{earnings.activeBookings}</strong>
+						<small>Confirmed and upcoming</small>
+					</div>
+					<div className="sx-earnings-card">
+						<span>Check-ins soon</span>
+						<strong>{earnings.upcomingCheckIns}</strong>
+						<small>In the next 7 days</small>
+					</div>
+					<div className="sx-earnings-card">
+						<span>Nights booked</span>
+						<strong>{earnings.nightsBooked}</strong>
+						<small>Confirmed and completed stays</small>
+					</div>
+				</div>
+			)}
 
 			<div className="sx-notifications-filters" role="tablist" aria-label="Filter reservations">
 				{bookingFilters.map((item) => (
