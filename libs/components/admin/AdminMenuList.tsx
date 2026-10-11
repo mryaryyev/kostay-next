@@ -6,7 +6,7 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { CalendarCheck, ChatsCircle, Headset, User, UserCircleGear } from 'phosphor-react';
+import { CalendarCheck, ChartBar, ChatsCircle, Headset, User, UserCircleGear } from 'phosphor-react';
 import cookies from 'js-cookie';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { useQuery } from '@apollo/client';
@@ -48,6 +48,9 @@ const AdminMenuList = (props: any) => {
 		if (device === 'mobile') setMobileLayout(true);
 
 		switch (pathnames[1]) {
+			case undefined:
+				setClickMenu(['Dashboard']);
+				break;
 			case 'properties':
 				setClickMenu(['Properties']);
 				break;
@@ -65,7 +68,10 @@ const AdminMenuList = (props: any) => {
 				break;
 		}
 
-		switch (pathnames[2]) {
+		switch (pathnames[1] === undefined ? 'overview' : pathnames[2]) {
+			case 'overview':
+				setClickSubMenu('Overview');
+				break;
 			case 'logs':
 				setClickSubMenu('Logs');
 				break;
@@ -100,6 +106,11 @@ const AdminMenuList = (props: any) => {
 
 	const menu_set = [
 		{
+			title: 'Dashboard',
+			icon: <ChartBar size={20} color="#bdbdbd" weight="fill" />,
+			on_click: () => subMenuChangeHandler('Dashboard'),
+		},
+		{
 			title: 'Users',
 			icon: <User size={20} color="#bdbdbd" weight="fill" />,
 			on_click: () => subMenuChangeHandler('Users'),
@@ -127,6 +138,7 @@ const AdminMenuList = (props: any) => {
 	];
 
 	const sub_menu_set: any = {
+		Dashboard: [{ title: 'Overview', url: '/_admin' }],
 		Users: [{ title: 'List', url: '/_admin/users' }],
 		Properties: [{ title: 'List', url: '/_admin/properties' }],
 		Bookings: [{ title: 'List', url: '/_admin/bookings' }],

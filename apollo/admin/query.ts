@@ -324,3 +324,26 @@ export const GET_ALL_BOOKINGS_BY_ADMIN = gql`
 		}
 	}
 `;
+
+/**************************
+ *       DASHBOARD        *
+ *************************/
+
+export const GET_ADMIN_DASHBOARD = gql`
+	query GetAdminDashboard {
+		getAdminDashboard {
+			guests
+			hosts
+			activeStays
+			pausedStays
+			activeArticles
+			waitingInquiries
+			confirmedBookings
+			completedBookings
+			cancelledBookings
+			upcomingCheckIns
+			totalRevenue
+			monthRevenue
+		}
+	}
+`;
