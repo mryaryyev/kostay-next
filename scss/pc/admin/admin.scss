@@ -625,3 +625,85 @@
 		font-weight: 800;
 	}
 }
+
+// Admin → Dashboard (pages/_admin/index.tsx).
+.admin-dash-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+	margin-bottom: 24px;
+}
+.admin-dash-card {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 20px 22px;
+	border: 1px solid #e6e2dc;
+	border-radius: 16px;
+	background: #fff;
+	color: inherit;
+	text-decoration: none;
+	transition: border-color 160ms ease, box-shadow 160ms ease;
+	&:hover {
+		border-color: #031636;
+		box-shadow: 0 8px 24px rgba(26, 43, 76, 0.08);
+	}
+	span {
+		color: #75777f;
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	strong {
+		color: #031636;
+		font-size: 30px;
+		font-weight: 800;
+		line-height: 1.1;
+	}
+	small {
+		color: #44474e;
+		font-size: 13px;
+	}
+	&.is-accent {
+		border-color: #031636;
+		background: linear-gradient(140deg, #031636, #1a2b4c);
+		span,
+		small {
+			color: #cbd5e1;
+		}
+		strong {
+			color: #fff;
+		}
+	}
+	&.is-warn {
+		border-color: #aa3614;
+		strong {
+			color: #aa3614;
+		}
+	}
+}
+.admin-dash-panel {
+	padding: 20px 22px;
+	border: 1px solid #e6e2dc;
+	border-radius: 16px;
+	background: #fff;
+}
+.admin-dash-panel-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+	h3 {
+		margin: 0;
+		color: #031636;
+		font-size: 18px;
+		font-weight: 800;
+	}
+	a {
+		color: #aa3614;
+		font-size: 13px;
+		font-weight: 700;
+		text-decoration: none;
+	}
+}
