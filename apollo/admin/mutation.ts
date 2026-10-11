@@ -235,3 +235,16 @@ export const UPDATE_INQUIRY_BY_ADMIN = gql`
 		}
 	}
 `;
+
+/**************************
+ *        BOOKING         *
+ *************************/
+
+export const CANCEL_BOOKING_BY_ADMIN = gql`
+	mutation CancelBookingByAdmin($bookingId: String!) {
+		cancelBookingByAdmin(bookingId: $bookingId) {
+			id
+			status
+		}
+	}
+`;

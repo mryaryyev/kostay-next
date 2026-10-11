@@ -17,3 +17,8 @@ export interface BookingsInquiry {
 export interface BookAndPayInput extends BookingInput {
 	paymentMethod: string;
 }
+
+export interface AllBookingsInquiry extends BookingsInquiry {
+	checkInFrom?: string;
+	checkInTo?: string;
+}

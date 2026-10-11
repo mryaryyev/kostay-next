@@ -3,7 +3,7 @@ import { NotificationGroup, NotificationType } from '../../enums/notification.en
 import { REACT_APP_API_URL } from '../../config';
 
 /** Titles set by the booking service for notifications the host receives. */
-const HOST_BOOKING_TITLES = ['booked your stay', 'cancelled their booking'];
+const HOST_BOOKING_TITLES = ['booked your stay', 'cancelled their booking', 'cancelled a booking of your stay'];
 
 /** Set by the inquiry service on the notification each admin gets for a new question. */
 const NEW_INQUIRY_TITLE = 'sent an inquiry';
