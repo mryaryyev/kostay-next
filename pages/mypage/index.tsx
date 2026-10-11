@@ -10,6 +10,8 @@ import RecentlyVisited from '../../libs/components/mypage/RecentlyVisited';
 import AddProperty from '../../libs/components/mypage/AddNewProperty';
 import MyProfile from '../../libs/components/mypage/MyProfile';
 import MyNotifications from '../../libs/components/mypage/MyNotifications';
+import MyBookings from '../../libs/components/mypage/MyBookings';
+import Reservations from '../../libs/components/mypage/Reservations';
 import MyArticles from '../../libs/components/mypage/MyArticles';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { userVar } from '../../apollo/store';
@@ -107,6 +109,10 @@ const MyPage: NextPage = () => {
 		}
 	};
 
+	// Logged out (e.g. right after Log Out reloads this URL): render nothing while the effect above redirects,
+	// so no section fires an auth-only query without a token ("Bearer Token is not provided!").
+	if (!user?._id) return <div id="my-page" style={{ minHeight: '60vh' }} />;
+
 	if (device === 'mobile') {
 		return <div>MY PAGE</div>;
 	} else {
@@ -129,6 +135,8 @@ const MyPage: NextPage = () => {
 									{category === 'writeArticle' && <WriteArticle />}
 									{category === 'myProfile' && <MyProfile />}
 									{category === 'notifications' && <MyNotifications />}
+									{category === 'myBookings' && <MyBookings />}
+									{category === 'reservations' && <Reservations />}
 									{category === 'followers' && (
 										<MemberFollowers
 											subscribeHandler={subscribeHandler}

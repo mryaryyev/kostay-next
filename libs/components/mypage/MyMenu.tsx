@@ -64,8 +64,7 @@ const MyMenu = () => {
 								category: 'myProperties',
 								badge: user.memberProperties || undefined,
 							},
-							// TODO: backend — bookings guests made on this host's stays
-							{ label: 'Reservations', icon: <EventAvailableOutlinedIcon />, badge: 'Soon', badgeClass: 'is-warm' },
+							{ label: 'Reservations', icon: <EventAvailableOutlinedIcon />, category: 'reservations' },
 							{ label: 'Add Stay', icon: <AddHomeOutlinedIcon />, category: 'addProperty' },
 						],
 					},
@@ -75,12 +74,7 @@ const MyMenu = () => {
 			title: 'Stays',
 			items: [
 				// Guests book stays; hosts see incoming bookings under Hosting → Reservations instead.
-				...(isHost
-					? []
-					: [
-							// TODO: backend — bookings tab and active count
-							{ label: 'My Bookings', icon: <LuggageOutlinedIcon />, badge: 'Soon', badgeClass: 'is-warm' },
-					  ]),
+				...(isHost ? [] : [{ label: 'My Bookings', icon: <LuggageOutlinedIcon />, category: 'myBookings' }]),
 				{ label: 'My Favorites', icon: <FavoriteBorderIcon />, category: 'myFavorites' },
 				{ label: 'Recently Viewed', icon: <HistoryIcon />, category: 'recentlyVisited' },
 			],
