@@ -38,12 +38,13 @@ import { Pagination as MuiPagination } from '@mui/material';
 import Link from 'next/link';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import 'swiper/css';
-import { GET_COMMENTS, GET_PROPERTIES, GET_PROPERTY } from '../../apollo/user/query';
+import { GET_BOOKED_DATES, GET_COMMENTS, GET_PROPERTIES, GET_PROPERTY } from '../../apollo/user/query';
+import { BookedRange } from '../../libs/types/booking/booking';
 import { T } from '../../libs/types/common';
 import { Direction, Message } from '../../libs/enums/common.enum';
-import { CREATE_COMMENT, LIKE_TARGET_PROPERTY, SEND_MESSAGE_TO_HOST } from '../../apollo/user/mutation';
+import { CREATE_BOOKING, CREATE_COMMENT, LIKE_TARGET_PROPERTY, SEND_MESSAGE_TO_HOST } from '../../apollo/user/mutation';
 import {
-	sweetBasicAlert,
+	sweetLoginConfirmAlert,
 	sweetErrorHandling,
 	sweetMixinErrorAlert,
 	sweetTopSmallSuccessAlert,
@@ -100,6 +101,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY);
 	const [createComment] = useMutation(CREATE_COMMENT);
 	const [sendMessageToHost, { loading: sendingMessage }] = useMutation(SEND_MESSAGE_TO_HOST);
+	const [createBooking, { loading: reserving }] = useMutation(CREATE_BOOKING);
 
 	const {
 		loading: getPropertyLoading,
@@ -235,11 +237,20 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		}
 	};
 
-	/** BOOKING BOX (UI only for now) **/
+	/** BOOKING BOX **/
+	const { data: bookedData, refetch: refetchBookedDates } = useQuery(GET_BOOKED_DATES, {
+		fetchPolicy: 'cache-and-network',
+		variables: { propertyId },
+		skip: !propertyId,
+	});
+	const bookedRanges: BookedRange[] = bookedData?.getBookedDates ?? [];
+
 	const today = toYMD(new Date());
 	const nights = nightsBetween(checkIn, checkOut);
 	const maxGuests = Math.max(property?.maxGuests ?? 1, 1);
-	const datesValid = !!checkIn && !!checkOut && checkIn >= today && nights > 0;
+	// Same rule as the database: [checkIn, checkOut) ranges must not overlap (string compare works for YYYY-MM-DD).
+	const datesTaken = !!checkIn && !!checkOut && bookedRanges.some((r) => checkIn < r.checkOut && checkOut > r.checkIn);
+	const datesValid = !!checkIn && !!checkOut && checkIn >= today && nights > 0 && !datesTaken;
 	const totalPrice = datesValid && property ? property.pricePerNight * nights : null;
 
 	const checkInChangeHandler = (value: string) => {
@@ -249,8 +260,25 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	};
 
 	const reserveHandler = async () => {
-		// TODO: backend — createBooking({ propertyId, checkIn, checkOut, guestsCount }) in the booking phase
-		await sweetBasicAlert('Booking opens soon. Your dates are not reserved yet.');
+		if (!user._id) {
+			if (await sweetLoginConfirmAlert('Log in to request this stay.')) await router.push('/account/join');
+			return;
+		}
+		try {
+			await createBooking({
+				variables: { input: { propertyId: property?._id, checkIn, checkOut, guestsCount: guests } },
+			});
+			setCheckIn('');
+			setCheckOut('');
+			setGuests(1);
+			await refetchBookedDates();
+			await sweetTopSmallSuccessAlert('Request sent to the host', 1200);
+			await router.push({ pathname: '/mypage', query: { category: 'myBookings' } });
+		} catch (err: any) {
+			// e.g. "Dates are not available" when someone booked the same dates a moment earlier
+			await refetchBookedDates();
+			await sweetErrorHandling(err);
+		}
 	};
 
 	// Stored as a MESSAGE notification for the host (bell + My Page → Notifications).
@@ -533,10 +561,32 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 									</dl>
 								)}
 
-								<button type="button" className="sx-reserve" disabled={!datesValid} onClick={reserveHandler}>
-									{datesValid ? 'Reserve' : 'Select dates'}
+								{datesTaken && (
+									<p className="sx-booking-alert" role="alert">
+										Those dates are already booked. Please choose other dates.
+									</p>
+								)}
+								<button
+									type="button"
+									className="sx-reserve"
+									disabled={!datesValid || isOwnStay || reserving}
+									onClick={reserveHandler}
+								>
+									{isOwnStay ? 'This is your stay' : reserving ? 'Sending request…' : datesValid ? 'Reserve' : 'Select dates'}
 								</button>
-								<p className="sx-booking-note">You won't be charged yet</p>
+								<p className="sx-booking-note">The host confirms first — you pay only after approval</p>
+								{bookedRanges.length > 0 && (
+									<div className="sx-booked">
+										<span>Already booked</span>
+										<ul>
+											{bookedRanges.map((range) => (
+												<li key={`${range.checkIn}-${range.checkOut}`}>
+													{range.checkIn} → {range.checkOut}
+												</li>
+											))}
+										</ul>
+									</div>
+								)}
 							</div>
 
 							{!isOwnStay && (
