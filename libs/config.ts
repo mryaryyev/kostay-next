@@ -11,3 +11,7 @@ export const Messages = {
 };
 
 export const topPropertyRank = 2;
+
+// House times: booking dates are plain YYYY-MM-DD, these hours apply to every stay.
+export const CHECK_IN_TIME = '13:00';
+export const CHECK_OUT_TIME = '11:00';

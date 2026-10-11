@@ -31,7 +31,7 @@ import { useRouter } from 'next/router';
 import { Property } from '../../libs/types/property/property';
 import moment from 'moment';
 import { formatKRW } from '../../libs/utils';
-import { REACT_APP_API_URL } from '../../libs/config';
+import { CHECK_IN_TIME, CHECK_OUT_TIME, REACT_APP_API_URL } from '../../libs/config';
 import { userVar } from '../../apollo/store';
 import { CommentInput, CommentsInquiry } from '../../libs/types/comment/comment.input';
 import { Comment } from '../../libs/types/comment/comment';
@@ -553,6 +553,9 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 										/>
 									)}
 								</div>
+								<p className="sx-booking-times">
+									Check-in from {CHECK_IN_TIME} · Check-out by {CHECK_OUT_TIME}
+								</p>
 								<div className="sx-booking-guests">
 									<div>
 										<span>Guests</span>

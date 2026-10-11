@@ -11,6 +11,11 @@ import { sweetConfirmAlert, sweetErrorHandling, sweetTopSmallSuccessAlert } from
 import BookingCard from './BookingCard';
 
 const PAGE_LIMIT = 6;
+const pad = (value: number) => String(value).padStart(2, '0');
+const todayYMD = () => {
+	const now = new Date();
+	return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
 
 export const bookingFilters: { key: BookingStatus | 'ALL'; label: string }[] = [
 	{ key: 'ALL', label: 'All' },
@@ -56,7 +61,8 @@ const MyBookings = () => {
 	const renderActions = (booking: Booking) => {
 		const busy = busyId === booking.id;
 		const active = booking.status === BookingStatus.PENDING || booking.status === BookingStatus.CONFIRMED;
-		if (!active) return null;
+		// Check-out day reached: the stay is over (the batch marks it COMPLETED at 11:05), so it can no longer be cancelled.
+		if (!active || booking.checkOut <= todayYMD()) return null;
 		return (
 			<>
 				<button type="button" className="sx-btn-ghost" disabled={busy} onClick={() => cancelHandler(booking)}>
