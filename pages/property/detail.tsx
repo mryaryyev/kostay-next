@@ -1,9 +1,10 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { CircularProgress, Stack, Typography } from '@mui/material';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutFull from '../../libs/components/layout/LayoutFull';
 import { NextPage } from 'next';
 import Review from '../../libs/components/property/Review';
+import BookingCalendar from '../../libs/components/property/BookingCalendar';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay, Navigation, Pagination } from 'swiper';
 import PropertyBigCard from '../../libs/components/common/PropertyBigCard';
@@ -23,6 +24,7 @@ import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import AddIcon from '@mui/icons-material/Add';
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { useRouter } from 'next/router';
@@ -38,11 +40,12 @@ import { Pagination as MuiPagination } from '@mui/material';
 import Link from 'next/link';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import 'swiper/css';
-import { GET_BOOKED_DATES, GET_COMMENTS, GET_PROPERTIES, GET_PROPERTY } from '../../apollo/user/query';
-import { BookedRange } from '../../libs/types/booking/booking';
+import { GET_BOOKED_DATES, GET_COMMENTS, GET_MY_BOOKINGS, GET_PROPERTIES, GET_PROPERTY } from '../../apollo/user/query';
+import { BookedRange, Booking } from '../../libs/types/booking/booking';
+import { BookingStatus, PaymentStatus } from '../../libs/enums/booking.enum';
 import { T } from '../../libs/types/common';
 import { Direction, Message } from '../../libs/enums/common.enum';
-import { CREATE_BOOKING, CREATE_COMMENT, LIKE_TARGET_PROPERTY, SEND_MESSAGE_TO_HOST } from '../../apollo/user/mutation';
+import { CREATE_COMMENT, LIKE_TARGET_PROPERTY, SEND_MESSAGE_TO_HOST } from '../../apollo/user/mutation';
 import {
 	sweetLoginConfirmAlert,
 	sweetErrorHandling,
@@ -88,6 +91,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const [checkIn, setCheckIn] = useState<string>('');
 	const [checkOut, setCheckOut] = useState<string>('');
 	const [guests, setGuests] = useState<number>(1);
+	const [openCalendar, setOpenCalendar] = useState<'checkIn' | 'checkOut' | null>(null);
 	const [contactName, setContactName] = useState<string>('');
 	const [contactPhone, setContactPhone] = useState<string>('');
 	const [contactMessage, setContactMessage] = useState<string>('');
@@ -101,7 +105,6 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY);
 	const [createComment] = useMutation(CREATE_COMMENT);
 	const [sendMessageToHost, { loading: sendingMessage }] = useMutation(SEND_MESSAGE_TO_HOST);
-	const [createBooking, { loading: reserving }] = useMutation(CREATE_BOOKING);
 
 	const {
 		loading: getPropertyLoading,
@@ -245,7 +248,20 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	});
 	const bookedRanges: BookedRange[] = bookedData?.getBookedDates ?? [];
 
+	// The logged-in guest's own upcoming bookings on this stay (everyone else only sees taken days in the calendar).
+	const { data: myBookingsData } = useQuery(GET_MY_BOOKINGS, {
+		fetchPolicy: 'cache-and-network',
+		variables: { input: { page: 1, limit: 50 } },
+		skip: !user?._id || !propertyId,
+	});
+
 	const today = toYMD(new Date());
+	const myStayBookings: Booking[] = (myBookingsData?.getMyBookings?.list ?? []).filter(
+		(b: Booking) =>
+			b.propertyId === propertyId &&
+			(b.status === BookingStatus.PENDING || b.status === BookingStatus.CONFIRMED) &&
+			b.checkOut > today,
+	);
 	const nights = nightsBetween(checkIn, checkOut);
 	const maxGuests = Math.max(property?.maxGuests ?? 1, 1);
 	// Same rule as the database: [checkIn, checkOut) ranges must not overlap (string compare works for YYYY-MM-DD).
@@ -253,32 +269,35 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const datesValid = !!checkIn && !!checkOut && checkIn >= today && nights > 0 && !datesTaken;
 	const totalPrice = datesValid && property ? property.pricePerNight * nights : null;
 
-	const checkInChangeHandler = (value: string) => {
-		setCheckIn(value);
-		// Keep check-out after check-in.
-		if (value && checkOut && checkOut <= value) setCheckOut(addDays(value, 1));
+	const closeCalendar = useCallback(() => setOpenCalendar(null), []);
+
+	const calendarSelectHandler = (value: string) => {
+		if (openCalendar === 'checkIn') {
+			checkInChangeHandler(value);
+			// Picking check-in moves straight on to check-out.
+			setOpenCalendar(value ? 'checkOut' : null);
+		} else {
+			setCheckOut(value);
+			setOpenCalendar(null);
+		}
 	};
 
+	const checkInChangeHandler = (value: string) => {
+		setCheckIn(value);
+		// A new check-in can make the old check-out invalid (before it, or across a booked night): ask again.
+		if (!value || (checkOut && checkOut <= value)) setCheckOut('');
+	};
+
+	// Instant Book step 1 → 2: nothing is saved here; the checkout page shows the summary and takes the payment.
 	const reserveHandler = async () => {
 		if (!user._id) {
-			if (await sweetLoginConfirmAlert('Log in to request this stay.')) await router.push('/account/join');
+			if (await sweetLoginConfirmAlert('Log in to book this stay.')) await router.push('/account/join');
 			return;
 		}
-		try {
-			await createBooking({
-				variables: { input: { propertyId: property?._id, checkIn, checkOut, guestsCount: guests } },
-			});
-			setCheckIn('');
-			setCheckOut('');
-			setGuests(1);
-			await refetchBookedDates();
-			await sweetTopSmallSuccessAlert('Request sent to the host', 1200);
-			await router.push({ pathname: '/mypage', query: { category: 'myBookings' } });
-		} catch (err: any) {
-			// e.g. "Dates are not available" when someone booked the same dates a moment earlier
-			await refetchBookedDates();
-			await sweetErrorHandling(err);
-		}
+		await router.push({
+			pathname: '/booking/checkout',
+			query: { propertyId: property?._id, checkIn, checkOut, guests },
+		});
 	};
 
 	// Stored as a MESSAGE notification for the host (bell + My Page → Notifications).
@@ -506,24 +525,33 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 									<span>/ night</span>
 								</div>
 								<div className="sx-booking-dates">
-									<label>
-										<span>Check-in</span>
-										<input
-											type="date"
-											value={checkIn}
-											min={today}
-											onChange={({ target: { value } }) => checkInChangeHandler(value)}
+									{(['checkIn', 'checkOut'] as const).map((field) => {
+										const value = field === 'checkIn' ? checkIn : checkOut;
+										return (
+											<button
+												type="button"
+												key={field}
+												className={`sx-date-field ${openCalendar === field ? 'is-open' : ''}`}
+												aria-expanded={openCalendar === field}
+												onClick={() => setOpenCalendar(openCalendar === field ? null : field)}
+											>
+												<span>{field === 'checkIn' ? 'Check-in' : 'Check-out'}</span>
+												<strong className={value ? '' : 'is-empty'}>{value || 'Add date'}</strong>
+											</button>
+										);
+									})}
+									{openCalendar && (
+										<BookingCalendar
+											mode={openCalendar}
+											value={openCalendar === 'checkIn' ? checkIn : checkOut}
+											checkIn={checkIn}
+											checkOut={checkOut}
+											min={openCalendar === 'checkIn' ? today : addDays(checkIn || today, 1)}
+											bookedRanges={bookedRanges}
+											onSelect={calendarSelectHandler}
+											onClose={closeCalendar}
 										/>
-									</label>
-									<label>
-										<span>Check-out</span>
-										<input
-											type="date"
-											value={checkOut}
-											min={checkIn ? addDays(checkIn, 1) : addDays(today, 1)}
-											onChange={({ target: { value } }) => setCheckOut(value)}
-										/>
-									</label>
+									)}
 								</div>
 								<div className="sx-booking-guests">
 									<div>
@@ -546,6 +574,25 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 									</div>
 								</div>
 
+								{myStayBookings.length > 0 && (
+									<div className="sx-booked">
+										<div className="sx-booked-head">
+											<EventAvailableOutlinedIcon aria-hidden="true" />
+											<strong>{myStayBookings.length === 1 ? 'Your booking' : 'Your bookings'}</strong>
+										</div>
+										<ul>
+											{myStayBookings.map((booking) => (
+												<li key={booking.id}>
+													<span>
+														{booking.checkIn} → {booking.checkOut}
+													</span>
+													<em>{booking.paymentStatus === PaymentStatus.SUCCEEDED ? 'Confirmed · Paid' : 'Not paid'}</em>
+												</li>
+											))}
+										</ul>
+										<Link href={{ pathname: '/mypage', query: { category: 'myBookings' } }}>Manage in My Bookings</Link>
+									</div>
+								)}
 								{datesValid && (
 									<dl className="sx-booking-breakdown">
 										<div>
@@ -566,27 +613,10 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 										Those dates are already booked. Please choose other dates.
 									</p>
 								)}
-								<button
-									type="button"
-									className="sx-reserve"
-									disabled={!datesValid || isOwnStay || reserving}
-									onClick={reserveHandler}
-								>
-									{isOwnStay ? 'This is your stay' : reserving ? 'Sending request…' : datesValid ? 'Reserve' : 'Select dates'}
+								<button type="button" className="sx-reserve" disabled={!datesValid || isOwnStay} onClick={reserveHandler}>
+									{isOwnStay ? 'This is your stay' : datesValid ? 'Booking' : 'Select dates'}
 								</button>
-								<p className="sx-booking-note">The host confirms first — you pay only after approval</p>
-								{bookedRanges.length > 0 && (
-									<div className="sx-booked">
-										<span>Already booked</span>
-										<ul>
-											{bookedRanges.map((range) => (
-												<li key={`${range.checkIn}-${range.checkOut}`}>
-													{range.checkIn} → {range.checkOut}
-												</li>
-											))}
-										</ul>
-									</div>
-								)}
+								<p className="sx-booking-note">You won't be charged yet — review and pay on the next step</p>
 							</div>
 
 							{!isOwnStay && (
