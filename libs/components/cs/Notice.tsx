@@ -1,27 +1,27 @@
-import React from 'react';
-import { Stack, Box } from '@mui/material';
+import React, { useState } from 'react';
+import { Stack, Box, Pagination } from '@mui/material';
+import { useQuery } from '@apollo/client';
+import moment from 'moment';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
+import { GET_NOTICES } from '../../../apollo/user/query';
+import { NoticeCategory } from '../../enums/notice.enum';
+import { Notice as NoticeType } from '../../types/notice/notice';
 
+const PAGE_LIMIT = 10;
+
+/** CS → Notice: written by the admin (Notice Management); event notices are pinned on top. */
 const Notice = () => {
 	const device = useDeviceDetect();
+	const [page, setPage] = useState<number>(1);
+	const [openId, setOpenId] = useState<string | null>(null);
 
 	/** APOLLO REQUESTS **/
-	/** LIFECYCLES **/
-	/** HANDLERS **/
-
-	const data = [
-		{
-			no: 1,
-			event: true,
-			title: 'Welcome to Kostay: find stays across South Korea',
-			date: '07.10.2026',
-		},
-		{
-			no: 2,
-			title: 'Hosts can now list their stays on Kostay',
-			date: '07.10.2026',
-		},
-	];
+	const { data, loading } = useQuery(GET_NOTICES, {
+		fetchPolicy: 'cache-and-network',
+		variables: { input: { page, limit: PAGE_LIMIT, search: { noticeCategory: NoticeCategory.NOTICE } } },
+	});
+	const notices: NoticeType[] = data?.getNotices?.list ?? [];
+	const total: number = data?.getNotices?.metaCounter?.[0]?.total ?? 0;
 
 	if (device === 'mobile') {
 		return <div>NOTICE MOBILE</div>;
@@ -36,15 +36,43 @@ const Notice = () => {
 						<span>date</span>
 					</Box>
 					<Stack className={'bottom'}>
-						{data.map((ele: any) => (
-							<div className={`notice-card ${ele?.event && 'event'}`} key={ele.title}>
-								{ele?.event ? <div>event</div> : <span className={'notice-number'}>{ele.no}</span>}
-								<span className={'notice-title'}>{ele.title}</span>
-								<span className={'notice-date'}>{ele.date}</span>
-							</div>
-						))}
+						{!loading && notices.length === 0 && <p className={'notice-empty'}>No notices yet.</p>}
+						{notices.map((notice, index) => {
+							const open = openId === notice._id;
+							return (
+								<div className={'notice-item'} key={notice._id}>
+									<button
+										type={'button'}
+										className={`notice-card ${notice.noticeEvent ? 'event' : ''}`}
+										aria-expanded={open}
+										onClick={() => setOpenId(open ? null : notice._id)}
+									>
+										{notice.noticeEvent ? (
+											<div>event</div>
+										) : (
+											<span className={'notice-number'}>{total - ((page - 1) * PAGE_LIMIT + index)}</span>
+										)}
+										<span className={'notice-title'}>{notice.noticeTitle}</span>
+										<span className={'notice-date'}>{moment(notice.createdAt).format('YYYY.MM.DD')}</span>
+									</button>
+									{open && <p className={'notice-body'}>{notice.noticeContent}</p>}
+								</div>
+							);
+						})}
 					</Stack>
 				</Stack>
+				{total > PAGE_LIMIT && (
+					<Pagination
+						className={'notice-pagination'}
+						page={page}
+						count={Math.ceil(total / PAGE_LIMIT)}
+						onChange={(_, value) => {
+							setPage(value);
+							setOpenId(null);
+						}}
+						shape="circular"
+					/>
+				)}
 			</Stack>
 		);
 	}
