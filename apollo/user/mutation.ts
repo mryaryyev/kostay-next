@@ -352,3 +352,60 @@ export const SEND_MESSAGE_TO_HOST = gql`
 		}
 	}
 `;
+
+/**************************
+ *         BOOKING        *
+ *************************/
+
+export const CREATE_BOOKING = gql`
+	mutation CreateBooking($input: BookingInput!) {
+		createBooking(input: $input) {
+			id
+			checkIn
+			checkOut
+			guestsCount
+			totalPrice
+			status
+		}
+	}
+`;
+
+export const CANCEL_BOOKING = gql`
+	mutation CancelBooking($bookingId: String!) {
+		cancelBooking(bookingId: $bookingId) {
+			id
+			status
+		}
+	}
+`;
+
+export const CONFIRM_BOOKING = gql`
+	mutation ConfirmBooking($bookingId: String!) {
+		confirmBooking(bookingId: $bookingId) {
+			id
+			status
+		}
+	}
+`;
+
+export const DECLINE_BOOKING = gql`
+	mutation DeclineBooking($bookingId: String!) {
+		declineBooking(bookingId: $bookingId) {
+			id
+			status
+		}
+	}
+`;
+
+export const CREATE_PAYMENT = gql`
+	mutation CreatePayment($input: PaymentInput!) {
+		createPayment(input: $input) {
+			id
+			bookingId
+			amount
+			currency
+			status
+			paidAt
+		}
+	}
+`;

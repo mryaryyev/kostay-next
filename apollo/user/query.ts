@@ -647,3 +647,66 @@ export const GET_UNREAD_NOTIFICATION_COUNT = gql`
 		getUnreadNotificationCount
 	}
 `;
+
+/**************************
+ *         BOOKING        *
+ *************************/
+
+const BOOKING_FIELDS = `
+	id
+	propertyId
+	memberId
+	checkIn
+	checkOut
+	guestsCount
+	totalPrice
+	status
+	paymentStatus
+	createdAt
+	updatedAt
+	propertyData {
+		_id
+		propertyTitle
+		propertyImage
+		propertyLocation
+		propertyAddress
+	}
+	guestData {
+		_id
+		memberNick
+		memberFullName
+		memberImage
+		memberPhone
+	}
+`;
+
+export const GET_MY_BOOKINGS = gql`
+	query GetMyBookings($input: BookingsInquiry!) {
+		getMyBookings(input: $input) {
+			list {
+				${BOOKING_FIELDS}
+			}
+			total
+		}
+	}
+`;
+
+export const GET_HOST_BOOKINGS = gql`
+	query GetHostBookings($input: BookingsInquiry!) {
+		getHostBookings(input: $input) {
+			list {
+				${BOOKING_FIELDS}
+			}
+			total
+		}
+	}
+`;
+
+export const GET_BOOKED_DATES = gql`
+	query GetBookedDates($propertyId: String!) {
+		getBookedDates(propertyId: $propertyId) {
+			checkIn
+			checkOut
+		}
+	}
+`;
