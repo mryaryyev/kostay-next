@@ -87,6 +87,10 @@
           justify-content: center;
         }
         .notice-content {
+          .notice-pagination {
+            margin-top: 24px;
+            align-self: center;
+          }
           .main {
             border: 1px solid #EEE;
             .top {
@@ -107,7 +111,31 @@
             .bottom {
               display: flex;
               flex-direction: column;
+              .notice-empty {
+                margin: 0;
+                padding: 32px;
+                color: #717171;
+                text-align: center;
+              }
+              // Rows open in place to show the notice text.
+              .notice-body {
+                margin: 0;
+                padding: 20px 30px 24px 87px;
+                border: 1px solid #EEE;
+                border-top: 0;
+                background: #fafafa;
+                color: #333;
+                font-family: $font;
+                font-size: 15px;
+                line-height: 1.6;
+                white-space: pre-line;
+              }
               .notice-card {
+                width: 100%;
+                align-items: center;
+                background: #fff;
+                text-align: left;
+                cursor: pointer;
                 padding: 20px 14px 20px 30px;
                 display: flex;
                 flex-direction: row;
@@ -190,6 +218,14 @@
           }
           .wrap {
             margin-top: 50px;
+            .notice-empty {
+              padding: 32px;
+              color: #717171;
+              text-align: center;
+            }
+            .MuiTypography-root {
+              white-space: pre-line;
+            }
             .MuiAccordionDetails-root {
               padding: 30px 20px;
               background: #FAFAFA;
