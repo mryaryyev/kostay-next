@@ -193,3 +193,40 @@ export const GET_COMMENTS = gql`
 		}
 	}
 `;
+
+/**************************
+ *         NOTICE         *
+ *************************/
+
+export const GET_ALL_NOTICES_BY_ADMIN = gql`
+	query GetAllNoticesByAdmin($input: AllNoticesInquiry!) {
+		getAllNoticesByAdmin(input: $input) {
+			list {
+				_id
+				noticeCategory
+				noticeStatus
+				faqGroup
+				noticeEvent
+				noticeTitle
+				noticeContent
+				noticeViews
+				memberId
+				createdAt
+				updatedAt
+				memberData {
+					_id
+					memberNick
+					memberImage
+				}
+			}
+			metaCounter {
+				total
+			}
+			statusCounter {
+				_id
+				count
+			}
+		}
+	}
+`;
+
