@@ -13,7 +13,7 @@ export interface BookingsInquiry {
 	status?: BookingStatus;
 }
 
-export interface PaymentInput {
-	bookingId: string;
+/** Instant Book: BookingInput + payment method (simulated card for now). */
+export interface BookAndPayInput extends BookingInput {
 	paymentMethod: string;
 }
