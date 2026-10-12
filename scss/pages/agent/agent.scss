@@ -111,51 +111,23 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 	}
 	.sx-hosts-hero-bg {
 		position: absolute;
-		inset: 0;
-		background: url('/img/banner/agents.webp') center / cover no-repeat;
+		inset: 80px 0 0; // start under the fixed navbar so the skyline top stays visible
+		@include mobile {
+			top: 64px;
+		}
+		background: url('/img/banner/hero/hosts.jpg') center / cover no-repeat;
 		&::after {
 			content: '';
 			position: absolute;
 			inset: 0;
-			background: linear-gradient(to top, rgba(3, 22, 54, 0.95), rgba(3, 22, 54, 0.75), rgba(3, 22, 54, 0.45));
-			backdrop-filter: blur(2px);
+			background: linear-gradient(to top, rgba(3, 22, 54, 0.78), rgba(3, 22, 54, 0.35) 55%, rgba(3, 22, 54, 0.1));
 		}
 	}
 	.container {
 		position: relative;
 		z-index: 1;
 		flex-direction: column;
-		gap: 12px;
 		padding-bottom: 48px;
-	}
-	.sx-hosts-crumbs {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		color: #cbd5e1;
-		font-size: 12px;
-		font-weight: 600;
-		a {
-			color: inherit;
-			text-decoration: none;
-			&:hover {
-				color: #fff;
-			}
-		}
-		svg {
-			width: 14px;
-			height: 14px;
-			color: #94a3b8;
-		}
-		span {
-			color: #fff;
-		}
-	}
-	.sx-hosts-hero-row {
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
-		gap: 24px;
 	}
 	h1 {
 		margin: 0;
@@ -166,44 +138,35 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 		letter-spacing: -0.03em;
 	}
 	p {
-		margin: 8px 0 0;
+		margin: 12px 0 0;
 		max-width: 672px;
 		color: #e2e8f0;
 		font-size: 16px;
 		line-height: 24px;
-		font-weight: 300;
 	}
-	.sx-hosts-hero-badge {
+	// Same look as the Find a Stay hero metrics.
+	.sx-hosts-hero-metrics {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		gap: 12px;
-		padding: 10px 16px;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 12px;
-		background: rgba(255, 255, 255, 0.1);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		color: #fff;
-		> svg {
-			width: 20px;
-			height: 20px;
-			color: #ff734c;
-		}
-		div {
+		gap: 24px;
+		margin: 24px 0 0;
+		padding: 0;
+		list-style: none;
+		li {
 			display: flex;
-			flex-direction: column;
-		}
-		small {
-			color: #cbd5e1;
-			font-size: 11px;
-			line-height: 14px;
-			font-weight: 700;
-			letter-spacing: 0.08em;
-			text-transform: uppercase;
-		}
-		strong {
-			font-size: 16px;
-			font-weight: 700;
+			align-items: center;
+			gap: 8px;
+			color: rgba(255, 255, 255, 0.9);
+			font-size: 17px;
+			line-height: 24px;
+			font-weight: 600;
+			letter-spacing: 0.02em;
+			svg {
+				width: 24px;
+				height: 24px;
+				color: #ff734c;
+			}
 		}
 	}
 }
@@ -263,7 +226,7 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 		}
 		input {
 			width: 100%;
-			padding: 10px 16px 10px 40px;
+			padding: 10px 40px 10px 40px;
 			border: 1px solid $ht-line;
 			border-radius: 12px;
 			outline: none;
@@ -277,6 +240,30 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 			}
 			&:focus {
 				box-shadow: 0 0 0 2px rgba(170, 54, 20, 0.2);
+			}
+		}
+		.sx-search-clear {
+			position: absolute;
+			right: 10px;
+			width: 24px;
+			height: 24px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0;
+			border: 0;
+			border-radius: 50%;
+			background: $ht-line;
+			color: $ht-ink;
+			cursor: pointer;
+			svg {
+				position: static;
+				width: 14px;
+				height: 14px;
+				color: inherit;
+			}
+			&:hover {
+				background: #d9d4cc;
 			}
 		}
 	}
@@ -296,8 +283,10 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		select {
+		button {
+			min-width: 150px;
 			padding: 10px 40px 10px 16px;
+			text-align: left;
 			border: 1px solid $ht-line;
 			border-radius: 12px;
 			outline: none;
@@ -310,6 +299,10 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 			cursor: pointer;
 			&:hover {
 				background: $ht-container;
+			}
+			&:focus-visible {
+				outline: 2px solid $ht-navy;
+				outline-offset: 2px;
 			}
 		}
 		svg {
@@ -326,12 +319,12 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 		display: flex;
 		gap: 8px;
 		button {
-			padding: 8px 16px;
+			padding: 10px 20px;
 			border: 1px solid rgba(197, 198, 207, 0.4);
 			border-radius: 9999px;
 			background: $ht-low;
 			color: $ht-body;
-			font-size: 12px;
+			font-size: 14px;
 			font-weight: 600;
 			&.is-active {
 				border-color: transparent;
@@ -339,25 +332,6 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 				box-shadow: $ht-shadow-sm;
 				color: #fff;
 			}
-		}
-	}
-
-	.sx-hosts-count {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 0 4px;
-		color: $ht-body;
-		font-size: 12px;
-		i {
-			width: 8px;
-			height: 8px;
-			border-radius: 50%;
-			background: $ht-cta;
-		}
-		strong {
-			color: $ht-ink;
-			font-weight: 600;
 		}
 	}
 
@@ -436,7 +410,21 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 		gap: 16px;
 		margin-bottom: 16px;
 		> div {
+			flex: 1;
 			min-width: 0;
+		}
+		// Name on the left, stay count on the right of the same line.
+		.sx-host-name-row {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			h3 {
+				min-width: 0;
+			}
+			.sx-host-count {
+				flex-shrink: 0;
+			}
 		}
 		h3 {
 			margin: 0;
@@ -569,8 +557,8 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 		gap: 8px;
 		padding: 12px;
 		border-radius: 12px;
-		background: $ht-container-high;
-		box-shadow: $ht-shadow-sm;
+		background: #f7dcd1; // peach, a step stronger than the home search fields
+		box-shadow: none;
 		color: $ht-ink;
 		font-size: 14px;
 		line-height: 20px;
@@ -582,8 +570,7 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 			transition: transform 200ms ease;
 		}
 		&:hover {
-			background: $ht-cta;
-			color: #fff;
+			background: #efc3b1;
 			svg {
 				transform: translateX(3px);
 			}
@@ -808,6 +795,28 @@ $ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0
 		.sx-host-cta:hover svg,
 		.sx-hosts-cta-actions a:hover svg {
 			transform: none;
+		}
+	}
+}
+
+// Sort menu (Hosts and Stays) is portaled to <body>, so it lives outside the page scope.
+.sx-hosts-sort-menu,
+.sx-sort-menu {
+	margin-top: 6px;
+	min-width: 170px;
+	border: 1px solid $ht-line;
+	border-radius: 12px !important;
+	box-shadow: $ht-shadow-sm !important;
+	.MuiMenuItem-root {
+		margin: 0 6px;
+		border-radius: 8px;
+		color: $ht-ink;
+		font-size: 14px;
+		font-weight: 600;
+		&.Mui-selected,
+		&.Mui-selected:hover {
+			background: $ht-navy;
+			color: #fff;
 		}
 	}
 }

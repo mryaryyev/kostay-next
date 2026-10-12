@@ -465,15 +465,14 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 	.sx-stays-hero-bg {
 		position: absolute;
 		inset: 0;
-		background: url('/img/banner/cities/SEOUL.webp') center / cover no-repeat;
-		opacity: 0.4;
+		background: url('/img/banner/hero/stays.jpg') center / cover no-repeat;
 		mix-blend-mode: luminosity;
 		transform: scale(1.05);
 		&::after {
 			content: '';
 			position: absolute;
 			inset: 0;
-			background: linear-gradient(to top, $st-navy, rgba(3, 22, 54, 0.8), transparent);
+			background: linear-gradient(to top, rgba(3, 22, 54, 0.78), rgba(3, 22, 54, 0.35) 55%, rgba(3, 22, 54, 0.1));
 		}
 	}
 	.sx-stays-hero-glow {
@@ -524,13 +523,13 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 			align-items: center;
 			gap: 8px;
 			color: rgba(255, 255, 255, 0.8);
-			font-size: 12px;
-			line-height: 16px;
+			font-size: 17px;
+			line-height: 24px;
 			font-weight: 600;
 			letter-spacing: 0.02em;
 			svg {
-				width: 18px;
-				height: 18px;
+				width: 24px;
+				height: 24px;
 				color: #ff734c;
 			}
 			& + li {
@@ -543,7 +542,8 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 
 // Stay cards (PropertyCard variant="stays") are also used on the Host detail page.
 #site-wrap #property-list-page,
-#site-wrap #host-detail-page {
+#site-wrap #host-detail-page,
+#site-wrap #member-page {
 	padding-bottom: 0;
 	background: $st-canvas;
 	&,
@@ -567,6 +567,11 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 	.sx-filter {
 		position: sticky;
 		top: 112px;
+		// Taller than the screen: scroll inside the panel instead of waiting for the list to end.
+		max-height: calc(100vh - 136px);
+		overflow-y: auto;
+		scrollbar-width: thin;
+		scrollbar-color: $st-container-high transparent;
 		display: flex;
 		flex-direction: column;
 		gap: 24px;
@@ -574,6 +579,9 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 		border-radius: 16px;
 		background: $st-surface;
 		box-shadow: 0 4px 24px rgba(26, 43, 76, 0.05);
+		> * {
+			flex-shrink: 0; // sections keep their height; the panel scrolls
+		}
 	}
 
 	.sx-filter-head {
@@ -1049,16 +1057,6 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 			line-height: 28px;
 			font-weight: 600;
 		}
-		span {
-			padding: 2px 10px;
-			border-radius: 9999px;
-			background: $st-container;
-			color: $st-navy;
-			font-size: 11px;
-			line-height: 14px;
-			font-weight: 700;
-			letter-spacing: 0.08em;
-		}
 	}
 
 	.sx-sort {
@@ -1078,21 +1076,30 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 		align-items: center;
 		border-radius: 12px;
 		background: $st-low;
-		select {
-			padding: 6px 32px 6px 12px;
-			border: 0;
+		button {
+			min-width: 170px;
+			padding: 8px 36px 8px 14px;
+			border: 1px solid $st-container-high;
+			border-radius: 12px;
 			outline: none;
 			background: transparent;
+			text-align: left;
 			color: $st-navy;
 			font-size: 14px;
 			line-height: 20px;
 			font-weight: 600;
-			appearance: none;
 			cursor: pointer;
+			&:hover {
+				background: $st-container-high;
+			}
+			&:focus-visible {
+				outline: 2px solid $st-navy;
+				outline-offset: 2px;
+			}
 		}
 		svg {
 			position: absolute;
-			right: 8px;
+			right: 10px;
 			width: 18px;
 			height: 18px;
 			color: $st-outline;
@@ -1328,76 +1335,6 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 			display: flex;
 			align-items: center;
 			gap: 4px;
-		}
-	}
-
-	/* ---------- Map callout ---------- */
-	.sx-map-callout {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 16px;
-		margin-top: 16px;
-		padding: 24px;
-		border-radius: 16px;
-		background: $st-container-high;
-		h4 {
-			margin: 0;
-			color: $st-navy;
-			font-size: 20px;
-			line-height: 28px;
-			font-weight: 600;
-			letter-spacing: -0.01em;
-		}
-		p {
-			margin: 0;
-			color: $st-body;
-			font-size: 12px;
-			line-height: 18px;
-		}
-		button {
-			display: flex;
-			align-items: center;
-			gap: 6px;
-			padding: 8px 16px;
-			border: 0;
-			border-radius: 12px;
-			background: $st-navy;
-			box-shadow: $st-shadow-sm;
-			color: #fff;
-			font-size: 14px;
-			line-height: 20px;
-			font-weight: 600;
-			white-space: nowrap;
-			svg {
-				width: 18px;
-				height: 18px;
-			}
-			&:disabled {
-				cursor: not-allowed;
-			}
-		}
-	}
-
-	.sx-map-copy {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-	}
-
-	.sx-map-icon {
-		width: 48px;
-		height: 48px;
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 12px;
-		background: rgba(255, 115, 76, 0.2);
-		color: $st-cta;
-		svg {
-			width: 28px;
-			height: 28px;
 		}
 	}
 

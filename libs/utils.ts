@@ -67,11 +67,9 @@ export const normalizePropertySearch = (input: unknown, defaults: PropertiesInqu
 		const numbers = Array.isArray(list) ? list.filter((item) => isGraphQLInt(item) && item > 0) : [];
 		if (numbers.length) search[key] = Array.from(new Set(numbers));
 	}
-	for (const key of ['pricesRange', 'squaresRange'] as const) {
-		const range = rawSearch[key];
-		if (isRecord(range) && isGraphQLInt(range.start) && isGraphQLInt(range.end) && range.start <= range.end) {
-			search[key] = { start: range.start, end: range.end };
-		}
+	const prices = rawSearch.pricesRange;
+	if (isRecord(prices) && isGraphQLInt(prices.start) && isGraphQLInt(prices.end) && prices.start <= prices.end) {
+		search.pricesRange = { start: prices.start, end: prices.end };
 	}
 
 	const sorts = ['createdAt', 'updatedAt', 'propertyLikes', 'propertyViews', 'propertyRank', 'pricePerNight'];
@@ -106,8 +104,6 @@ export const parsePropertyQuery = (query: Record<string, QueryValue>, defaults: 
 		lowest: { sort: 'pricePerNight', direction: Direction.ASC },
 		highest: { sort: 'pricePerNight', direction: Direction.DESC },
 	};
-	const sizeMin = toNumber(query.sizeMin);
-	const sizeMax = toNumber(query.sizeMax);
 	const priceMin = toNumber(query.priceMin);
 	const priceMax = toNumber(query.priceMax);
 
@@ -127,10 +123,6 @@ export const parsePropertyQuery = (query: Record<string, QueryValue>, defaults: 
 				guestsCount: toNumber(query.guests),
 				checkIn: firstValue(query.checkIn),
 				checkOut: firstValue(query.checkOut),
-				squaresRange:
-					sizeMin !== undefined || sizeMax !== undefined
-						? { start: sizeMin ?? 0, end: sizeMax ?? 500 }
-						: defaults.search.squaresRange,
 				pricesRange: priceMin !== undefined && priceMax !== undefined ? { start: priceMin, end: priceMax } : undefined,
 			},
 		},
@@ -138,7 +130,7 @@ export const parsePropertyQuery = (query: Record<string, QueryValue>, defaults: 
 	);
 };
 
-/** PropertiesInquiry → URL params. Only values that differ from the defaults are written, so a clean list is just /property. */
+/** PropertiesInquiry → URL params. Only values that differ from the defaults are written, so a clean list is just /stay. */
 export const buildPropertyQuery = (input: PropertiesInquiry, defaults: PropertiesInquiry): Record<string, string> => {
 	const { search } = normalizePropertySearch(input, defaults);
 	const query: Record<string, string> = {};
@@ -158,11 +150,6 @@ export const buildPropertyQuery = (input: PropertiesInquiry, defaults: Propertie
 	if (search.pricesRange) {
 		query.priceMin = String(search.pricesRange.start);
 		query.priceMax = String(search.pricesRange.end);
-	}
-	const size = search.squaresRange;
-	if (size && (size.start !== 0 || size.end !== 500)) {
-		query.sizeMin = String(size.start);
-		query.sizeMax = String(size.end);
 	}
 	if (sort === 'pricePerNight') query.sort = direction === Direction.ASC ? 'lowest' : 'highest';
 	else if (sort !== (defaults.sort ?? 'createdAt') || direction !== (defaults.direction ?? Direction.DESC)) {
@@ -214,4 +201,12 @@ export const likeTargetMemberHandler = async (likeTargetMember: any, id: string)
 		console.log('ERROR, likeTargetMemberHandler:', err.message);
 		sweetMixinErrorAlert(err.message).then();
 	}
+};
+
+/** After a page change, bring the top of the list back under the fixed navbar. */
+export const scrollToListTop = (selector: string) => {
+	if (typeof window === 'undefined') return;
+	const el = document.querySelector(selector);
+	const top = el ? el.getBoundingClientRect().top + window.scrollY - 96 : 0;
+	window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
 };

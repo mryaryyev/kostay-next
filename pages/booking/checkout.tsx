@@ -118,7 +118,7 @@ const Checkout: NextPage = () => {
 		);
 	}
 
-	const stayHref = { pathname: '/property/detail', query: { id: propertyId } };
+	const stayHref = { pathname: '/stay/detail', query: { id: propertyId } };
 	const image = property?.propertyImages?.[0];
 
 	return (

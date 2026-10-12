@@ -401,48 +401,6 @@ $home-font: $font-display;
 		}
 	}
 
-	/* ---------- Trust strip ---------- */
-	.home-page > .home-trust-strip {
-		padding-top: 0;
-		.container {
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
-			gap: 32px;
-			padding: 28px 0;
-			border-top: 1px solid $home-line;
-			border-bottom: 1px solid $home-line;
-		}
-		.trust-item {
-			display: flex;
-			align-items: flex-start;
-			gap: 14px;
-		}
-		.trust-icon {
-			width: 44px;
-			height: 44px;
-			flex: none;
-			display: grid;
-			place-items: center;
-			border-radius: 12px;
-			background: $home-clay-soft;
-			color: $home-clay;
-			svg {
-				font-size: 22px;
-			}
-		}
-		strong {
-			display: block;
-			font-size: 15px;
-			font-weight: 600;
-			color: $home-ink;
-		}
-		p {
-			margin: 2px 0 0;
-			font-size: 13px;
-			line-height: 1.55;
-			color: $home-muted;
-		}
-	}
 
 	/* ---------- Stay card ---------- */
 	.boutique-stay-card {

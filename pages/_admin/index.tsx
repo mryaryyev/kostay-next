@@ -60,7 +60,7 @@ const AdminHome: NextPage = () => {
 					note: `${stats.upcomingCheckIns} check-ins in the next 7 days`,
 					href: '/_admin/bookings',
 				},
-				{ label: 'Stays', value: stats.activeStays, note: `${stats.pausedStays} paused`, href: '/_admin/properties' },
+				{ label: 'Stays', value: stats.activeStays, note: `${stats.pausedStays} paused`, href: '/_admin/stays' },
 				{
 					label: 'Members',
 					value: stats.guests + stats.hosts,

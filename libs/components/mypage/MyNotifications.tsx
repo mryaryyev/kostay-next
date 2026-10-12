@@ -177,7 +177,7 @@ const MyNotifications = () => {
 								</button>
 								{isMessage && notification.propertyId && (
 									<Link
-										href={{ pathname: '/property/detail', query: { id: notification.propertyId } }}
+										href={{ pathname: '/stay/detail', query: { id: notification.propertyId } }}
 										className="sx-notification-link"
 									>
 										View stay

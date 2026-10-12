@@ -104,7 +104,7 @@ const MyBookings = () => {
 					<LuggageOutlinedIcon aria-hidden="true" />
 					<strong>No bookings here yet</strong>
 					<p>
-						Find a place you love and book it in a few steps. <Link href="/property">Browse stays</Link>
+						Find a place you love and book it in a few steps. <Link href="/stay">Browse stays</Link>
 					</p>
 				</div>
 			) : (

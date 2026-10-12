@@ -32,7 +32,7 @@ const HomeStayCard = (props: HomeStayCardProps) => {
 	const imageSrc = imagePath ? `${REACT_APP_API_URL}/${imagePath}` : '';
 	const isFavorite = Boolean(property.meLiked?.[0]?.myFavorite);
 	const isPopular = variant === 'popular';
-	const detailHref = { pathname: '/property/detail', query: { id: property._id } };
+	const detailHref = { pathname: '/stay/detail', query: { id: property._id } };
 
 	return (
 		<article className={`sx-stay-card${isPopular ? ' is-popular' : ''}`}>

@@ -32,13 +32,16 @@ $mp-shadow-lg: 0 12px 32px rgba(26, 43, 76, 0.1);
 	}
 	.sx-mypage-hero-bg {
 		position: absolute;
-		inset: 0;
-		background: url('/img/banner/cities/SEOUL.webp') center / cover no-repeat;
+		inset: 80px 0 0; // start under the fixed navbar
+		@include mobile {
+			top: 64px;
+		}
+		background: url('/img/banner/hero/mypage.jpg') center / cover no-repeat;
 		&::after {
 			content: '';
 			position: absolute;
 			inset: 0;
-			background: linear-gradient(to top, rgba(3, 22, 54, 0.95), rgba(3, 22, 54, 0.75), rgba(3, 22, 54, 0.45));
+			background: linear-gradient(to top, rgba(3, 22, 54, 0.78), rgba(3, 22, 54, 0.35) 55%, rgba(3, 22, 54, 0.1));
 		}
 	}
 	.container {
@@ -47,29 +50,6 @@ $mp-shadow-lg: 0 12px 32px rgba(26, 43, 76, 0.1);
 		flex-direction: column;
 		gap: 12px;
 		padding-bottom: 48px;
-	}
-	.sx-mypage-crumbs {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		color: #cbd5e1;
-		font-size: 12px;
-		font-weight: 600;
-		a {
-			color: inherit;
-			text-decoration: none;
-			&:hover {
-				color: #fff;
-			}
-		}
-		svg {
-			width: 14px;
-			height: 14px;
-			color: #94a3b8;
-		}
-		span {
-			color: #fff;
-		}
 	}
 	h1 {
 		margin: 0;
@@ -138,6 +118,8 @@ $mp-shadow-lg: 0 12px 32px rgba(26, 43, 76, 0.1);
 		border-radius: 50%;
 		background: $mp-cta-bright;
 		color: #fff;
+		padding: 0;
+		cursor: pointer;
 		svg {
 			width: 16px;
 			height: 16px;
@@ -189,8 +171,10 @@ $mp-shadow-lg: 0 12px 32px rgba(26, 43, 76, 0.1);
 		align-items: center;
 		gap: 8px;
 		padding: 12px 22px;
+		border: 0;
 		border-radius: 12px;
 		background: $mp-cta-bright;
+		cursor: pointer;
 		color: #fff;
 		font-size: 14px;
 		font-weight: 700;
@@ -229,6 +213,13 @@ $mp-shadow-lg: 0 12px 32px rgba(26, 43, 76, 0.1);
 					align-items: flex-start;
 					gap: 28px;
 					.left-config {
+						// Sticks while the list scrolls; a very short screen scrolls inside the menu instead.
+						position: sticky;
+						top: 104px;
+						align-self: flex-start;
+						max-height: calc(100vh - 128px);
+						overflow-y: auto;
+						scrollbar-width: thin;
 						width: 336px;
 						flex-shrink: 0;
 						border: 1px solid $mp-line;

@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useMemo, useState } from 'react';
 import { NextPage } from 'next';
-import { Button } from '@mui/material';
+import { Button, Menu, MenuItem } from '@mui/material';
 import PropertyCard from '../../libs/components/property/PropertyCard';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Filter from '../../libs/components/property/Filter';
@@ -12,8 +12,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import MapOutlinedIcon from '@mui/icons-material/MapOutlined';
-import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Direction, Message } from '../../libs/enums/common.enum';
@@ -23,6 +21,7 @@ import { T } from '../../libs/types/common';
 import { LIKE_TARGET_PROPERTY } from '../../apollo/user/mutation';
 import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
 import moment from 'moment';
+import { scrollToListTop } from '../../libs/utils';
 
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
@@ -53,7 +52,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 		try {
 			await router.push(
 				{
-					pathname: '/property',
+					pathname: '/stay',
 					query: buildPropertyQuery(input, initialInput),
 				},
 				undefined,
@@ -88,6 +87,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	/** HANDLERS **/
 	const handlePaginationChange = async (event: ChangeEvent<unknown>, value: number) => {
 		await setSearchFilter({ ...searchFilter, page: value });
+		scrollToListTop('.sx-results');
 	};
 
 	const likePropertyHandler = async (user: T, id: string) => {
@@ -109,6 +109,13 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 			sweetMixinErrorAlert(err.message).then();
 		}
 	};
+
+	const [sortAnchor, setSortAnchor] = useState<HTMLElement | null>(null);
+	const sortOptions = [
+		{ value: 'new', label: 'Newest First' },
+		{ value: 'lowest', label: 'Price: Low to High' },
+		{ value: 'highest', label: 'Price: High to Low' },
+	];
 
 	const sortChangeHandler = (value: string) => {
 		switch (value) {
@@ -166,22 +173,44 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 						</button>
 						<div className="sx-results-title">
 							<h2>Available Stays</h2>
-							<span>
-								{total} verified {total === 1 ? 'home' : 'homes'}
-							</span>
 						</div>
-						<label className="sx-sort">
-							<span>Sort by</span>
+						<div className="sx-sort">
+							<span id="sx-sort-label">Sort by</span>
 							<span className="sx-sort-select">
-								<select value={sortKey} onChange={(e) => sortChangeHandler(e.target.value)}>
-									{sortKey === 'custom' && <option value="custom">Custom</option>}
-									<option value="new">Newest First</option>
-									<option value="lowest">Price: Low to High</option>
-									<option value="highest">Price: High to Low</option>
-								</select>
+								<button
+									type="button"
+									aria-haspopup="listbox"
+									aria-expanded={Boolean(sortAnchor)}
+									aria-labelledby="sx-sort-label"
+									onClick={(e) => setSortAnchor(e.currentTarget)}
+								>
+									{sortOptions.find((option) => option.value === sortKey)?.label ?? 'Custom'}
+								</button>
 								<ExpandMoreIcon aria-hidden="true" />
 							</span>
-						</label>
+							<Menu
+								anchorEl={sortAnchor}
+								open={Boolean(sortAnchor)}
+								onClose={() => setSortAnchor(null)}
+								anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+								PaperProps={{ className: 'sx-sort-menu' }}
+								disableScrollLock
+							>
+								{sortOptions.map((option) => (
+									<MenuItem
+										key={option.value}
+										selected={option.value === sortKey}
+										onClick={() => {
+											setSortAnchor(null);
+											sortChangeHandler(option.value);
+										}}
+									>
+										{option.label}
+									</MenuItem>
+								))}
+							</Menu>
+						</div>
 					</div>
 
 					{stayDates && (
@@ -218,21 +247,6 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 						</div>
 					)}
 
-					<div className="sx-map-callout">
-						<div className="sx-map-copy">
-							<span className="sx-map-icon" aria-hidden="true">
-								<MapOutlinedIcon />
-							</span>
-							<div>
-								<h4>Looking for Seoul subway proximity?</h4>
-								<p>Switch to interactive map mode to find hanoks within walking distance of lines 1-9.</p>
-							</div>
-						</div>
-						<button type="button" disabled title="Map view is coming soon">
-							<ExploreOutlinedIcon aria-hidden="true" />
-							View on Map
-						</button>
-					</div>
 
 					{showResults && (
 						<div className="sx-pagination">
@@ -270,7 +284,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 								<strong>
 									{total} stay{total > 1 ? 's' : ''}
 								</strong>{' '}
-								found in Korea
+								found
 							</p>
 						</div>
 					)}
@@ -283,15 +297,10 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 PropertyList.defaultProps = {
 	initialInput: {
 		page: 1,
-		limit: 9,
+		limit: 10,
 		sort: 'createdAt',
 		direction: 'DESC',
-		search: {
-			squaresRange: {
-				start: 0,
-				end: 500,
-			},
-		},
+		search: {},
 	},
 };
 

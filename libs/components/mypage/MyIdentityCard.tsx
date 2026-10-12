@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import { REACT_APP_API_URL } from '../../config';
@@ -12,7 +12,21 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 /** Account summary card at the top of /mypage (Stitch: My Page & Traveler Dashboard). */
 const MyIdentityCard = () => {
 	const user = useReactiveVar(userVar);
-	const profileHref = { pathname: '/mypage', query: { category: 'myProfile' } };
+	const router = useRouter();
+
+	/** Open the My Profile tab (if needed), then bring the form into view so the click always does something visible. */
+	const openProfile = async (target: 'form' | 'photo') => {
+		if (router.query?.category && router.query.category !== 'myProfile') {
+			await router.push({ pathname: '/mypage', query: { category: 'myProfile' } }, undefined, { scroll: false });
+		}
+		// Wait a frame for the tab to render.
+		requestAnimationFrame(() => {
+			const form = document.getElementById('my-profile-page');
+			form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			if (target === 'photo') document.getElementById('hidden-input')?.click();
+			else form?.querySelector<HTMLInputElement>('.sx-profile-grid input:not([readonly])')?.focus({ preventScroll: true });
+		});
+	};
 
 	return (
 		<section className="sx-identity">
@@ -22,9 +36,14 @@ const MyIdentityCard = () => {
 				) : (
 					<PersonIcon aria-hidden="true" />
 				)}
-				<Link href={profileHref} className="sx-identity-camera" aria-label="Change profile photo">
+				<button
+					type="button"
+					className="sx-identity-camera"
+					aria-label="Change profile photo"
+					onClick={() => openProfile('photo')}
+				>
 					<PhotoCameraOutlinedIcon aria-hidden="true" />
-				</Link>
+				</button>
 			</span>
 			<div className="sx-identity-copy">
 				<h2>{user?.memberFullName || user?.memberNick}</h2>
@@ -45,10 +64,10 @@ const MyIdentityCard = () => {
 					{/* TODO: backend — "Member since" needs createdAt in the JWT payload */}
 				</div>
 			</div>
-			<Link href={profileHref} className="sx-identity-edit">
+			<button type="button" className="sx-identity-edit" onClick={() => openProfile('form')}>
 				<EditNoteIcon aria-hidden="true" />
 				Edit Profile
-			</Link>
+			</button>
 		</section>
 	);
 };

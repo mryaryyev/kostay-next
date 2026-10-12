@@ -11,29 +11,28 @@ interface EventData {
 }
 const eventsData: EventData[] = [
 	{
-		eventTitle: 'Paradise City Theme Park',
-		city: 'Incheon',
-		description: 'Experience magic and wonder in Incheon with a visit to the night-themed indoor theme park wonderbox.',
-		imageSrc: '/img/events/INCHEON.webp',
-	},
-	{
-		eventTitle: 'Taebaeksan Snow Festival',
-		city: 'Seoul / Gangwon',
-		description: 'If you have the opportunity to travel to South Korea, do not miss the Taebaeksan Snow Festival!',
-		imageSrc: '/img/events/SEOUL.webp',
-	},
-	{
-		eventTitle: 'Suseong Lake Event',
-		city: 'Daegu',
-		description: 'The Suseong Lake Festival is a culture and arts festival held alongside Suseongmot Lake!',
-		imageSrc: '/img/events/DAEGU.webp',
-	},
-	{
-		eventTitle: 'Sand Festival',
+		eventTitle: 'Busan Fireworks Festival',
 		city: 'Busan',
-		description:
-			"Haeundae Sand Festival, the nation's largest eco-friendly exhibition on sand, is held at Haeundae Beach!",
-		imageSrc: '/img/events/BUSAN.webp',
+		description: 'Watch fireworks light up Gwangan Bridge over the sea, Korea’s biggest fireworks show every autumn.',
+		imageSrc: '/img/events/BUSAN_FIREWORKS.webp',
+	},
+	{
+		eventTitle: 'Seoul Lantern Festival',
+		city: 'Seoul',
+		description: 'Walk along Cheonggyecheon Stream as thousands of glowing lanterns tell stories of Korea after dark.',
+		imageSrc: '/img/events/SEOUL_LANTERN.webp',
+	},
+	{
+		eventTitle: 'Jeju Canola Flower Festival',
+		city: 'Jeju',
+		description: 'Golden canola fields bloom beside the ocean, making spring the perfect time for a coastal Jeju stay.',
+		imageSrc: '/img/events/JEJU_CANOLA.webp',
+	},
+	{
+		eventTitle: 'Jeonju Hanok Village',
+		city: 'Jeonju',
+		description: 'Explore 700+ traditional hanok houses, local food streets and Korea’s classic culture in one village.',
+		imageSrc: '/img/events/JEONJU_HANOK.webp',
 	},
 ];
 

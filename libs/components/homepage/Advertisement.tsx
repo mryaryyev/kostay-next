@@ -14,7 +14,7 @@ const Advertisement = () => {
 						<span className={'home-eyebrow'}>Kostay film</span>
 						<h2>Slow mornings, from Seoul to Jeju.</h2>
 						<p>Rooms with a view, Hosts who know the neighbourhood, and nights priced clearly in KRW.</p>
-						<Link href={'/property'} className={'home-btn is-glass'}>
+						<Link href={'/stay'} className={'home-btn is-glass'}>
 							Explore stays
 						</Link>
 					</div>

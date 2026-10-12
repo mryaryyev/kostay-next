@@ -3,7 +3,9 @@ import { NextPage } from 'next';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Link from 'next/link';
 import SearchIcon from '@mui/icons-material/Search';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Menu, MenuItem } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import EastIcon from '@mui/icons-material/East';
@@ -21,6 +23,7 @@ import { LIKE_TARGET_MEMBER } from '../../apollo/user/mutation';
 import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
 import { Messages } from '../../libs/config';
 import { T } from '../../libs/types/common';
+import { scrollToListTop } from '../../libs/utils';
 
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
@@ -36,7 +39,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 	const [agents, setAgents] = useState<Member[]>([]);
 	const [total, setTotal] = useState<number>(0);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [searchText, setSearchText] = useState<string>('');
+	const [searchText, setSearchText] = useState<string>(searchFilter?.search?.text ?? '');
 
 	/** APOLLO REQUESTS **/
 	const [likeTargetMember] = useMutation(LIKE_TARGET_MEMBER);
@@ -66,7 +69,22 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 		setCurrentPage(searchFilter.page === undefined ? 1 : searchFilter.page);
 	}, [router]);
 
+	// Live search: run ~400ms after typing stops; an empty box brings every host back.
+	useEffect(() => {
+		const timer = setTimeout(() => applySearch(searchText), 400);
+		return () => clearTimeout(timer);
+	}, [searchText]);
+
 	/** HANDLERS **/
+	const applySearch = (value: string) => {
+		const text = value.trim();
+		setSearchFilter((prev: any) => {
+			if ((prev.search?.text ?? '') === text) return prev;
+			const { text: _old, ...rest } = prev.search ?? {};
+			return { ...prev, page: 1, search: text ? { ...rest, text } : rest };
+		});
+	};
+
 	const sortKey =
 		searchFilter.sort === 'memberLikes'
 			? 'likes'
@@ -93,12 +111,21 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 		}
 	};
 
+	const [sortAnchor, setSortAnchor] = useState<HTMLElement | null>(null);
+	const sortOptions = [
+		{ value: 'recent', label: 'Recent' },
+		{ value: 'old', label: 'Oldest' },
+		{ value: 'likes', label: 'Most Liked' },
+		{ value: 'views', label: 'Most Viewed' },
+	];
+
 	const paginationChangeHandler = async (event: ChangeEvent<unknown>, value: number) => {
 		searchFilter.page = value;
 		await router.push(`/agent?input=${JSON.stringify(searchFilter)}`, `/agent?input=${JSON.stringify(searchFilter)}`, {
 			scroll: false,
 		});
 		setCurrentPage(value);
+		scrollToListTop('.sx-hosts-controls');
 	};
 
 	const likeMemberHandler = async (user: any, id: string) => {
@@ -136,41 +163,64 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 								value={searchText}
 								onChange={(e) => setSearchText(e.target.value)}
 								onKeyDown={(event) => {
-									if (event.key === 'Enter') {
-										setSearchFilter({
-											...searchFilter,
-											search: { ...searchFilter.search, text: searchText },
-										});
-									}
+									if (event.key === 'Enter') applySearch(searchText);
+									if (event.key === 'Escape') setSearchText('');
 								}}
 							/>
+							{searchText && (
+								<button
+									type="button"
+									className={'sx-search-clear'}
+									aria-label={'Clear search'}
+									onClick={() => setSearchText('')}
+								>
+									<CloseRoundedIcon />
+								</button>
+							)}
 						</label>
-						<label className={'sx-hosts-sort'}>
-							<span>Sort by:</span>
+						<div className={'sx-hosts-sort'}>
+							<span id="sx-hosts-sort-label">Sort by:</span>
 							<span className={'sx-hosts-select'}>
-								<select value={sortKey} onChange={(e) => sortChangeHandler(e.target.value)}>
-									<option value="recent">Recent</option>
-									<option value="old">Oldest</option>
-									<option value="likes">Most Liked</option>
-									<option value="views">Most Viewed</option>
-								</select>
+								<button
+									type="button"
+									aria-haspopup="listbox"
+									aria-expanded={Boolean(sortAnchor)}
+									aria-labelledby="sx-hosts-sort-label"
+									onClick={(e) => setSortAnchor(e.currentTarget)}
+								>
+									{sortOptions.find((option) => option.value === sortKey)?.label}
+								</button>
 								<ExpandMoreIcon aria-hidden="true" />
 							</span>
-						</label>
+							<Menu
+								anchorEl={sortAnchor}
+								open={Boolean(sortAnchor)}
+								onClose={() => setSortAnchor(null)}
+								anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+								PaperProps={{ className: 'sx-hosts-sort-menu' }}
+								disableScrollLock
+							>
+								{sortOptions.map((option) => (
+									<MenuItem
+										key={option.value}
+										selected={option.value === sortKey}
+										onClick={() => {
+											setSortAnchor(null);
+											sortChangeHandler(option.value);
+										}}
+									>
+										{option.label}
+									</MenuItem>
+								))}
+							</Menu>
+						</div>
 					</div>
 					<div className={'sx-hosts-chips'}>
 						<button type="button" className={'is-active'} aria-pressed={true}>
 							All Hosts ({total})
 						</button>
 					</div>
-				</div>
-
-				<div className={'sx-hosts-count'}>
-					<i aria-hidden="true" />
-					<strong>
-						Showing {total} verified Kostay {total === 1 ? 'host' : 'hosts'}
-					</strong>
-					<span>across Korea</span>
 				</div>
 
 				{getAgentsLoading && agents.length === 0 ? (
@@ -242,10 +292,10 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 							<RoofingIcon aria-hidden="true" />
 							Open Your Doors with Kostay
 						</span>
-						<h2>Have a hanok, villa, or coastal retreat to share?</h2>
+						<h2>Have an apartment, a villa or a hanok to share?</h2>
 						<p>
-							Join {total} verified {total === 1 ? 'host' : 'hosts'} across Korea. Earn steady income while introducing global
-							travelers to genuine Korean hospitality, design, and serenity.
+							Join {total} {total === 1 ? 'Host' : 'Hosts'} across Korea. List your stay, set your nightly price and manage every
+							booking and payout from My Page.
 						</p>
 					</div>
 					<div className={'sx-hosts-cta-actions'}>
@@ -253,7 +303,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 							Become a Host
 							<EastIcon aria-hidden="true" />
 						</Link>
-						<Link href={'/account/join'} className={'is-ghost'}>
+						<Link href={'/about#how-it-works'} className={'is-ghost'}>
 							How Hosting Works
 						</Link>
 					</div>
@@ -266,21 +316,21 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 const trustItems = [
 	{
 		icon: <VerifiedUserOutlinedIcon />,
-		title: 'Identity & Property Vetting',
+		title: 'Reviewed Hosts & Stays',
 		text:
-			'Every host undergoes on-site architectural verification and legal registration compliance under Korean accommodation standards.',
+			'Every stay is reviewed by the Kostay team and only active listings appear in search.',
 	},
 	{
 		icon: <TranslateIcon />,
-		title: 'Multilingual Hospitality',
+		title: 'Direct Host Messaging',
 		text:
-			'Direct host messaging with built-in instant English-Korean translation and round-the-clock Kostay concierge backup.',
+			'Message any host from their stay page, and reach the Kostay team anytime through the Help Center.',
 	},
 	{
 		icon: <SecurityIcon />,
-		title: 'Host Peace of Mind',
+		title: 'Clear Bookings & Payouts',
 		text:
-			'Up to ₩1,000,000,000 property protection and guaranteed direct payouts secured by Korean tier-1 banking escrow.',
+			'Every booking and payment is recorded securely, and hosts track their earnings in one place.',
 	},
 ];
 

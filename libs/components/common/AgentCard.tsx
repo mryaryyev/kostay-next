@@ -32,19 +32,14 @@ const AgentCard = (props: AgentCardProps) => {
 	return (
 		<article className="sx-host">
 			<div>
-				<div className="sx-host-top">
-					{isSuperhost ? (
+				{isSuperhost && (
+					<div className="sx-host-top">
 						<span className="sx-host-tag is-super">
 							<WorkspacePremiumOutlinedIcon aria-hidden="true" />
 							Superhost
 						</span>
-					) : (
-						<span className="sx-host-tag">Verified Host</span>
-					)}
-					<span className="sx-host-count">
-						{properties} {properties === 1 ? 'Property' : 'Properties'}
-					</span>
-				</div>
+					</div>
+				)}
 
 				<div className="sx-host-who">
 					<Link href={detailHref} className="sx-host-avatar" aria-label={`View ${agent?.memberNick}`}>
@@ -58,9 +53,14 @@ const AgentCard = (props: AgentCardProps) => {
 						</span>
 					</Link>
 					<div>
-						<h3>
-							<Link href={detailHref}>{agent?.memberFullName || agent?.memberNick}</Link>
-						</h3>
+						<div className="sx-host-name-row">
+							<h3>
+								<Link href={detailHref}>{agent?.memberFullName || agent?.memberNick}</Link>
+							</h3>
+							<span className="sx-host-count">
+								{properties} {properties === 1 ? 'Stay' : 'Stays'}
+							</span>
+						</div>
 						{agent?.memberAddress && (
 							<span className="sx-host-place">
 								<PlaceOutlinedIcon aria-hidden="true" />

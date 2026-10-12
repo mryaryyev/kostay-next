@@ -349,7 +349,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 			<div id={'property-detail-page'}>
 				<Stack className="property-unavailable" role="alert">
 					<Typography>This stay could not be loaded. It may no longer be available.</Typography>
-					<Link href="/property">Back to stays</Link>
+					<Link href="/stay">Back to stays</Link>
 				</Stack>
 			</div>
 		);
@@ -363,6 +363,11 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const hostImage = host?.memberImage ? `${REACT_APP_API_URL}/${host.memberImage}` : '/img/profile/defaultUser.svg';
 	const typeLabel = toLabel(property?.propertyType ?? '');
 	const locationLabel = toLabel(property?.propertyLocation ?? '');
+	// Stays have no coordinates yet, so the map searches by address (neighbourhood zoom keeps the exact home private).
+	const mapQuery = [property?.propertyAddress || locationLabel, 'South Korea']
+		.filter((part, index, parts) => part && (index === 0 || !parts[0]?.includes(part)))
+		.join(', ');
+	const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&hl=en&z=13&output=embed`;
 	const listedDays = moment().diff(property?.createdAt, 'days');
 	const facts = [
 		{ icon: <BedOutlinedIcon />, label: 'Bedrooms', value: property?.propertyBeds },
@@ -379,7 +384,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 					<nav className="sx-detail-crumbs" aria-label="Breadcrumb">
 						<Link href="/">Home</Link>
 						<ChevronRightIcon aria-hidden="true" />
-						<Link href="/property">Stays</Link>
+						<Link href="/stay">Stays</Link>
 						<ChevronRightIcon aria-hidden="true" />
 						<span aria-current="page">{property?.propertyTitle}</span>
 					</nav>
@@ -465,9 +470,9 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 								{[property?.propertyAddress, locationLabel].filter(Boolean).join(', ')}
 							</p>
 							<div className="sx-map">
-								{/* TODO: backend — map is static until stays have coordinates */}
 								<iframe
-									src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25867.098915951767!2d128.68632810247993!3d35.86402299180927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x35660bba427bf179%3A0x1fc02da732b9072f!2sGeumhogangbyeon-ro%2C%20Dong-gu%2C%20Daegu!5e0!3m2!1suz!2skr!4v1695537640704!5m2!1suz!2skr"
+									key={mapSrc}
+									src={mapSrc}
 									width="100%"
 									height="100%"
 									style={{ border: 0 }}

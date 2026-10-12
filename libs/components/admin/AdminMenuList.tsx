@@ -51,8 +51,8 @@ const AdminMenuList = (props: any) => {
 			case undefined:
 				setClickMenu(['Dashboard']);
 				break;
-			case 'properties':
-				setClickMenu(['Properties']);
+			case 'stays':
+				setClickMenu(['Stays']);
 				break;
 			case 'bookings':
 				setClickMenu(['Bookings']);
@@ -116,9 +116,9 @@ const AdminMenuList = (props: any) => {
 			on_click: () => subMenuChangeHandler('Users'),
 		},
 		{
-			title: 'Properties',
+			title: 'Stays',
 			icon: <UserCircleGear size={20} color="#bdbdbd" weight="fill" />,
-			on_click: () => subMenuChangeHandler('Properties'),
+			on_click: () => subMenuChangeHandler('Stays'),
 		},
 		{
 			title: 'Bookings',
@@ -140,7 +140,7 @@ const AdminMenuList = (props: any) => {
 	const sub_menu_set: any = {
 		Dashboard: [{ title: 'Overview', url: '/_admin' }],
 		Users: [{ title: 'List', url: '/_admin/users' }],
-		Properties: [{ title: 'List', url: '/_admin/properties' }],
+		Stays: [{ title: 'List', url: '/_admin/stays' }],
 		Bookings: [{ title: 'List', url: '/_admin/bookings' }],
 		Community: [{ title: 'List', url: '/_admin/community' }],
 		Cs: [

@@ -157,7 +157,10 @@ export const updateUserInfo = (jwtToken: any) => {
 export const logOut = () => {
 	deleteStorage(); // LocalStorage.accessToken > BACKEND
 	deleteUserInfo(); // ReactiveVariable > FRONTEND
-	window.location.reload();
+	// Public pages reload in place as a guest; member-only pages would be empty, so send those home.
+	const privatePaths = ['/mypage', '/_admin', '/booking'];
+	if (privatePaths.some((path) => window.location.pathname.startsWith(path))) window.location.href = '/';
+	else window.location.reload();
 };
 
 const deleteStorage = () => {

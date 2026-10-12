@@ -1,4 +1,4 @@
-// Help Center (/cs): Kostay palette, same as the Stays / My Page screens.
+// Help Center (/help): Kostay palette, same as the Stays / My Page screens.
 $cs-navy: #031636;
 $cs-navy-soft: #1a2b4c;
 $cs-cta: #aa3614;
@@ -30,12 +30,12 @@ $cs-shadow-md: 0 4px 20px rgba(26, 43, 76, 0.06);
 	.sx-cs-hero-bg {
 		position: absolute;
 		inset: 0;
-		background: url('/img/banner/cities/JEJU.webp') center / cover no-repeat;
+		background: url('/img/banner/hero/help.jpg') center / cover no-repeat;
 		&::after {
 			content: '';
 			position: absolute;
 			inset: 0;
-			background: linear-gradient(to top, rgba(3, 22, 54, 0.95), rgba(3, 22, 54, 0.75), rgba(3, 22, 54, 0.45));
+			background: linear-gradient(to top, rgba(3, 22, 54, 0.78), rgba(3, 22, 54, 0.35) 55%, rgba(3, 22, 54, 0.1));
 		}
 	}
 	.container {
@@ -44,29 +44,6 @@ $cs-shadow-md: 0 4px 20px rgba(26, 43, 76, 0.06);
 		flex-direction: column;
 		gap: 12px;
 		padding-bottom: 48px;
-	}
-	.sx-cs-crumbs {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		color: #cbd5e1;
-		font-size: 12px;
-		font-weight: 600;
-		a {
-			color: inherit;
-			text-decoration: none;
-			&:hover {
-				color: #fff;
-			}
-		}
-		svg {
-			width: 14px;
-			height: 14px;
-			color: #94a3b8;
-		}
-		span {
-			color: #fff;
-		}
 	}
 	h1 {
 		margin: 0;

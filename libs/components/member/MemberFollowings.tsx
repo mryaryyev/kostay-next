@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { Box, Button, Pagination, Stack, Typography } from '@mui/material';
+import { Pagination } from '@mui/material';
 import { useRouter } from 'next/router';
 import { FollowInquiry } from '../../types/follow/follow.input';
 import { useQuery, useReactiveVar } from '@apollo/client';
@@ -9,7 +9,10 @@ import type { T } from '../../types/common';
 import { REACT_APP_API_URL } from '../../config';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import PersonIcon from '@mui/icons-material/Person';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import { userVar } from '../../../apollo/store';
+import { scrollToListTop } from '../../utils';
 
 interface MemberFollowingsProps {
 	initialInput: FollowInquiry;
@@ -23,7 +26,6 @@ const MemberFollowings = (props: MemberFollowingsProps) => {
 	const { initialInput, subscribeHandler, unsubscribeHandler, likeMemberHandler, redirectToMemberPageHandler } = props;
 	const router = useRouter();
 	const [total, setTotal] = useState<number>(0);
-	const category: any = router.query?.category ?? 'properties';
 	const [followInquiry, setFollowInquiry] = useState<FollowInquiry>(initialInput);
 	const [memberFollowings, setMemberFollowings] = useState<Following[]>([]);
 	const user = useReactiveVar(userVar);
@@ -61,107 +63,99 @@ const MemberFollowings = (props: MemberFollowingsProps) => {
 	const paginationHandler = async (event: ChangeEvent<unknown>, value: number) => {
 		followInquiry.page = value;
 		setFollowInquiry({ ...followInquiry });
+		scrollToListTop('.main-config');
 	};
 
 	return (
 		<div id="member-follows-page">
-			<Stack className="main-title-box">
-				<Stack className="right-box">
-					<Typography className="main-title">{category === 'followers' ? 'Followers' : 'Followings'}</Typography>
-				</Stack>
-			</Stack>
-			<Stack className="follows-list-box">
-				<Stack className="listing-title-box">
-					<Typography className="title-text">Name</Typography>
-					<Typography className="title-text">Details</Typography>
-					<Typography className="title-text">Subscription</Typography>
-				</Stack>
-				{memberFollowings?.length === 0 && (
-					<div className={'no-data'}>
-						<img src="/img/icons/icoAlert.svg" alt="" />
-						<p>No Followings yet!</p>
-					</div>
-				)}
-				{memberFollowings.map((follower: Following) => {
-					const imagePath: string = follower?.followingData?.memberImage
-						? `${REACT_APP_API_URL}/${follower?.followingData?.memberImage}`
-						: '/img/profile/defaultUser.svg';
-					return (
-						<Stack className="follows-card-box" key={follower._id}>
-							<Stack className={'info'} onClick={() => redirectToMemberPageHandler(follower?.followingData?._id)}>
-								<Stack className="image-box">
-									<img src={imagePath} alt="" />
-								</Stack>
-								<Stack className="information-box">
-									<Typography className="name">{follower?.followingData?.memberNick}</Typography>
-								</Stack>
-							</Stack>
-							<Stack className={'details-box'}>
-								<Box className={'info-box'} component={'div'}>
-									<p>Followers</p>
-									<span>({follower?.followingData?.memberFollowers})</span>
-								</Box>
-								<Box className={'info-box'} component={'div'}>
-									<p>Followings</p>
-									<span>({follower?.followingData?.memberFollowings})</span>
-								</Box>
-								<Box className={'info-box'} component={'div'}>
-									{follower?.meLiked && follower?.meLiked[0]?.myFavorite ? (
-										<FavoriteIcon
-											color="primary"
-											onClick={() => likeMemberHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)}
-										/>
+			<div className="sx-follows-head">
+				<h3>Following</h3>
+				<span>{total ?? 0} {(total ?? 0) === 1 ? 'person' : 'people'}</span>
+			</div>
+			{memberFollowings?.length === 0 ? (
+				<div className="sx-follows-empty">
+					<GroupOutlinedIcon aria-hidden="true" />
+					<p>Not following anyone yet.</p>
+				</div>
+			) : (
+				<ul className="sx-follows-list">
+					{memberFollowings.map((follow: Following) => {
+						const person = follow?.followingData;
+						const isMe = user?._id === follow?.followingId;
+						const isLiked = Boolean(follow?.meLiked?.[0]?.myFavorite);
+						const isFollowing = Boolean(follow?.meFollowed?.[0]?.myFollowing);
+						return (
+							<li className="sx-follow-row" key={follow._id}>
+								<button
+									type="button"
+									className="sx-follow-person"
+									onClick={() => redirectToMemberPageHandler(person?._id)}
+								>
+									<span className="sx-follow-avatar">
+										{person?.memberImage ? (
+											<img src={`${REACT_APP_API_URL}/${person.memberImage}`} alt="" />
+										) : (
+											<PersonIcon aria-hidden="true" />
+										)}
+									</span>
+									<span className="sx-follow-name">
+										<strong>{person?.memberNick}</strong>
+										<small>{person?.memberType === 'AGENT' ? 'Host' : 'Guest'}</small>
+									</span>
+								</button>
+								<div className="sx-follow-stats">
+									<span>
+										<b>{person?.memberFollowers ?? 0}</b> {person?.memberFollowers === 1 ? 'follower' : 'followers'}
+									</span>
+									<span>
+										<b>{person?.memberFollowings ?? 0}</b> following
+									</span>
+									<button
+										type="button"
+										className={`sx-follow-like${isLiked ? ' is-on' : ''}`}
+										aria-pressed={isLiked}
+										aria-label={isLiked ? 'Unlike' : 'Like'}
+										onClick={() => likeMemberHandler(person?._id, getMemberFollowingsRefetch, followInquiry)}
+									>
+										{isLiked ? <FavoriteIcon aria-hidden="true" /> : <FavoriteBorderIcon aria-hidden="true" />}
+										<b>{person?.memberLikes ?? 0}</b>
+									</button>
+								</div>
+								<div className="sx-follow-action">
+									{isMe ? (
+										<span className="sx-follow-you">You</span>
+									) : isFollowing ? (
+										<button
+											type="button"
+											className="sx-follow-btn is-following"
+											onClick={() => unsubscribeHandler(person?._id, getMemberFollowingsRefetch, followInquiry)}
+										>
+											<span className="sx-follow-label">Following</span>
+											<span className="sx-follow-hover">Unfollow</span>
+										</button>
 									) : (
-										<FavoriteBorderIcon
-											onClick={() => likeMemberHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)}
-										/>
-									)}
-									<span>({follower?.followingData?.memberLikes})</span>
-								</Box>
-							</Stack>
-							{user?._id !== follower?.followingId && (
-								<Stack className="action-box">
-									{follower.meFollowed && follower.meFollowed[0]?.myFollowing ? (
-										<>
-											<Typography>Following</Typography>
-											<Button
-												variant="outlined"
-												sx={{ background: '#f78181', ':hover': { background: '#f06363' } }}
-												onClick={() => unsubscribeHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)}
-											>
-												Unfollow
-											</Button>
-										</>
-									) : (
-										<Button
-											variant="contained"
-											sx={{ background: '#60eb60d4', ':hover': { background: '#60eb60d4' } }}
-											onClick={() => subscribeHandler(follower?.followingData?._id, getMemberFollowingsRefetch, followInquiry)}
+										<button
+											type="button"
+											className="sx-follow-btn"
+											onClick={() => subscribeHandler(person?._id, getMemberFollowingsRefetch, followInquiry)}
 										>
 											Follow
-										</Button>
+										</button>
 									)}
-								</Stack>
-							)}
-						</Stack>
-					);
-				})}
-			</Stack>
-			{memberFollowings.length !== 0 && (
-				<Stack className="pagination-config">
-					<Stack className="pagination-box">
-						<Pagination
-							page={followInquiry.page}
-							count={Math.ceil(total / followInquiry.limit)}
-							onChange={paginationHandler}
-							shape="circular"
-							color="primary"
-						/>
-					</Stack>
-					<Stack className="total-result">
-						<Typography>{total} followings</Typography>
-					</Stack>
-				</Stack>
+								</div>
+							</li>
+						);
+					})}
+				</ul>
+			)}
+			{total > followInquiry.limit && (
+				<Pagination
+					className="sx-follows-pagination"
+					page={followInquiry.page}
+					count={Math.ceil(total / followInquiry.limit)}
+					onChange={paginationHandler}
+					shape="circular"
+				/>
 			)}
 		</div>
 	);

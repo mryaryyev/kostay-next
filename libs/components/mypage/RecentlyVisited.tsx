@@ -6,6 +6,7 @@ import { Property } from '../../types/property/property';
 import { T } from '../../types/common';
 import { useQuery } from '@apollo/client';
 import { GET_VISITED } from '../../../apollo/user/query';
+import { scrollToListTop } from '../../utils';
 
 const RecentlyVisited: NextPage = () => {
 	const [recentlyVisited, setRecentlyVisited] = useState<Property[]>([]);
@@ -32,6 +33,7 @@ const RecentlyVisited: NextPage = () => {
 	/** HANDLERS **/
 	const paginationHandler = (e: T, value: number) => {
 		setSearchVisited({ ...searchVisited, page: value });
+		scrollToListTop('#my-page .main-config');
 	};
 
 	return (

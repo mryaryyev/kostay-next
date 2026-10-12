@@ -43,7 +43,7 @@ const BookingCard = ({ booking, view, actions }: BookingCardProps) => {
 
 	return (
 		<article className="sx-booking-card">
-			<Link href={{ pathname: '/property/detail', query: { id: booking.propertyId } }} className="sx-booking-photo">
+			<Link href={{ pathname: '/stay/detail', query: { id: booking.propertyId } }} className="sx-booking-photo">
 				<img
 					src={stay?.propertyImage ? `${REACT_APP_API_URL}/${stay.propertyImage}` : '/img/property/bigImage.png'}
 					alt=""
@@ -56,7 +56,7 @@ const BookingCard = ({ booking, view, actions }: BookingCardProps) => {
 					{paid && <span className="sx-status is-paid">Paid</span>}
 					{refunded && <span className="sx-status is-refunded">Refunded</span>}
 				</div>
-				<Link href={{ pathname: '/property/detail', query: { id: booking.propertyId } }} className="sx-booking-title">
+				<Link href={{ pathname: '/stay/detail', query: { id: booking.propertyId } }} className="sx-booking-title">
 					{stay?.propertyTitle ?? 'Stay no longer available'}
 				</Link>
 				{stay && (

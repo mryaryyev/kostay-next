@@ -31,8 +31,6 @@
 
 @import '/scss/pages/member/memberPage.scss';
 @import '/scss/pages/member/memberFollows.scss';
-@import '/scss/pages/member/memberArticles.scss';
-@import '/scss/pages/member/memberProperties.scss';
 
 body {
 	-ms-overflow-style: none; /* for Internet Explorer, Edge */
@@ -1642,3 +1640,73 @@ body::-webkit-scrollbar {
 	}
 }
 @import '/scss/pages/responsive.scss';
+
+/* ---------- Header user menu (MUI Menu renders in a portal) ---------- */
+.MuiPaper-root.sx-user-menu {
+	min-width: 240px;
+	margin-top: 10px;
+	border: 1px solid rgba(197, 198, 207, 0.45);
+	border-radius: 16px;
+	box-shadow: 0 16px 40px rgba(3, 22, 54, 0.14);
+	.MuiList-root {
+		padding: 8px;
+	}
+	.sx-user-menu-head {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 6px;
+		padding: 8px 10px 14px;
+		border-bottom: 1px solid rgba(197, 198, 207, 0.45);
+		img {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			object-fit: cover;
+		}
+		div {
+			display: flex;
+			flex-direction: column;
+			min-width: 0;
+		}
+		strong {
+			overflow: hidden;
+			color: #031636;
+			font-family: $font-display;
+			font-size: 15px;
+			line-height: 20px;
+			font-weight: 700;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		span {
+			color: #75777f;
+			font-size: 13px;
+			line-height: 18px;
+		}
+	}
+	.sx-user-menu-item {
+		gap: 12px;
+		min-height: 40px;
+		padding: 8px 10px;
+		border-radius: 10px;
+		color: #031636;
+		font-size: 14px;
+		font-weight: 600;
+		svg {
+			color: #75777f;
+		}
+		&:hover {
+			background: #f4f3f1;
+		}
+		&.is-logout {
+			color: #e11d48;
+			svg {
+				color: #e11d48;
+			}
+			&:hover {
+				background: #fff1f2;
+			}
+		}
+	}
+}

@@ -44,7 +44,7 @@ const CS: NextPage = () => {
 
 	/** HANDLERS **/
 	const changeTabHandler = (value: string) => {
-		router.push({ pathname: '/cs', query: { tab: value } }, undefined, { scroll: false });
+		router.push({ pathname: '/help', query: { tab: value } }, undefined, { scroll: false });
 	};
 
 	return (
@@ -111,7 +111,7 @@ const CS: NextPage = () => {
 									<small>Dates, payments and cancellations</small>
 								</span>
 							</Link>
-							<Link href="/property">
+							<Link href="/stay">
 								<HomeWorkOutlinedIcon aria-hidden="true" />
 								<span>
 									<strong>Message a host</strong>

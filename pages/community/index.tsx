@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import CommunityCard, { boardLabels } from '../../libs/components/common/CommunityCard';
+import CommunityCard, { boardLabels, boardMeta } from '../../libs/components/common/CommunityCard';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import SearchIcon from '@mui/icons-material/Search';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -21,6 +22,7 @@ import { GET_BOARD_ARTICLES } from '../../apollo/user/query';
 import { Messages } from '../../libs/config';
 import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
 import { LIKE_TARGET_BOARD_ARTICLE } from '../../apollo/user/mutation';
+import { scrollToListTop } from '../../libs/utils';
 
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
@@ -97,7 +99,22 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 		}
 	}, [query?.articleCategory]);
 
+	// Live search: run ~400ms after typing stops; an empty box brings the full board back.
+	useEffect(() => {
+		const timer = setTimeout(() => applySearch(searchText), 400);
+		return () => clearTimeout(timer);
+	}, [searchText]);
+
 	/** HANDLERS **/
+	const applySearch = (value: string) => {
+		const text = value.trim();
+		setSearchCommunity((prev) => {
+			if ((prev.search.text ?? '') === text) return prev;
+			const { text: _old, ...rest } = prev.search;
+			return { ...prev, page: 1, search: text ? { ...rest, text } : rest };
+		});
+	};
+
 	const tabChangeHandler = async (e: T, value: string) => {
 		setSearchText('');
 		setSearchCommunity({ ...searchCommunity, page: 1, search: { articleCategory: value as BoardArticleCategory } });
@@ -113,6 +130,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 
 	const paginationHandler = (e: T, value: number) => {
 		setSearchCommunity({ ...searchCommunity, page: value });
+		scrollToListTop('.sx-community-main');
 	};
 
 	const likeArticleHandler = async (e: any, user: any, id: string) => {
@@ -141,7 +159,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 		// Writing needs an account; tell logged-out visitors why instead of a silent bounce from /mypage.
 		if (!user?._id) {
 			await sweetMixinErrorAlert(Messages.error2, 2000);
-			await router.push('/');
+			await router.push('/account/join');
 			return;
 		}
 		await router.push({ pathname: '/mypage', query: { category: 'writeArticle' } });
@@ -205,15 +223,20 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 									value={searchText}
 									onChange={(e) => setSearchText(e.target.value)}
 									onKeyDown={(event) => {
-										if (event.key === 'Enter') {
-											setSearchCommunity({
-												...searchCommunity,
-												page: 1,
-												search: { ...searchCommunity.search, text: searchText },
-											});
-										}
+										if (event.key === 'Enter') applySearch(searchText);
+										if (event.key === 'Escape') setSearchText('');
 									}}
 								/>
+								{searchText && (
+									<button
+										type="button"
+										className="sx-search-clear"
+										aria-label="Clear search"
+										onClick={() => setSearchText('')}
+									>
+										<CloseRoundedIcon />
+									</button>
+								)}
 							</label>
 							<button type="button" className="sx-write" onClick={goWrite}>
 								<EditNoteIcon aria-hidden="true" />
@@ -240,7 +263,11 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 					) : (
 						<div className={'no-data'}>
 							<img src="/img/icons/icoAlert.svg" alt="" />
-							<p>No Article found!</p>
+							<p>
+								{searchCommunity.search.text
+									? `No articles match "${searchCommunity.search.text}".`
+									: 'No articles on this board yet.'}
+							</p>
 						</div>
 					)}
 
@@ -290,7 +317,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 							</span>
 							<div>
 								<h3>Have a memorable moment from your Korean stay?</h3>
-								<p>Whether an unexpected Hanok discovery or a subway turnstile mystery, fellow travelers want to hear it.</p>
+								<p>Whether a hidden neighborhood cafe or a subway turnstile mystery, fellow travelers want to hear it.</p>
 							</div>
 						</div>
 						<button type="button" onClick={goWrite}>
@@ -301,30 +328,6 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 			</div>
 		</div>
 	);
-};
-
-const boardMeta: Record<string, { title: string; description: string; placeholder: string }> = {
-	FREE: {
-		title: 'FREE BOARD',
-		description: 'Talk about anything from your stay — questions, stories and everyday moments across Korea.',
-		placeholder: 'Search the free board...',
-	},
-	RECOMMEND: {
-		title: 'RECOMMENDATION',
-		description: 'Favourite stays, neighbourhoods, cafés and day trips recommended by fellow travelers.',
-		placeholder: 'Search recommendations...',
-	},
-	NEWS: {
-		title: 'NEWS & GUIDES',
-		description: 'Seasonal guides, local events and practical news for staying in Korea.',
-		placeholder: 'Search news and guides...',
-	},
-	HUMOR: {
-		title: 'HUMOR BOARD',
-		description:
-			'Express your opinions freely here without content restrictions. Funny travel moments, ondol fails & delightful memes.',
-		placeholder: 'Search funny stories...',
-	},
 };
 
 Community.defaultProps = {
