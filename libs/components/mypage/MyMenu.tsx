@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { GET_UNREAD_NOTIFICATION_COUNT } from '../../../apollo/user/query';
+import { GET_BOARD_ARTICLES, GET_UNREAD_NOTIFICATION_COUNT } from '../../../apollo/user/query';
 import { userVar } from '../../../apollo/store';
 import { logOut } from '../../auth';
 import { sweetConfirmAlert } from '../../sweetAlert';
@@ -12,8 +12,6 @@ import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlin
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import HistoryIcon from '@mui/icons-material/History';
-import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
-import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
@@ -39,6 +37,20 @@ const MyMenu = () => {
 		skip: !user?._id,
 	});
 	const unreadCount: number = unreadData?.getUnreadNotificationCount ?? 0;
+	// The JWT's memberArticles is frozen at login, so count the live (ACTIVE) articles instead.
+	const { data: myArticlesData, refetch: refetchMyArticles } = useQuery(GET_BOARD_ARTICLES, {
+		fetchPolicy: 'network-only',
+		skip: !user?._id,
+		variables: { input: { page: 1, limit: 1, search: { memberId: user?._id } } },
+	});
+	// No articles → metaCounter is []; once loaded, that means 0 (not the stale JWT value).
+	const myArticlesCount: number = myArticlesData
+		? myArticlesData.getBoardArticles?.metaCounter?.[0]?.total ?? 0
+		: user.memberArticles ?? 0;
+
+	useEffect(() => {
+		if (user?._id) refetchMyArticles().then();
+	}, [category]);
 	const isHost = user.memberType === 'AGENT';
 
 	/** HANDLERS **/
@@ -84,7 +96,7 @@ const MyMenu = () => {
 					label: 'My Articles',
 					icon: <ArticleOutlinedIcon />,
 					category: 'myArticles',
-					badge: user.memberArticles || undefined,
+					badge: myArticlesCount || undefined,
 				},
 				{ label: 'Write Article', icon: <EditOutlinedIcon />, category: 'writeArticle' },
 				{ label: 'Followers', icon: <PersonAddAltOutlinedIcon />, category: 'followers' },
@@ -103,8 +115,6 @@ const MyMenu = () => {
 					badgeClass: 'is-alert',
 				},
 				// TODO: backend — wallet and password/security pages
-				{ label: 'Payments & Wallet', icon: <AccountBalanceWalletOutlinedIcon /> },
-				{ label: 'Security', icon: <ShieldOutlinedIcon /> },
 			],
 		},
 	];

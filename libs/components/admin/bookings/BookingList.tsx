@@ -68,7 +68,7 @@ export const BookingList = ({ bookings, cancelHandler }: BookingListProps) => {
 							return (
 								<TableRow hover key={booking.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
 									<TableCell align="left" sx={{ maxWidth: 220 }}>
-										<Link href={{ pathname: '/property/detail', query: { id: booking.propertyId } }} target={'_blank'}>
+										<Link href={{ pathname: '/stay/detail', query: { id: booking.propertyId } }} target={'_blank'}>
 											<Typography variant={'body2'} sx={{ fontWeight: 600 }}>
 												{booking.propertyData?.propertyTitle ?? 'Removed stay'}
 											</Typography>

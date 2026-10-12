@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { PropertyLocation, PropertyType } from '../../enums/property.enum';
 import { PropertiesInquiry } from '../../types/property/property.input';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
-import { propertySquare } from '../../config';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
@@ -108,12 +107,6 @@ const Filter = (props: FilterType) => {
 		return updateSearch({ ...searchFilter.search, bedsList });
 	};
 
-	const propertySquareHandler = (e: { target: { value: unknown } }, type: 'start' | 'end') =>
-		updateSearch({
-			...searchFilter.search,
-			squaresRange: { start: 0, end: 500, ...searchFilter.search.squaresRange, [type]: Number(e.target.value) },
-		});
-
 	const propertyPriceHandler = (value: string, type: 'start' | 'end') =>
 		setPriceRange((current) => ({ ...current, [type]: value }));
 
@@ -179,7 +172,6 @@ const Filter = (props: FilterType) => {
 		search.typeList?.length,
 		search.roomsList?.length,
 		search.bedsList?.length,
-		search.squaresRange,
 		search.checkIn && search.checkOut,
 		search.guestsCount,
 		search.pricesRange,
@@ -413,35 +405,9 @@ const Filter = (props: FilterType) => {
 			</div>
 
 			<div className={'sx-filter-block'}>
-				<span className={'sx-filter-label'}>Rooms &amp; space</span>
+				<span className={'sx-filter-label'}>Rooms &amp; bedrooms</span>
 				{renderSegment('Rooms', search.roomsList as number[] | undefined, propertyRoomSelectHandler)}
 				{renderSegment('Bedrooms', search.bedsList as number[] | undefined, propertyBedSelectHandler)}
-				<div className={'sx-filter-sub'}>
-					<span className={'sx-filter-sublabel'}>Size (m²)</span>
-					<div className={'sx-range'}>
-						<label className={'sx-field'}>
-							<small>Min</small>
-							<select value={search.squaresRange?.start ?? 0} onChange={(e) => propertySquareHandler(e, 'start')}>
-								{propertySquare.map((square: number) => (
-									<option value={square} disabled={(search.squaresRange?.end || 0) < square} key={square}>
-										{square} m²
-									</option>
-								))}
-							</select>
-						</label>
-						<span className={'sx-range-dash'}>—</span>
-						<label className={'sx-field'}>
-							<small>Max</small>
-							<select value={search.squaresRange?.end ?? 500} onChange={(e) => propertySquareHandler(e, 'end')}>
-								{propertySquare.map((square: number) => (
-									<option value={square} disabled={(search.squaresRange?.start || 0) > square} key={square}>
-										{square} m²
-									</option>
-								))}
-							</select>
-						</label>
-					</div>
-				</div>
 			</div>
 		</aside>
 	);

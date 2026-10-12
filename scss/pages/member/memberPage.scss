@@ -1,201 +1,166 @@
-#site-wrap {
-	#member-page {
-		background: #f6f6f6;
-		.container {
-			.member-page {
-				position: relative;
+// Public profile (/member). Uses the $mp-* tokens from mypage.scss and the shared
+// .sx-identity / .sx-menu (mypage), .sx-stay (property) and .sx-post (community) styles.
+
+#site-wrap div#member-page {
+	min-height: 70vh;
+	padding: 120px 0 112px; // clears the fixed navbar
+	background: $mp-canvas;
+	&,
+	* {
+		font-family: $font-display;
+	}
+	@include tablet {
+		padding: 88px 0 64px;
+	}
+
+	.sx-member-page {
+		width: 100%;
+		min-width: 0; // flex child of .container: let the scrolling menu shrink instead of widening the page
+		flex-direction: column;
+		gap: 28px;
+		@include tablet {
+			gap: 20px;
+		}
+	}
+
+	.back-frame {
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 28px;
+		@include tablet {
+			flex-direction: column;
+			gap: 20px;
+		}
+		.left-config {
+			position: sticky;
+			top: 104px;
+			max-height: calc(100vh - 128px);
+			overflow-y: auto;
+			scrollbar-width: thin;
+			width: 300px;
+			flex-shrink: 0;
+			border: 1px solid $mp-line;
+			border-radius: 20px;
+			background: $mp-surface;
+			box-shadow: $mp-shadow-md;
+			@include tablet {
+				position: static;
 				width: 100%;
-				flex-direction: row;
-				gap: 25px;
-				padding-top: 96px;
-				.back-frame {
-					width: 1260px;
-					height: auto;
-					display: flex;
-					flex-direction: row;
-					margin: 100px 0 200px 0;
-					border-radius: 12px;
-					border: 1px solid #c4c4c4;
-					background: #fff;
-					box-shadow: 0px 1px 4px 0px rgba(24, 26, 32, 0.07);
-					.left-config {
-						position: relative;
-						padding: 0 0 0 0;
-						width: 266px;
-						height: 700px;
-						border-radius: 12px;
-						background: #fff;
-						border: 1px solid rgba(196, 196, 196, 0.79);
-						box-shadow: 0px 1px 4px 0px rgba(24, 26, 32, 0.07);
-						margin: 180px 20px 40px 20px;
-						.profile {
-							margin-top: 5px;
-							position: relative;
-							display: flex;
-							flex-direction: row;
-							.profile-img {
-								img {
-									width: 79px;
-									height: 79px;
-									border-radius: 50%;
-									right: 30px;
-									bottom: 12px;
-									object-fit: cover;
-								}
-							}
-							.user-info {
-								margin-left: 20px;
-								display: flex;
-								flex-direction: column;
-								.user-name {
-									color: #181a20;
-									font-family: $font;
-									font-size: 15px;
-									font-style: normal;
-									font-weight: 600;
-									line-height: normal;
-								}
-								.user-phone {
-									display: flex;
-									flex-direction: row;
-									margin-top: 5px;
-									img {
-										margin-top: 3px;
-										margin-right: 4px;
-										width: 16px;
-										height: 16px;
-									}
-								}
-								.view-list {
-									margin-top: 5px;
-									font-weight: 300;
-									color: rgb(187, 187, 187);
-								}
-							}
-						}
-						.follow-button-box {
-							height: 35px;
-							flex-direction: row;
-							gap: 10px;
-							align-items: center;
-							margin-top: 15px;
-							button {
-								border: 1px solid #b9b9b9;
-								color: #181a20;
-								font-family: $font;
-								font-size: 14px;
-								font-style: normal;
-								font-weight: 400;
-								line-height: normal;
-							}
-							p {
-								color: #b9b9b9;
-								font-family: $font;
-								font-size: 14px;
-								font-style: italic;
-								font-weight: 400;
-								line-height: normal;
-							}
-						}
-						.sections {
-							height: auto;
-							margin-top: 30px;
-							.section {
-								height: auto;
-								.title {
-									font-family: $font;
-									font-size: 15px;
-									font-style: normal;
-									font-weight: 400;
-									line-height: 28px;
-								}
-								.sub-section {
-									width: 230px;
-									height: auto;
-									display: flex;
-									flex-direction: column;
-									align-items: center;
-									cursor: pointer;
-									padding: 0 5px 0 5px;
-									li {
-										height: 33px;
-										margin-bottom: 6px;
-										border-radius: 4px;
-									}
-									.focus {
-										height: 50px;
-										background: #000000;
-										border-radius: 10px;
-										p {
-											font-size: 14px;
-											color: #ffffff;
-										}
-									}
-									.flex-box {
-										width: 100%;
-										display: flex;
-										flex-direction: row;
-										align-items: center;
-										.com-icon {
-											display: flex;
-											flex-direction: row;
-											justify-content: flex-end;
-											margin-left: 11px;
-										}
-										p {
-											width: 40%;
-											font-size: 14px;
-										}
-									}
-								}
-								img {
-									width: 16px;
-									height: 16px;
-								}
-								svg {
-									width: 16px;
-									height: 16px;
-								}
-								.sub-title {
-									margin-left: 12px;
-									color: #181a20;
-									font-family: $font;
-									font-size: 14px;
-									font-style: normal;
-									font-weight: 600;
-									line-height: 55px;
-								}
-								.count-title {
-									display: flex;
-									justify-content: flex-end;
-									padding-right: 10px;
-									color: #181a20;
-									font-family: $font;
-									font-size: 14px;
-									font-style: normal;
-									font-weight: 600;
-									line-height: 55px;
-								}
-							}
-						}
-					}
-					.main-config {
-						position: relative;
-						width: 936px;
-						margin-top: 52px;
-						align-items: center;
-						gap: 109px;
-						.list-config {
-							display: flex;
-							width: 100%;
-							height: auto;
-							flex-direction: row;
-							flex-wrap: wrap;
-							gap: 22px;
-						}
-					}
+				min-width: 0;
+				max-height: none;
+				overflow: hidden;
+			}
+		}
+		.main-config {
+			flex: 1;
+			min-width: 0;
+			@include tablet {
+				width: 100%;
+			}
+		}
+		.list-config {
+			width: 100%;
+		}
+	}
+
+	/* ---------- Identity card additions ---------- */
+	.sx-identity-role {
+		display: inline-block;
+		margin-bottom: 8px;
+		padding: 4px 12px;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.12);
+		color: #fbbf24;
+		font-size: 11px;
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.sx-identity-edit {
+		flex-shrink: 0;
+		min-width: 148px;
+		justify-content: center;
+		&:focus-visible {
+			outline: 2px solid #fff;
+			outline-offset: 3px;
+		}
+		.sx-follow-hover {
+			display: none;
+		}
+		// Following: quiet glass button that turns into "Unfollow" on hover.
+		&.is-following {
+			border: 1px solid rgba(255, 255, 255, 0.35);
+			background: rgba(255, 255, 255, 0.1);
+			box-shadow: none;
+			&:hover {
+				border-color: transparent;
+				background: #e11d48;
+				.sx-follow-label {
+					display: none;
+				}
+				.sx-follow-hover {
+					display: inline;
 				}
 			}
+		}
+		@include mobile {
+			width: 100%;
+		}
+	}
+
+	/* ---------- Sections (Stays / Articles) ---------- */
+	.sx-member-section {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.sx-member-section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+		h3 {
+			margin: 0;
+			color: $mp-navy;
+			font-size: 26px;
+			line-height: 34px;
+			font-weight: 800;
+			letter-spacing: -0.02em;
+		}
+		span {
+			color: $mp-outline;
+			font-size: 14px;
+			font-weight: 600;
+		}
+	}
+
+	.sx-stays-grid,
+	.sx-post-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.no-data {
+		border: 1px dashed $mp-line;
+		p {
+			margin: 0;
+			color: $mp-body;
+			font-size: 15px;
+		}
+	}
+
+	.sx-member-pagination {
+		align-self: center;
+		margin-top: 8px;
+		.Mui-selected {
+			background: $mp-navy !important;
+			color: #fff;
 		}
 	}
 }

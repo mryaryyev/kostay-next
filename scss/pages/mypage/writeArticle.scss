@@ -79,3 +79,182 @@
 		}
 	}
 }
+
+/* Cover image field (create + edit article) */
+#site-wrap #write-article-page .sx-cover-field {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0 0 24px;
+	font-family: $font-display;
+	.sx-cover-label {
+		color: #7f838d;
+		font-family: $font-display;
+		font-size: 14px;
+		font-weight: 600;
+	}
+	.sx-cover-empty {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		height: 120px;
+		border: 1.5px dashed #d9d4cc;
+		border-radius: 16px;
+		background: #fdf9f3;
+		color: #44474e;
+		font-family: $font-display;
+		font-size: 14px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: border-color 200ms ease, color 200ms ease;
+		&:hover:not(:disabled) {
+			border-color: #aa3614;
+			color: #aa3614;
+		}
+		&:disabled {
+			cursor: wait;
+			opacity: 0.7;
+		}
+	}
+	.sx-cover-preview {
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 16 / 6;
+		border-radius: 16px;
+		background: #f1ede7;
+		img {
+			width: 100%;
+			height: 100%;
+			display: block;
+			object-fit: cover;
+		}
+	}
+	.sx-cover-actions {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		display: flex;
+		gap: 8px;
+		button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 34px;
+			min-width: 34px;
+			padding: 0 14px;
+			border: 0;
+			border-radius: 9999px;
+			background: rgba(3, 22, 54, 0.75);
+			color: #fff;
+			font-family: $font-display;
+			font-size: 13px;
+			font-weight: 600;
+			cursor: pointer;
+			backdrop-filter: blur(8px);
+			svg {
+				width: 18px;
+				height: 18px;
+			}
+			&:hover {
+				background: rgba(3, 22, 54, 0.9);
+			}
+		}
+		button[aria-label] {
+			padding: 0;
+		}
+	}
+	@include tablet {
+		margin: 0 0 20px;
+	}
+	@include mobile {
+		.sx-cover-preview {
+			aspect-ratio: 16 / 9;
+		}
+	}
+}
+
+/* Editor frame + actions */
+#site-wrap #write-article-page {
+	.toastui-editor-defaultUI {
+		border-color: #e5e0d8;
+		border-radius: 16px;
+		overflow: hidden;
+		background: #fff;
+	}
+	.sx-editor-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 12px;
+		margin: 24px 0 8px;
+		button {
+			height: 46px;
+			padding: 0 28px;
+			border: 0;
+			border-radius: 9999px;
+			background: #aa3614;
+			color: #fff;
+			font-family: $font-display;
+			font-size: 14px;
+			font-weight: 700;
+			cursor: pointer;
+			transition: background 200ms ease, transform 150ms ease;
+			&:hover:not(:disabled) {
+				background: #591000;
+			}
+			&:active:not(:disabled) {
+				transform: scale(0.97);
+			}
+			&:disabled {
+				opacity: 0.55;
+				cursor: not-allowed;
+			}
+			&.is-ghost {
+				border: 1px solid #e5e0d8;
+				background: #fff;
+				color: #1c1c18;
+				&:hover {
+					background: #f7f3ed;
+				}
+			}
+		}
+	}
+	@include mobile {
+		.sx-editor-actions button {
+			flex: 1;
+			padding: 0 16px;
+		}
+	}
+}
+
+/* Write/Edit article: the editor fills the leftover height so the right column ends level with the left menu. */
+#site-wrap #my-page .back-frame:has(#write-article-page) {
+	align-items: stretch;
+	.main-config {
+		display: flex;
+		flex-direction: column;
+	}
+	.list-config {
+		flex: 1;
+		flex-direction: column;
+		flex-wrap: nowrap;
+	}
+	#write-article-page,
+	.sx-teditor {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+	}
+	.sx-editor-wrap {
+		position: relative;
+		flex: 1;
+		min-height: 280px;
+		> div {
+			position: absolute;
+			inset: 0;
+		}
+	}
+	.sx-editor-actions {
+		margin-bottom: 0;
+	}
+}

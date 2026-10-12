@@ -2,19 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
-import { Button, Stack, Typography, Tab, Tabs, IconButton, Backdrop, Pagination } from '@mui/material';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { Dialog, IconButton } from '@mui/material';
 import Moment from 'react-moment';
 import { userVar } from '../../apollo/store';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import ChatIcon from '@mui/icons-material/Chat';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { boardLabels, boardMeta } from '../../libs/components/common/CommunityCard';
+import { BoardArticleCategory } from '../../libs/enums/board-article.enum';
+import { REACT_APP_API_URL } from '../../libs/config';
 import { Comment } from '../../libs/types/comment/comment';
 import dynamic from 'next/dynamic';
 import { T } from '../../libs/types/common';
-import EditIcon from '@mui/icons-material/Edit';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { BoardArticle } from '../../libs/types/board-article/board-article';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
@@ -29,7 +37,14 @@ import {
 	sweetMixinSuccessAlert,
 	sweetTopSmallSuccessAlert,
 } from '../../libs/sweetAlert';
-import { CREATE_COMMENT, LIKE_TARGET_BOARD_ARTICLE, UPDATE_COMMENT } from '../../apollo/user/mutation';
+import {
+	CREATE_COMMENT,
+	LIKE_TARGET_BOARD_ARTICLE,
+	UPDATE_BOARD_ARTICLE,
+	UPDATE_COMMENT,
+} from '../../apollo/user/mutation';
+import { BoardArticleStatus } from '../../libs/enums/board-article.enum';
+import { scrollToListTop } from '../../libs/utils';
 
 const ToastViewerComponent = dynamic(() => import('../../libs/components/community/TViewer'), { ssr: false });
 
@@ -55,7 +70,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 	const [searchFilter, setSearchFilter] = useState<CommentsInquiry>({
 		...initialInput,
 	});
-	const [memberImage, setMemberImage] = useState<string>('/img/community/articleImg.png');
+	const [memberImage, setMemberImage] = useState<string>('/img/profile/defaultUser.svg');
 	const [anchorEl, setAnchorEl] = useState<any | null>(null);
 	const open = Boolean(anchorEl);
 	const id = open ? 'simple-popover' : undefined;
@@ -69,6 +84,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 	const [likeTargetBoardArticle] = useMutation(LIKE_TARGET_BOARD_ARTICLE);
 	const [createComment] = useMutation(CREATE_COMMENT);
 	const [updateComment] = useMutation(UPDATE_COMMENT);
+	const [updateBoardArticle] = useMutation(UPDATE_BOARD_ARTICLE);
 
 	const {
 		loading: boardArticleLoading,
@@ -212,9 +228,38 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 		}
 	};
 
+	const goWrite = async () => {
+		// Writing needs an account (same rule as the board list).
+		if (!user?._id) {
+			await sweetMixinErrorAlert(Messages.error2, 2000);
+			await router.push('/account/join');
+			return;
+		}
+		await router.push({ pathname: '/mypage', query: { category: 'writeArticle' } });
+	};
+
+	const editArticleHandler = () => {
+		router.push({ pathname: '/mypage', query: { category: 'writeArticle', articleId } });
+	};
+
+	const deleteArticleHandler = async () => {
+		try {
+			if (!user?._id) throw new Error(Messages.error2);
+			if (!(await sweetConfirmAlert('Do you want to delete this article?'))) return;
+			await updateBoardArticle({
+				variables: { input: { _id: articleId, articleStatus: BoardArticleStatus.DELETE } },
+			});
+			await sweetTopSmallSuccessAlert('Article deleted', 800);
+			// The author's own list shows the result (article gone, count down by one).
+			await router.push({ pathname: '/mypage', query: { category: 'myArticles' } });
+		} catch (err: any) {
+			sweetMixinErrorAlert(err.message).then();
+		}
+	};
+
 	const getCommentMemberImage = (imageUrl: string | undefined) => {
 		if (imageUrl) return `${process.env.REACT_APP_API_URL}/${imageUrl}`;
-		else return '/img/community/articleImg.png';
+		else return '/img/profile/defaultUser.svg';
 	};
 
 	const goMemberPage = (id: any) => {
@@ -236,271 +281,293 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 
 	const paginationHandler = (e: T, value: number) => {
 		setSearchFilter({ ...searchFilter, page: value });
+		scrollToListTop('.sx-comments');
 	};
+
+	const activeBoard = boardArticle?.articleCategory ?? articleCategory ?? 'FREE';
+	const activeMeta = boardMeta[activeBoard] ?? boardMeta.FREE;
+	const isOwner = Boolean(user?._id && boardArticle?.memberId === user._id);
+	const meLiked = Boolean(boardArticle?.meLiked && boardArticle?.meLiked[0]?.myFavorite);
+	const commentPageCount = Math.ceil(total / searchFilter.limit) || 1;
 
 	return (
 		<div id="community-detail-page">
-			<div className="container">
-				<Stack className="main-box">
-					<Stack className="left-config">
-						<Stack className={'image-info'}>
-							<img src={'/img/logo/logoText.svg'} />
-							<Stack className={'community-name'}>
-								<Typography className={'name'}>Community Board Article</Typography>
-							</Stack>
-						</Stack>
-						<Tabs
-							orientation="vertical"
-							aria-label="lab API tabs example"
-							TabIndicatorProps={{
-								style: { display: 'none' },
-							}}
-							onChange={tabChangeHandler}
-							value={articleCategory}
-						>
-							<Tab
-								value={'FREE'}
-								label={'Free Board'}
-								className={`tab-button ${articleCategory === 'FREE' ? 'active' : ''}`}
-							/>
-							<Tab
-								value={'RECOMMEND'}
-								label={'Recommendation'}
-								className={`tab-button ${articleCategory === 'RECOMMEND' ? 'active' : ''}`}
-							/>
-							<Tab value={'NEWS'} label={'News'} className={`tab-button ${articleCategory === 'NEWS' ? 'active' : ''}`} />
-							<Tab value={'HUMOR'} label={'Humor'} className={`tab-button ${articleCategory === 'HUMOR' ? 'active' : ''}`} />
-						</Tabs>
-					</Stack>
-					<div className="community-detail-config">
-						<Stack className="title-box">
-							<Stack className="left">
-								<Typography className="title">{articleCategory} BOARD</Typography>
-								<Typography className="sub-title">Express your opinions freely here without content restrictions</Typography>
-							</Stack>
-							<Button
-								onClick={() =>
-									router.push({
-										pathname: '/mypage',
-										query: {
-											category: 'writeArticle',
-										},
-									})
-								}
-								className="right"
-							>
-								Write
-							</Button>
-						</Stack>
-						<div className="config">
-							<Stack className="first-box-config">
-								<Stack className="content-and-info">
-									<Stack className="content">
-										<Typography className="content-data">{boardArticle?.articleTitle}</Typography>
-										<Stack className="member-info">
-											<img
-												src={memberImage}
-												alt=""
-												className="member-img"
-												onClick={() => goMemberPage(boardArticle?.memberData?._id)}
-											/>
-											<Typography className="member-nick" onClick={() => goMemberPage(boardArticle?.memberData?._id)}>
-												{boardArticle?.memberData?.memberNick}
-											</Typography>
-											<Stack className="divider"></Stack>
-											<Moment className={'time-added'} format={'DD.MM.YY HH:mm'}>
-												{boardArticle?.createdAt}
-											</Moment>
-										</Stack>
-									</Stack>
-									<Stack className="info">
-										<Stack className="icon-info">
-											{boardArticle?.meLiked && boardArticle?.meLiked[0]?.myFavorite ? (
-												<ThumbUpAltIcon onClick={() => likeBoArticleHandler(user, boardArticle?._id)} />
-											) : (
-												<ThumbUpOffAltIcon onClick={() => likeBoArticleHandler(user, boardArticle?._id)} />
-											)}
+			<div className="container sx-community-layout">
+				<aside className="sx-community-side">
+					<div className="sx-board-menu">
+						<div className="sx-board-brand">
+							<span aria-hidden="true">
+								<HomeOutlinedIcon />
+							</span>
+							<div>
+								<strong>Kostay</strong>
+								<small>Community Lounge</small>
+							</div>
+						</div>
+						<nav aria-label="Boards">
+							{Object.values(BoardArticleCategory).map((category) => (
+								<button
+									type="button"
+									key={category}
+									className={category === activeBoard ? 'is-active' : ''}
+									aria-current={category === activeBoard ? 'page' : undefined}
+									onClick={(e) => tabChangeHandler(e, category)}
+								>
+									<span>{boardLabels[category]}</span>
+								</button>
+							))}
+						</nav>
+					</div>
 
-											<Typography className="text">{boardArticle?.articleLikes}</Typography>
-										</Stack>
-										<Stack className="divider"></Stack>
-										<Stack className="icon-info">
-											<VisibilityIcon />
-											<Typography className="text">{boardArticle?.articleViews}</Typography>
-										</Stack>
-										<Stack className="divider"></Stack>
-										<Stack className="icon-info">
-											{total > 0 ? <ChatIcon /> : <ChatBubbleOutlineRoundedIcon />}
-											<Typography className="text">{total}</Typography>
-										</Stack>
-									</Stack>
-								</Stack>
-								<Stack>
-									<ToastViewerComponent markdown={boardArticle?.articleContent} className={'ytb_play'} />
-								</Stack>
-								<Stack className="like-and-dislike">
-									<Stack className="top">
-										<Button>
-											{boardArticle?.meLiked && boardArticle?.meLiked[0]?.myFavorite ? (
-												<ThumbUpAltIcon onClick={() => likeBoArticleHandler(user, boardArticle?._id)} />
-											) : (
-												<ThumbUpOffAltIcon onClick={() => likeBoArticleHandler(user, boardArticle?._id)} />
-											)}
-											<Typography className="text">{boardArticle?.articleLikes}</Typography>
-										</Button>
-									</Stack>
-								</Stack>
-							</Stack>
-							<Stack
-								className="second-box-config"
-								sx={{ borderBottom: total > 0 ? 'none' : '1px solid #eee', border: '1px solid #eee' }}
+					<div className="sx-etiquette">
+						<h3>
+							<HandshakeIcon aria-hidden="true" />
+							Community Etiquette
+						</h3>
+						<p>
+							Korean hospitality thrives on mutual respect (<em>Jeong</em>). Please share truthful accounts, respect fellow
+							hosts and travelers, and avoid commercial spam.
+						</p>
+					</div>
+				</aside>
+
+				<section className="sx-community-main">
+					<div className="sx-board-head">
+						<div>
+							<button type="button" className="sx-back" onClick={(e) => tabChangeHandler(e, activeBoard)}>
+								<ArrowBackRoundedIcon aria-hidden="true" />
+								Back to {boardLabels[activeBoard] ?? 'board'}
+							</button>
+							<h2>{activeMeta.title}</h2>
+							<p>{activeMeta.description}</p>
+						</div>
+						<div className="sx-board-actions">
+							<button
+								type="button"
+								className="sx-write"
+								onClick={goWrite}
 							>
-								<Typography className="title-text">Comments ({total})</Typography>
-								<Stack className="leave-comment">
-									<input
-										type="text"
-										placeholder="Leave a comment"
-										value={comment}
-										onChange={(e) => {
-											if (e.target.value.length > 100) return;
-											setWordsCnt(e.target.value.length);
-											setComment(e.target.value);
-										}}
-									/>
-									<Stack className="button-box">
-										<Typography>{wordsCnt}/100</Typography>
-										<Button onClick={creteCommentHandler}>comment</Button>
-									</Stack>
-								</Stack>
-							</Stack>
-							{total > 0 && (
-								<Stack className="comments">
-									<Typography className="comments-title">Comments</Typography>
-								</Stack>
-							)}
-							{comments?.map((commentData, index) => {
-								return (
-									<Stack className="comments-box" key={commentData?._id}>
-										<Stack className="main-comment">
-											<Stack className="member-info">
-												<Stack className="name-date" onClick={() => goMemberPage(commentData?.memberData?._id as string)}>
-													<img src={getCommentMemberImage(commentData?.memberData?.memberImage)} alt="" />
-													<Stack className="name-date-column">
-														<Typography className="name">{commentData?.memberData?.memberNick}</Typography>
-														<Typography className="date">
-															<Moment className={'time-added'} format={'DD.MM.YY HH:mm'}>
-																{commentData?.createdAt}
-															</Moment>
-														</Typography>
-													</Stack>
-												</Stack>
+								<EditNoteIcon aria-hidden="true" />
+								Write
+							</button>
+						</div>
+					</div>
+
+					<article className="sx-article">
+						{boardArticle?.articleImage && (
+							<div className="sx-article-cover">
+								<img src={`${REACT_APP_API_URL}/${boardArticle.articleImage}`} alt="" />
+							</div>
+						)}
+						<header className="sx-article-head">
+							<div className="sx-article-top">
+								<span className="sx-article-board">{boardLabels[activeBoard] ?? activeBoard}</span>
+								{isOwner && (
+									<div className="sx-article-owner">
+										<button type="button" onClick={editArticleHandler}>
+											<EditOutlinedIcon aria-hidden="true" />
+											Edit
+										</button>
+										<button type="button" className="is-danger" onClick={deleteArticleHandler}>
+											<DeleteOutlineRoundedIcon aria-hidden="true" />
+											Delete
+										</button>
+									</div>
+								)}
+							</div>
+							<h1>{boardArticle?.articleTitle}</h1>
+							<div className="sx-article-meta">
+								<button
+									type="button"
+									className="sx-article-author"
+									onClick={() => goMemberPage(boardArticle?.memberData?._id)}
+								>
+									<img src={memberImage} alt="" />
+									<span>
+										<strong>{boardArticle?.memberData?.memberNick}</strong>
+										<Moment format={'MMM D, YYYY · HH:mm'}>{boardArticle?.createdAt}</Moment>
+									</span>
+								</button>
+								<ul className="sx-article-stats">
+									<li aria-label="Likes">
+										{meLiked ? <ThumbUpAltIcon /> : <ThumbUpOffAltIcon />}
+										{boardArticle?.articleLikes ?? 0}
+									</li>
+									<li aria-label="Views">
+										<VisibilityOutlinedIcon />
+										{boardArticle?.articleViews ?? 0}
+									</li>
+									<li aria-label="Comments">
+										<ChatBubbleOutlineRoundedIcon />
+										{total}
+									</li>
+								</ul>
+							</div>
+						</header>
+
+						<div className="sx-article-body">
+							<ToastViewerComponent markdown={boardArticle?.articleContent} className={'ytb_play'} />
+						</div>
+
+						<footer className="sx-article-foot">
+							<button
+								type="button"
+								className={`sx-like ${meLiked ? 'is-liked' : ''}`}
+								aria-pressed={meLiked}
+								disabled={likeLoading}
+								onClick={() => likeBoArticleHandler(user, boardArticle?._id)}
+							>
+								{meLiked ? <ThumbUpAltIcon /> : <ThumbUpOffAltIcon />}
+								{meLiked ? 'Liked' : 'Like'} · {boardArticle?.articleLikes ?? 0}
+							</button>
+						</footer>
+					</article>
+
+					<section className="sx-comments" aria-label="Comments">
+						<h3>
+							Comments <em>{total}</em>
+						</h3>
+						<div className="sx-comment-form">
+							<textarea
+								rows={3}
+								placeholder={user?._id ? 'Share your thoughts…' : 'Log in to leave a comment'}
+								value={comment}
+								onChange={(e) => {
+									if (e.target.value.length > 100) return;
+									setWordsCnt(e.target.value.length);
+									setComment(e.target.value);
+								}}
+							/>
+							<div className="sx-comment-form-foot">
+								<span>{wordsCnt}/100</span>
+								<button type="button" disabled={!comment.trim()} onClick={creteCommentHandler}>
+									Post comment
+								</button>
+							</div>
+						</div>
+
+						{total > 0 ? (
+							<ul className="sx-comment-list">
+								{comments?.map((commentData) => (
+									<li className="sx-comment" key={commentData?._id}>
+										<button
+											type="button"
+											className="sx-comment-avatar"
+											onClick={() => goMemberPage(commentData?.memberData?._id as string)}
+										>
+											<img src={getCommentMemberImage(commentData?.memberData?.memberImage)} alt="" />
+										</button>
+										<div className="sx-comment-main">
+											<div className="sx-comment-top">
+												<button
+													type="button"
+													className="sx-comment-name"
+													onClick={() => goMemberPage(commentData?.memberData?._id as string)}
+												>
+													{commentData?.memberData?.memberNick}
+												</button>
+												<Moment className="sx-comment-date" format={'MMM D, YYYY · HH:mm'}>
+													{commentData?.createdAt}
+												</Moment>
 												{commentData?.memberId === user?._id && (
-													<Stack className="buttons">
+													<div className="sx-comment-actions">
 														<IconButton
+															size="small"
+															aria-label="Edit comment"
 															onClick={() => {
-																setUpdatedCommentId(commentData?._id);
-																updateButtonHandler(commentData?._id, CommentStatus.DELETE);
-															}}
-														>
-															<DeleteForeverIcon sx={{ color: '#757575', cursor: 'pointer' }} />
-														</IconButton>
-														<IconButton
-															onClick={(e) => {
 																setUpdatedComment(commentData?.commentContent);
 																setUpdatedCommentWordsCnt(commentData?.commentContent?.length);
 																setUpdatedCommentId(commentData?._id);
 																setOpenBackdrop(true);
 															}}
 														>
-															<EditIcon sx={{ color: '#757575' }} />
+															<EditOutlinedIcon />
 														</IconButton>
-														<Backdrop
-															sx={{
-																top: '40%',
-																right: '25%',
-																left: '25%',
-																width: '1000px',
-																height: 'fit-content',
-																borderRadius: '10px',
-																color: '#ffffff',
-																zIndex: 999,
+														<IconButton
+															size="small"
+															aria-label="Delete comment"
+															onClick={() => {
+																setUpdatedCommentId(commentData?._id);
+																updateButtonHandler(commentData?._id, CommentStatus.DELETE);
 															}}
-															open={openBackdrop}
 														>
-															<Stack
-																sx={{
-																	width: '100%',
-																	height: '100%',
-																	background: 'white',
-																	border: '1px solid #b9b9b9',
-																	padding: '15px',
-																	gap: '10px',
-																	borderRadius: '10px',
-																	boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
-																}}
-															>
-																<Typography variant="h4" color={'#b9b9b9'}>
-																	Update comment
-																</Typography>
-																<Stack gap={'20px'}>
-																	<input
-																		autoFocus
-																		value={updatedComment}
-																		onChange={(e) => updateCommentInputHandler(e.target.value)}
-																		type="text"
-																		style={{
-																			border: '1px solid #b9b9b9',
-																			outline: 'none',
-																			height: '40px',
-																			padding: '0px 10px',
-																			borderRadius: '5px',
-																		}}
-																	/>
-																	<Stack width={'100%'} flexDirection={'row'} justifyContent={'space-between'}>
-																		<Typography variant="subtitle1" color={'#b9b9b9'}>
-																			{updatedCommentWordsCnt}/100
-																		</Typography>
-																		<Stack sx={{ flexDirection: 'row', alignSelf: 'flex-end', gap: '10px' }}>
-																			<Button variant="outlined" color="inherit" onClick={() => cancelButtonHandler()}>
-																				Cancel
-																			</Button>
-																			<Button
-																				variant="contained"
-																				color="inherit"
-																				onClick={() => updateButtonHandler(updatedCommentId, undefined)}
-																			>
-																				Update
-																			</Button>
-																		</Stack>
-																	</Stack>
-																</Stack>
-															</Stack>
-														</Backdrop>
-													</Stack>
+															<DeleteOutlineRoundedIcon />
+														</IconButton>
+													</div>
 												)}
-											</Stack>
-											<Stack className="content">
-												<Typography>{commentData?.commentContent}</Typography>
-											</Stack>
-										</Stack>
-									</Stack>
-								);
-							})}
-							{total > 0 && (
-								<Stack className="pagination-box">
-									<Pagination
-										count={Math.ceil(total / searchFilter.limit) || 1}
-										page={searchFilter.page}
-										shape="circular"
-										color="primary"
-										onChange={paginationHandler}
-									/>
-								</Stack>
-							)}
-						</div>
-					</div>
-				</Stack>
+											</div>
+											<p>{commentData?.commentContent}</p>
+										</div>
+									</li>
+								))}
+							</ul>
+						) : (
+							<p className="sx-comment-empty">No comments yet. Be the first to share your thoughts.</p>
+						)}
+
+						{commentPageCount > 1 && (
+							<div className="sx-community-pagination">
+								<nav aria-label="Comment pages">
+									<button
+										type="button"
+										aria-label="Previous page"
+										disabled={searchFilter.page <= 1}
+										onClick={() => paginationHandler({}, searchFilter.page - 1)}
+									>
+										<ChevronLeftIcon />
+									</button>
+									{Array.from({ length: commentPageCount }, (_, index) => index + 1).map((page) => (
+										<button
+											type="button"
+											key={page}
+											className={page === searchFilter.page ? 'is-active' : ''}
+											aria-current={page === searchFilter.page ? 'page' : undefined}
+											onClick={() => paginationHandler({}, page)}
+										>
+											{page}
+										</button>
+									))}
+									<button
+										type="button"
+										aria-label="Next page"
+										disabled={searchFilter.page >= commentPageCount}
+										onClick={() => paginationHandler({}, searchFilter.page + 1)}
+									>
+										<ChevronRightIcon />
+									</button>
+								</nav>
+							</div>
+						)}
+					</section>
+				</section>
 			</div>
+
+			<Dialog
+				open={openBackdrop}
+				onClose={cancelButtonHandler}
+				fullWidth
+				maxWidth="sm"
+				PaperProps={{ className: 'sx-comment-dialog' }}
+			>
+				<h3>Edit comment</h3>
+				<textarea
+					autoFocus
+					rows={4}
+					value={updatedComment}
+					onChange={(e) => updateCommentInputHandler(e.target.value)}
+				/>
+				<div className="sx-comment-dialog-foot">
+					<span>{updatedCommentWordsCnt}/100</span>
+					<div>
+						<button type="button" className="is-ghost" onClick={cancelButtonHandler}>
+							Cancel
+						</button>
+						<button type="button" onClick={() => updateButtonHandler(updatedCommentId, undefined)}>
+							Save
+						</button>
+					</div>
+				</div>
+			</Dialog>
 		</div>
 	);
 };

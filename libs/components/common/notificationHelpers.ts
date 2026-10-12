@@ -33,7 +33,7 @@ export const notificationHref = (notification: Notification) => {
 	if (notification.notificationType === NotificationType.INQUIRY) {
 		// Admins open the 1:1 Inquiry page; members see the answer in Help → Inquiry.
 		return isAnswerFromHelp(notification)
-			? { pathname: '/cs', query: { tab: 'inquiry' } }
+			? { pathname: '/help', query: { tab: 'inquiry' } }
 			: { pathname: '/_admin/cs/inquiry' };
 	}
 	if (notification.notificationType === NotificationType.BOOKING) {
@@ -42,7 +42,7 @@ export const notificationHref = (notification: Notification) => {
 		return { pathname: '/mypage', query: { category: forHost ? 'reservations' : 'myBookings' } };
 	}
 	if (notification.notificationGroup === NotificationGroup.PROPERTY && notification.propertyId) {
-		return { pathname: '/property/detail', query: { id: notification.propertyId } };
+		return { pathname: '/stay/detail', query: { id: notification.propertyId } };
 	}
 	if (notification.notificationGroup === NotificationGroup.ARTICLE && notification.articleId) {
 		return { pathname: '/community/detail', query: { id: notification.articleId } };

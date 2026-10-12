@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { getJwtToken } from '../../libs/auth';
 import { useRouter } from 'next/router';
 import { NextPage } from 'next';
 import { Stack } from '@mui/material';
@@ -41,8 +42,10 @@ const MyPage: NextPage = () => {
 	const [likeTargetMember] = useMutation(LIKE_TARGET_MEMBER);
 
 	/** LIFECYCLES **/
+	// On refresh userVar is still empty here (the layout restores it from the JWT a moment later),
+	// so only redirect when there is no token at all.
 	useEffect(() => {
-		if (!user._id) router.push('/').then();
+		if (!user._id && !getJwtToken()) router.push('/').then();
 	}, [user]);
 
 	/** HANDLERS **/

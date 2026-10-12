@@ -23,6 +23,30 @@ export const boardLabels: Record<string, string> = {
 	HUMOR: 'Humor Board',
 };
 
+export const boardMeta: Record<string, { title: string; description: string; placeholder: string }> = {
+	FREE: {
+		title: 'FREE BOARD',
+		description: 'Talk about anything from your stay — questions, stories and everyday moments across Korea.',
+		placeholder: 'Search the free board...',
+	},
+	RECOMMEND: {
+		title: 'RECOMMENDATION',
+		description: 'Favourite stays, neighbourhoods, cafés and day trips recommended by fellow travelers.',
+		placeholder: 'Search recommendations...',
+	},
+	NEWS: {
+		title: 'NEWS & GUIDES',
+		description: 'Seasonal guides, local events and practical news for staying in Korea.',
+		placeholder: 'Search news and guides...',
+	},
+	HUMOR: {
+		title: 'HUMOR BOARD',
+		description:
+			'Express your opinions freely here without content restrictions. Funny travel moments, ondol fails & delightful memes.',
+		placeholder: 'Search funny stories...',
+	},
+};
+
 interface CommunityCardProps {
 	boardArticle: BoardArticle;
 	size?: string;
@@ -37,7 +61,7 @@ const CommunityCard = (props: CommunityCardProps) => {
 	const user = useReactiveVar(userVar);
 	const imagePath: string = boardArticle?.articleImage
 		? `${REACT_APP_API_URL}/${boardArticle?.articleImage}`
-		: '/img/community/communityImg.png';
+		: '/img/banner/hero/community.jpg';
 
 	/** HANDLERS **/
 	const chooseArticleHandler = (e: React.SyntheticEvent, boardArticle: BoardArticle) => {

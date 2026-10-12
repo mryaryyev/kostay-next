@@ -892,9 +892,10 @@ $dt-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 	}
 }
 
-// Date fields + BookingCalendar popover: shared by the stay booking box and the Stays filter.
+// Date fields + BookingCalendar: shared by the stay booking box, the Stays filter and the home search.
 #site-wrap #property-detail-page,
-#site-wrap #property-list-page {
+#site-wrap #property-list-page,
+#site-wrap.is-home .home-glass-search {
 	.sx-booking-dates {
 		position: relative;
 		display: grid;

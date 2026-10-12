@@ -12,6 +12,7 @@ import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { UPDATE_PROPERTY } from '../../../apollo/user/mutation';
 import { GET_AGENT_PROPERTIES } from '../../../apollo/user/query';
 import { sweetConfirmAlert, sweetErrorHandling } from '../../sweetAlert';
+import { scrollToListTop } from '../../utils';
 
 const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 	const [searchFilter, setSearchFilter] = useState<AgentPropertiesInquiry>(initialInput);
@@ -41,6 +42,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 	/** HANDLERS **/
 	const paginationHandler = (e: T, value: number) => {
 		setSearchFilter({ ...searchFilter, page: value });
+		scrollToListTop('#my-page .main-config');
 	};
 
 	const changeStatusHandler = (value: PropertyStatus) => {

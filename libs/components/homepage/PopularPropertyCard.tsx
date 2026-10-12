@@ -23,7 +23,7 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 	/** HANDLERS **/
 	const pushDetailHandler = async (propertyId: string) => {
 		console.log('ID:', propertyId);
-		await router.push({ pathname: '/property/detail', query: { id: propertyId } });
+		await router.push({ pathname: '/stay/detail', query: { id: propertyId } });
 	};
 
 	return <HomeStayCard property={property} likePropertyHandler={likePropertyHandler} variant={'popular'} />;

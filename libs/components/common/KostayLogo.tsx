@@ -22,7 +22,7 @@ const KostayLogo = ({ className = '', width = 129, height = 52 }: KostayLogoProp
 			aria-label="Kostay"
 		>
 			<g className="kostay-logo__icon">
-				<rect x="2" y="8" width="36" height="36" rx="10" fill="#EB6753" />
+				<rect x="2" y="8" width="36" height="36" rx="10" fill="#C2471F" />
 				<path
 					className="kostay-logo__roof"
 					d="M10 26.5L20 18L30 26.5"
@@ -51,7 +51,12 @@ const KostayLogo = ({ className = '', width = 129, height = 52 }: KostayLogoProp
 				letterSpacing="0.4"
 			>
 				{LETTERS.map((letter, i) => (
-					<tspan key={i} className="kostay-logo__letter" style={{ animationDelay: `${i * 0.05}s` }}>
+					<tspan
+						key={i}
+						className={`kostay-logo__letter ${i < 2 ? 'kostay-logo__ko' : ''}`}
+						// KO = Korea (brand terracotta), STAY = context colour. Inline so page rules can't override it.
+						style={{ animationDelay: `${i * 0.05}s`, ...(i < 2 && { fill: '#C2471F' }) }}
+					>
 						{letter}
 					</tspan>
 				))}

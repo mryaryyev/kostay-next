@@ -9,6 +9,7 @@ import { GET_FAVORITES } from '../../../apollo/user/query';
 import { LIKE_TARGET_PROPERTY } from '../../../apollo/user/mutation';
 import { Messages } from '../../config';
 import { sweetMixinErrorAlert } from '../../sweetAlert';
+import { scrollToListTop } from '../../utils';
 
 const MyFavorites: NextPage = () => {
 	const [myFavorites, setMyFavorites] = useState<Property[]>([]);
@@ -38,6 +39,7 @@ const MyFavorites: NextPage = () => {
 	/** HANDLERS **/
 	const paginationHandler = (e: T, value: number) => {
 		setSearchFavorites({ ...searchFavorites, page: value });
+		scrollToListTop('#my-page .main-config');
 	};
 
 	const likePropertyHandler = async (user: any, id: string) => {

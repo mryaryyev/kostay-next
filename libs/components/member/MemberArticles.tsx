@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
-import { Pagination, Stack, Typography } from '@mui/material';
+import { Pagination } from '@mui/material';
 import { useRouter } from 'next/router';
 import CommunityCard from '../common/CommunityCard';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
@@ -11,6 +11,7 @@ import { BoardArticlesInquiry } from '../../types/board-article/board-article.in
 import { Messages } from '../../config';
 import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../sweetAlert';
 import { LIKE_TARGET_BOARD_ARTICLE } from '../../../apollo/user/mutation';
+import { scrollToListTop } from '../../utils';
 
 const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 	const router = useRouter();
@@ -47,6 +48,7 @@ const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 	/** HANDLERS **/
 	const paginationHandler = (e: T, value: number) => {
 		setSearchFilter({ ...searchFilter, page: value });
+		scrollToListTop('.main-config');
 	};
 
 	const likeArticleHandler = async (e: any, user: any, id: string) => {
@@ -69,45 +71,37 @@ const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 	};
 
 	return (
-		<div id="member-articles-page">
-			<Stack className="main-title-box">
-				<Stack className="right-box">
-					<Typography className="main-title">Articles</Typography>
-				</Stack>
-			</Stack>
-			<Stack className="articles-list-box">
-				{memberBoArticles?.length === 0 && (
-					<div className={'no-data'}>
-						<img src="/img/icons/icoAlert.svg" alt="" />
-						<p>No Articles found!</p>
-					</div>
-				)}
-				{memberBoArticles?.map((boardArticle: BoardArticle) => {
-					return (
+		<div id="member-articles-page" className="sx-member-section">
+			<div className="sx-member-section-head">
+				<h3>Articles</h3>
+				<span>
+					{total} {total === 1 ? 'article' : 'articles'}
+				</span>
+			</div>
+			{memberBoArticles?.length === 0 ? (
+				<div className={'no-data'}>
+					<p>No articles yet.</p>
+				</div>
+			) : (
+				<div className="sx-post-grid">
+					{memberBoArticles.map((boardArticle: BoardArticle) => (
 						<CommunityCard
 							boardArticle={boardArticle}
 							likeArticleHandler={likeArticleHandler}
 							key={boardArticle?._id}
-							size={'small'}
+							variant={'board'}
 						/>
-					);
-				})}
-			</Stack>
-			{memberBoArticles?.length !== 0 && (
-				<Stack className="pagination-config">
-					<Stack className="pagination-box">
-						<Pagination
-							count={Math.ceil(total / searchFilter.limit) || 1}
-							page={searchFilter.page}
-							shape="circular"
-							color="primary"
-							onChange={paginationHandler}
-						/>
-					</Stack>
-					<Stack className="total-result">
-						<Typography>{total} articles available</Typography>
-					</Stack>
-				</Stack>
+					))}
+				</div>
+			)}
+			{total > searchFilter.limit && (
+				<Pagination
+					className="sx-member-pagination"
+					count={Math.ceil(total / searchFilter.limit)}
+					page={searchFilter.page}
+					shape="circular"
+					onChange={paginationHandler}
+				/>
 			)}
 		</div>
 	);

@@ -48,7 +48,7 @@ const PropertyCard = (props: PropertyCardType) => {
 
 	if (variant === 'stays') {
 		const detailHref = {
-			pathname: '/property/detail',
+			pathname: '/stay/detail',
 			query: {
 				id: property?._id,
 				...(stayDates?.checkIn && stayDates?.checkOut ? { checkIn: stayDates.checkIn, checkOut: stayDates.checkOut } : {}),
@@ -128,7 +128,7 @@ const PropertyCard = (props: PropertyCardType) => {
 				<Stack className="top">
 					<Link
 						href={{
-							pathname: '/property/detail',
+							pathname: '/stay/detail',
 							query: { id: property?._id },
 						}}
 					>
@@ -149,7 +149,7 @@ const PropertyCard = (props: PropertyCardType) => {
 						<Stack className="name">
 							<Link
 								href={{
-									pathname: '/property/detail',
+									pathname: '/stay/detail',
 									query: { id: property?._id },
 								}}
 							>

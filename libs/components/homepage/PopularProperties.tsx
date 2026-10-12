@@ -68,7 +68,7 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 					eyebrow={'Most viewed'}
 					title={'Popular Stays'}
 					action={
-						<Link href={'/property'} className={'home-link'}>
+						<Link href={'/stay'} className={'home-link'}>
 							View all stays
 							<EastIcon aria-hidden="true" />
 						</Link>

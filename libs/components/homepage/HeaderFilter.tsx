@@ -1,18 +1,40 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Stack, Box, Modal, Divider, Button } from '@mui/material';
+import { Stack, Box, Modal } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import { propertySquare } from '../../config';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import SearchIcon from '@mui/icons-material/Search';
+import BookingCalendar from '../property/BookingCalendar';
 import { PropertyLocation, PropertyType } from '../../enums/property.enum';
 import { PropertiesInquiry } from '../../types/property/property.input';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { buildPropertyQuery, normalizePropertySearch } from '../../utils';
+import { buildPropertyQuery, formatKRW, normalizePropertySearch } from '../../utils';
 import moment from 'moment';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+
+/** One-line hint under each city in the Location panel. */
+const cityHints: Record<string, string> = {
+	SEOUL: 'Capital city',
+	BUSAN: 'Beaches & harbor',
+	INCHEON: 'Airport city',
+	DAEGU: 'Cafes & markets',
+	GYEONGJU: 'Silla heritage',
+	GWANGJU: 'Art & culture',
+	CHONJU: 'Hanok village',
+	JEJU: 'Island escape',
+};
+// Most-visited cities first (2 rows of 4).
+const homeLocations = ['SEOUL', 'BUSAN', 'JEJU', 'GYEONGJU', 'INCHEON', 'DAEGU', 'CHONJU', 'GWANGJU'];
+const cityName = (code: string) => code.charAt(0) + code.slice(1).toLowerCase();
+
+/** Stay type cards: photo + one-line hint (hanok uses the Jeonju hanok village photo). */
+const typeCards: Record<string, { image: string; hint: string }> = {
+	APARTMENT: { image: '/img/banner/types/apartment.webp', hint: 'City living' },
+	VILLA: { image: '/img/banner/types/villa.webp', hint: 'Space & privacy' },
+	HOUSE: { image: '/img/banner/types/house.webp', hint: 'Family homes' },
+	HANOK: { image: '/img/banner/types/hanok.webp', hint: 'Traditional Korean' },
+};
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 const MAX_GUESTS_STEPPER = 16;
@@ -22,19 +44,12 @@ const style = {
 	top: '50%',
 	left: '50%',
 	transform: 'translate(-50%, -50%)',
-	width: 'auto',
-	maxWidth: 'calc(100vw - 48px)',
+	width: 'min(520px, calc(100vw - 24px))',
+	maxWidth: 'calc(100vw - 24px)',
 	borderRadius: '24px',
 	outline: 'none',
 };
 
-const MenuProps = {
-	PaperProps: {
-		style: {
-			maxHeight: '200px',
-		},
-	},
-};
 
 interface HeaderFilterProps {
 	initialInput: PropertiesInquiry;
@@ -63,6 +78,26 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 	const [openRooms, setOpenRooms] = useState(false);
 	const [openDates, setOpenDates] = useState(false);
 	const [openGuests, setOpenGuests] = useState(false);
+
+	// Tablets and phones: panels open in the page flow under the buttons, so bring the open one into view.
+	useEffect(() => {
+		const id = openLocation
+			? 'location'
+			: openType
+			? 'type'
+			: openDates
+			? 'dates'
+			: openGuests
+			? 'guests'
+			: openRooms
+			? 'rooms'
+			: '';
+		if (!id || window.innerWidth >= 1200) return;
+		const timer = window.setTimeout(() => {
+			document.getElementById(`home-panel-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+		}, 80);
+		return () => window.clearTimeout(timer);
+	}, [openLocation, openType, openDates, openGuests, openRooms]);
 	// Dates travel as separate URL params; getProperties has no availability filter yet.
 	const [checkIn, setCheckIn] = useState('');
 	const [checkOut, setCheckOut] = useState('');
@@ -73,6 +108,16 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 	const guestError =
 		guestsCount !== '' &&
 		(!Number.isInteger(Number(guestsCount)) || Number(guestsCount) < 1 || Number(guestsCount) > 2147483647);
+	// Nightly price in KRW; either bound may stay empty ("from ₩X" or "up to ₩Y").
+	const [priceMin, setPriceMin] = useState(initialInput.search.pricesRange?.start?.toString() ?? '');
+	const [priceMax, setPriceMax] = useState(initialInput.search.pricesRange?.end?.toString() ?? '');
+	const isPrice = (value: string) => value === '' || (/^\d+$/.test(value) && Number(value) <= 2147483647);
+	const priceError =
+		!isPrice(priceMin) || !isPrice(priceMax) || (priceMin !== '' && priceMax !== '' && Number(priceMin) > Number(priceMax));
+	const pricesRange =
+		priceMin === '' && priceMax === ''
+			? undefined
+			: { start: priceMin === '' ? 0 : Number(priceMin), end: priceMax === '' ? 2147483647 : Number(priceMax) };
 	const today = moment().format(DATE_FORMAT);
 	const minCheckOut = checkIn ? moment(checkIn, DATE_FORMAT).add(1, 'day').format(DATE_FORMAT) : today;
 	const datesError =
@@ -252,42 +297,17 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 		[searchFilter],
 	);
 
-	const propertySquareHandler = useCallback(
-		async (e: any, type: string) => {
-			const value = e.target.value;
-
-			if (type == 'start') {
-				setSearchFilter({
-					...searchFilter,
-					search: {
-						...searchFilter.search,
-						// @ts-ignore
-						squaresRange: { ...searchFilter.search.squaresRange, start: parseInt(value) },
-					},
-				});
-			} else {
-				setSearchFilter({
-					...searchFilter,
-					search: {
-						...searchFilter.search,
-						// @ts-ignore
-						squaresRange: { ...searchFilter.search.squaresRange, end: parseInt(value) },
-					},
-				});
-			}
-		},
-		[searchFilter],
-	);
-
 	const resetFilterHandler = () => {
 		setSearchFilter(normalizePropertySearch(initialInput, initialInput));
 		setGuestsCount('');
+		setPriceMin('');
+		setPriceMax('');
 		setCheckIn('');
 		setCheckOut('');
 	};
 
 	const pushSearchHandler = async () => {
-		if (guestError) {
+		if (guestError || priceError) {
 			setOpenAdvancedFilter(true);
 			return;
 		}
@@ -305,6 +325,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 					search: {
 						...searchFilter.search,
 						guestsCount: guestsCount === '' ? undefined : Number(guestsCount),
+						pricesRange,
 						checkIn: checkIn && checkOut ? checkIn : undefined,
 						checkOut: checkIn && checkOut ? checkOut : undefined,
 					},
@@ -312,7 +333,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 				initialInput,
 			);
 			await router.push({
-				pathname: '/property',
+				pathname: '/stay',
 				query: buildPropertyQuery(input, initialInput),
 			});
 		} catch (err: any) {
@@ -441,7 +462,8 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							className="filter-location on"
 							{...panelMotion}
 						>
-							{propertyLocation.map((location: string, index: number) => {
+							<p className="filter-location-title">Where are you going?</p>
+							{homeLocations.map((location: string, index: number) => {
 								return (
 									<motion.button
 										type="button"
@@ -453,8 +475,14 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 										onClick={() => propertyLocationSelectHandler(location)}
 										key={location}
 									>
-										<img src={`img/banner/cities/${location}.webp`} alt="" />
-										<span>{location}</span>
+										<img src={`/img/banner/cities/${location}.webp`} alt="" />
+										<span className="filter-location-text">
+											<strong>{cityName(location)}</strong>
+											<small>{cityHints[location]}</small>
+										</span>
+										<i className="filter-location-check" aria-hidden="true">
+											<CheckRoundedIcon />
+										</i>
 									</motion.button>
 								);
 							})}
@@ -472,6 +500,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							className="filter-type on"
 							{...panelMotion}
 						>
+							<p className="filter-panel-title">What kind of stay?</p>
 							{propertyType.map((type: string, index: number) => {
 								return (
 									<motion.button
@@ -480,12 +509,18 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 										initial="hidden"
 										animate="visible"
 										transition={{ duration: reducedMotion ? 0 : 0.15, delay: reducedMotion ? 0 : index * 0.025 }}
-										style={{ backgroundImage: `url(/img/banner/types/${type.toLowerCase()}.webp)` }}
 										aria-pressed={searchFilter.search.typeList?.includes(type as PropertyType) ?? false}
 										onClick={() => propertyTypeSelectHandler(type)}
 										key={type}
 									>
-										<span>{type}</span>
+										<img src={typeCards[type]?.image} alt="" />
+										<span className="filter-location-text">
+											<strong>{cityName(type)}</strong>
+											<small>{typeCards[type]?.hint}</small>
+										</span>
+										<i className="filter-location-check" aria-hidden="true">
+											<CheckRoundedIcon />
+										</i>
 									</motion.button>
 								);
 							})}
@@ -503,6 +538,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							className="filter-rooms on"
 							{...panelMotion}
 						>
+							<p className="filter-panel-title">How many rooms?</p>
 							{[1, 2, 3, 4, 5].map((room: number) => {
 								return (
 									<motion.button
@@ -512,7 +548,8 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 										onClick={() => propertyRoomSelectHandler(room)}
 										key={room}
 									>
-										{room} room{room > 1 ? 's' : ''}
+										<strong>{room === 5 ? '5+' : room}</strong>
+										<small>{room === 1 ? 'room' : 'rooms'}</small>
 									</motion.button>
 								);
 							})}
@@ -530,27 +567,33 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							className="filter-dates on"
 							{...panelMotion}
 						>
-							<div className={'date-fields'}>
-								<label>
-									<span>Check-in</span>
-									<input
-										type="date"
-										min={today}
-										value={checkIn}
-										onChange={(e) => checkInChangeHandler(e.target.value)}
-										aria-invalid={datesError && (checkIn === '' || checkIn < today)}
-									/>
-								</label>
-								<label>
-									<span>Check-out</span>
-									<input
-										type="date"
-										min={minCheckOut}
-										value={checkOut}
-										onChange={(e) => setCheckOut(e.target.value)}
-										aria-invalid={datesError && (checkOut === '' || checkOut <= checkIn)}
-									/>
-								</label>
+							<p className="filter-panel-title">When are you staying?</p>
+							{/* Both calendars at once: check-in on the left, check-out on the right. */}
+							<div className={'home-dual-calendar'}>
+								{(['checkIn', 'checkOut'] as const).map((field) => {
+									const value = field === 'checkIn' ? checkIn : checkOut;
+									return (
+										<div className={'home-calendar'} key={field}>
+											<div className={'home-calendar-label'}>
+												<span>{field === 'checkIn' ? 'Check-in' : 'Check-out'}</span>
+												<strong className={value ? '' : 'is-empty'}>
+													{value ? moment(value, DATE_FORMAT).format('ddd, MMM D') : 'Add date'}
+												</strong>
+											</div>
+											<BookingCalendar
+												mode={field}
+												value={value}
+												checkIn={checkIn}
+												checkOut={checkOut}
+												min={field === 'checkIn' ? today : minCheckOut}
+												bookedRanges={[]}
+												onSelect={(picked) => (field === 'checkIn' ? checkInChangeHandler(picked) : setCheckOut(picked))}
+												// The calendars stay open inside the panel; the panel itself closes on outside click.
+												onClose={() => undefined}
+											/>
+										</div>
+									);
+								})}
 							</div>
 							<div className={'date-footer'}>
 								{datesError ? (
@@ -558,7 +601,9 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 										Choose both dates; check-out must be after check-in and not in the past.
 									</p>
 								) : (
-									<p className={'date-note'}>Availability filtering is coming soon.</p>
+									<p className={'date-note'}>
+										Check-in from 13:00 · check-out by 11:00. Only stays free for these nights are shown.
+									</p>
 								)}
 								{(checkIn || checkOut) && (
 									<button
@@ -587,6 +632,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							className="filter-guests on"
 							{...panelMotion}
 						>
+							<p className="filter-panel-title">Who is coming?</p>
 							<div className={'guests-row'}>
 								<div>
 									<strong>Guests</strong>
@@ -632,133 +678,104 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 					<Modal open={openAdvancedFilter} onClose={() => advancedFilterHandler(false)} aria-labelledby="home-filter-title">
 						{/* @ts-ignore */}
 						<Box sx={style} role="dialog" aria-modal="true" aria-labelledby="home-filter-title" tabIndex={-1}>
-							<motion.div className="advanced-filter-modal home-glass-dialog" {...panelMotion}>
-								<button type="button" aria-label="Close filters" className="close" onClick={() => advancedFilterHandler(false)}>
-									<CloseIcon />
-								</button>
-								<div className={'top'}>
-									<span id="home-filter-title">Find your stay</span>
-									<div className={'search-input-box'}>
-										<img src="/img/icons/search.svg" alt="" />
-										<input
-											value={searchFilter?.search?.text ?? ''}
-											type="text"
-											placeholder={'What are you looking for?'}
-											aria-label="Search stays by keyword"
-											onChange={(e: any) => {
-												setSearchFilter({
-													...searchFilter,
-													search: { ...searchFilter.search, text: e.target.value },
-												});
-											}}
-										/>
-									</div>
+							<motion.div className="advanced-filter-modal sx-adv" {...panelMotion}>
+								<div className="sx-adv-head">
+									<h2 id="home-filter-title">More filters</h2>
+									<button
+										type="button"
+										aria-label="Close filters"
+										className="sx-adv-close"
+										onClick={() => advancedFilterHandler(false)}
+									>
+										<CloseIcon />
+									</button>
 								</div>
-								<Divider sx={{ mt: '30px', mb: '35px' }} />
-								<div className={'middle'}>
-									<div className={'row-box'}>
-										<div className={'box'}>
-											<span>bedrooms</span>
-											<div className={'inside'}>
+
+								<label className="sx-adv-field">
+									<span>Keyword</span>
+									<input
+										value={searchFilter?.search?.text ?? ''}
+										type="text"
+										placeholder="Stay name, e.g. Hanok or Ocean View"
+										onChange={(e) =>
+											setSearchFilter({ ...searchFilter, search: { ...searchFilter.search, text: e.target.value } })
+										}
+									/>
+								</label>
+
+								<div className="sx-adv-field">
+									<span>Bedrooms</span>
+									<div className="sx-adv-chips" role="group" aria-label="Bedrooms">
+										{[0, 1, 2, 3, 4, 5].map((bed: number) => {
+											const active =
+												bed === 0 ? !searchFilter.search.bedsList?.length : Boolean(searchFilter.search.bedsList?.includes(bed));
+											return (
 												<button
 													type="button"
-													className={`room ${!searchFilter?.search?.bedsList ? 'active' : ''}`}
-													aria-pressed={!searchFilter.search.bedsList}
-													onClick={() => propertyBedSelectHandler(0)}
+													key={bed}
+													className={active ? 'active' : ''}
+													aria-pressed={active}
+													onClick={() => propertyBedSelectHandler(bed)}
 												>
-													Any
+													{bed === 0 ? 'Any' : bed === 5 ? '5+' : bed}
 												</button>
-												{[1, 2, 3, 4, 5].map((bed: number) => (
-													<button
-														type="button"
-														className={`room ${searchFilter?.search?.bedsList?.includes(bed) ? 'active' : ''}`}
-														aria-pressed={searchFilter.search.bedsList?.includes(bed) ?? false}
-														onClick={() => propertyBedSelectHandler(bed)}
-														key={bed}
-													>
-														{bed == 0 ? 'Any' : bed}
-													</button>
-												))}
-											</div>
-										</div>
-										<div className="box guest-filter">
-											<label htmlFor="homepage-guests">Guests</label>
-											<input
-												id="homepage-guests"
-												type="number"
-												min={1}
-												max={2147483647}
-												step={1}
-												placeholder="Any"
-												value={guestsCount}
-												onChange={(e) => setGuestsCount(e.target.value)}
-												aria-invalid={guestError}
-												aria-describedby={guestError ? 'homepage-guests-error' : undefined}
-											/>
-											{guestError && (
-												<p id="homepage-guests-error" role="alert">
-													Enter a positive whole number of guests.
-												</p>
-											)}
-										</div>
-									</div>
-									<div className={'row-box'} style={{ marginTop: '44px' }}>
-										<div className={'box'}>
-											<span>square meter</span>
-											<div className={'inside space-between align-center'}>
-												<FormControl sx={{ width: '122px' }}>
-													<Select
-														value={searchFilter?.search?.squaresRange?.start}
-														onChange={(e: any) => propertySquareHandler(e, 'start')}
-														displayEmpty
-														inputProps={{ 'aria-label': 'Minimum stay size' }}
-														MenuProps={MenuProps}
-													>
-														{propertySquare.map((square: number) => (
-															<MenuItem value={square} disabled={(searchFilter?.search?.squaresRange?.end || 0) < square} key={square}>
-																{square}
-															</MenuItem>
-														))}
-													</Select>
-												</FormControl>
-												<div className={'minus-line'}></div>
-												<FormControl sx={{ width: '122px' }}>
-													<Select
-														value={searchFilter?.search?.squaresRange?.end}
-														onChange={(e: any) => propertySquareHandler(e, 'end')}
-														displayEmpty
-														inputProps={{ 'aria-label': 'Maximum stay size' }}
-														MenuProps={MenuProps}
-													>
-														{propertySquare.map((square: number) => (
-															<MenuItem
-																value={square}
-																disabled={(searchFilter?.search?.squaresRange?.start || 0) > square}
-																key={square}
-															>
-																{square}
-															</MenuItem>
-														))}
-													</Select>
-												</FormControl>
-											</div>
-										</div>
+											);
+										})}
 									</div>
 								</div>
-								<Divider sx={{ mt: '60px', mb: '18px' }} />
-								<div className={'bottom'}>
-									<button type="button" className="reset-filters" onClick={resetFilterHandler}>
-										<img src="/img/icons/reset.svg" alt="" />
-										<span>Reset all filters</span>
+
+								<div className="sx-adv-field">
+									<span id="home-price-label">Price per night (₩)</span>
+									<div className="sx-adv-range" role="group" aria-labelledby="home-price-label">
+										<input
+											type="number"
+											inputMode="numeric"
+											min={0}
+											step={1000}
+											placeholder="Min"
+											aria-label="Minimum nightly price in KRW"
+											aria-invalid={priceError}
+											value={priceMin}
+											onChange={(e) => setPriceMin(e.target.value)}
+										/>
+										<i aria-hidden="true">—</i>
+										<input
+											type="number"
+											inputMode="numeric"
+											min={0}
+											step={1000}
+											placeholder="Max"
+											aria-label="Maximum nightly price in KRW"
+											aria-invalid={priceError}
+											value={priceMax}
+											onChange={(e) => setPriceMax(e.target.value)}
+										/>
+									</div>
+									{priceError ? (
+										<small className="sx-adv-error" role="alert">
+											Use whole numbers, with the minimum no higher than the maximum.
+										</small>
+									) : (
+										pricesRange && (
+											<small className="sx-adv-hint">
+												{priceMin === ''
+													? `Up to ${formatKRW(pricesRange.end)} / night`
+													: priceMax === ''
+													? `From ${formatKRW(pricesRange.start)} / night`
+													: `${formatKRW(pricesRange.start)} – ${formatKRW(pricesRange.end)} / night`}
+											</small>
+										)
+									)}
+								</div>
+
+								<div className="sx-adv-foot">
+									<button type="button" className="sx-adv-reset" onClick={resetFilterHandler}>
+										Reset all
 									</button>
-									<Button
-										startIcon={<img src={'/img/icons/search.svg'} />}
-										className={'search-btn'}
-										disabled={guestError}
-										onClick={pushSearchHandler}
-									>
-										Search
-									</Button>
+									<button type="button" className="sx-adv-search" disabled={guestError || priceError} onClick={pushSearchHandler}>
+										<SearchIcon aria-hidden="true" />
+										Show stays
+									</button>
 								</div>
 							</motion.div>
 						</Box>
@@ -773,12 +790,7 @@ HeaderFilter.defaultProps = {
 	initialInput: {
 		page: 1,
 		limit: 9,
-		search: {
-			squaresRange: {
-				start: 0,
-				end: 500,
-			},
-		},
+		search: {},
 	},
 };
 

@@ -10,6 +10,7 @@ import HostsHero from '../agent/HostsHero';
 import CommunityHero from '../community/CommunityHero';
 import MyPageHero from '../mypage/MyPageHero';
 import CsHero from '../cs/CsHero';
+import AboutHero from '../about/AboutHero';
 import HomeFooter from '../homepage/HomeFooter';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
@@ -30,52 +31,13 @@ const withLayoutBasic = (Component: any) => {
 				desc = '',
 				bgImage = '';
 
+			// Pages with their own hero (or none) skip the old banner below, so only the auth case is left.
 			switch (router.pathname) {
-				case '/property':
-					title = 'Property Search';
-					desc = 'We are glad to see you again!';
-					bgImage = '/img/banner/properties.png';
-					break;
-				case '/agent':
-					title = 'Agents';
-					desc = 'Home / For Rent';
-					bgImage = '/img/banner/agents.webp';
-					break;
-				case '/agent/detail':
-					title = 'Agent Page';
-					desc = 'Home / For Rent';
-					bgImage = '/img/banner/header2.svg';
-					break;
-				case '/mypage':
-					title = 'my page';
-					desc = 'Home / For Rent';
-					bgImage = '/img/banner/header1.svg';
-					break;
-				case '/community':
-					title = 'Community';
-					desc = 'Home / For Rent';
-					bgImage = '/img/banner/header2.svg';
-					break;
-				case '/community/detail':
-					title = 'Community Detail';
-					desc = 'Home / For Rent';
-					bgImage = '/img/banner/header2.svg';
-					break;
-				case '/cs':
-					title = 'CS';
-					desc = 'We are glad to see you again!';
-					bgImage = '/img/banner/header2.svg';
-					break;
 				case '/account/join':
 					title = 'Login/Signup';
 					desc = 'Authentication Process';
 					bgImage = '/img/banner/header2.svg';
 					setAuthHeader(true);
-					break;
-				case '/member':
-					title = 'Member Page';
-					desc = 'Home / For Rent';
-					bgImage = '/img/banner/header1.svg';
 					break;
 				default:
 					break;
@@ -104,17 +66,21 @@ const withLayoutBasic = (Component: any) => {
 						<Top />
 					</Stack>
 
-					{router.pathname === '/community' ? (
-						<CommunityHero />
+					{router.pathname === '/community' || router.pathname === '/community/detail' ? (
+						<CommunityHero detail={router.pathname === '/community/detail'} />
 					) : router.pathname === '/agent' ? (
 						<HostsHero />
-					) : router.pathname === '/property' ? (
+					) : router.pathname === '/stay' ? (
 						<StaysHero />
 					) : router.pathname === '/mypage' ? (
 						<MyPageHero />
-					) : router.pathname === '/cs' ? (
+					) : router.pathname === '/help' ? (
 						<CsHero />
-					) : router.pathname === '/account/join' || router.pathname === '/agent/detail' ? null : (
+					) : router.pathname === '/about' ? (
+						<AboutHero />
+					) : router.pathname === '/account/join' ||
+					  router.pathname === '/agent/detail' ||
+					  router.pathname === '/member' ? null : (
 						<Stack
 							className={`header-basic ${authHeader && 'auth'}`}
 							style={{

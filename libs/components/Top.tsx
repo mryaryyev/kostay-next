@@ -37,11 +37,11 @@ const Top = () => {
 
 	const navLinks = [
 		{ href: '/', label: t('Home'), path: '/' },
-		{ href: '/property', label: t('Properties'), path: '/property' },
+		{ href: '/stay', label: t('Properties'), path: '/stay' },
 		{ href: '/agent', label: t('Agents'), path: '/agent' },
 		{ href: '/community?articleCategory=FREE', label: t('Community'), path: '/community' },
 		...(user?._id ? [{ href: '/mypage', label: t('My Page'), path: '/mypage' }] : []),
-		{ href: '/cs', label: t('Help'), path: '/cs' },
+		{ href: '/help', label: t('Help'), path: '/help' },
 	];
 
 	/** LIFECYCLES **/
@@ -59,7 +59,7 @@ const Top = () => {
 
 	useEffect(() => {
 		switch (router.pathname) {
-			case '/property/detail':
+			case '/stay/detail':
 				setBgColor(true);
 				break;
 			default:
@@ -123,7 +123,7 @@ const Top = () => {
 						<Link href={'/'} aria-current={isActive('/') ? 'page' : undefined}>
 							<div>{t('Home')}</div>
 						</Link>
-						<Link href={'/property'} aria-current={isActive('/property') ? 'page' : undefined}>
+						<Link href={'/stay'} aria-current={isActive('/stay') ? 'page' : undefined}>
 							<div>{t('Properties')}</div>
 						</Link>
 						<Link href={'/agent'} aria-current={isActive('/agent') ? 'page' : undefined}>
@@ -137,7 +137,7 @@ const Top = () => {
 								<div> {t('My Page')} </div>
 							</Link>
 						)}
-						<Link href={'/cs'} aria-current={isActive('/cs') ? 'page' : undefined}>
+						<Link href={'/help'} aria-current={isActive('/help') ? 'page' : undefined}>
 							<div> {t('Help')} </div>
 						</Link>
 					</Box>
@@ -158,10 +158,22 @@ const Top = () => {
 									onClose={() => {
 										setLogoutAnchor(null);
 									}}
-									sx={{ mt: '5px' }}
+									anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+									transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+									PaperProps={{ className: 'sx-user-menu' }}
 								>
-									<MenuItem onClick={() => logOut()}>
-										<Logout fontSize="small" style={{ color: 'blue', marginRight: '10px' }} />
+									<div className={'sx-user-menu-head'}>
+										<img
+											src={user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'}
+											alt=""
+										/>
+										<div>
+											<strong>{user.memberFullName || user.memberNick}</strong>
+											<span>@{user.memberNick}</span>
+										</div>
+									</div>
+									<MenuItem className={'sx-user-menu-item is-logout'} onClick={() => logOut()}>
+										<Logout fontSize="small" />
 										Logout
 									</MenuItem>
 								</Menu>

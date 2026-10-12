@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -26,7 +26,7 @@ const accountTypes = [
 
 const perks = [
 	'Instant Book with a full refund until your stay ends',
-	'Stays and hanoks in 9 cities',
+	'Apartments, houses and villas in 9 cities',
 	'Message hosts directly',
 ];
 
@@ -37,6 +37,10 @@ const Join: NextPage = () => {
 	const [loginView, setLoginView] = useState<boolean>(router.query.mode !== 'signup');
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [submitting, setSubmitting] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (router.isReady) setLoginView(router.query.mode !== 'signup');
+	}, [router.isReady, router.query.mode]);
 
 	/** CHECKS **/
 	const nickError = !loginView && input.nick !== '' && input.nick.trim().length < 3 ? 'At least 3 characters' : '';
@@ -141,9 +145,10 @@ const Join: NextPage = () => {
 							<span>Nickname</span>
 							<input
 								type="text"
-								autoComplete="username"
+								// Register is a new account: don't let the browser fill in a saved login.
+								autoComplete={loginView ? 'username' : 'off'}
 								value={input.nick}
-								placeholder="e.g. traveler_kim"
+								placeholder="Your nickname"
 								onChange={(e) => handleInput('nick', e.target.value)}
 							/>
 							{nickError && <small>{nickError}</small>}
@@ -157,7 +162,7 @@ const Join: NextPage = () => {
 									inputMode="numeric"
 									autoComplete="tel"
 									value={input.phone}
-									placeholder="01012345678"
+									placeholder="Your phone"
 									onChange={(e) => handleInput('phone', e.target.value.replace(/\D/g, ''))}
 								/>
 								{phoneError && <small>{phoneError}</small>}
@@ -200,9 +205,6 @@ const Join: NextPage = () => {
 						<button type="button" onClick={() => switchView(!loginView)}>
 							{loginView ? 'Create an account' : 'Log in'}
 						</button>
-					</p>
-					<p className="sx-join-help">
-						Trouble signing in? <Link href={{ pathname: '/cs', query: { tab: 'faq' } }}>Visit the Help Center</Link>
 					</p>
 				</section>
 			</div>

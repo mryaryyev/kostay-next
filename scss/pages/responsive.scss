@@ -1,10 +1,11 @@
 // Shared responsive rules (tablet ≤1023px, mobile ≤767px). Page-specific rules live in each page's SCSS.
 // Imported last in main.scss so these win over the desktop defaults.
 
-html,
+// Only on body (never html): body's overflow then still applies to the window, so the window stays the scroller
+// and Next.js can scroll it to the top on page changes. Setting it on html made body its own scroll box.
 body {
 	@include tablet {
-		overflow-x: hidden;
+		overflow-x: clip;
 	}
 }
 
@@ -109,54 +110,60 @@ body {
 	.home-footer-inner {
 		@include tablet {
 			width: 100%;
-			padding: 48px 24px 32px;
+			padding: 48px 24px 28px;
 			box-sizing: border-box;
 		}
+		// Extra bottom space so the fixed chat button doesn't cover the last row.
 		@include mobile {
-			padding: 32px 16px 20px;
+			padding: 36px 16px 96px;
 		}
 	}
-	// Brand and newsletter span the full width; the link columns sit side by side to keep the footer short.
+	// Brand and newsletter span the full width; the three link columns stay side by side between them.
 	.home-footer-grid {
 		@include tablet {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 24px 16px;
+			gap: 28px 16px;
 			margin-bottom: 32px;
 			.home-footer-brand,
 			.home-footer-news {
 				grid-column: 1 / -1;
+				padding: 0;
+			}
+			.home-footer-news {
+				order: 2;
+				max-width: 480px;
 			}
 		}
+		// Phones: Stay types and Company side by side, Destinations (two columns of cities) on its own row below.
 		@include mobile {
-			gap: 20px 12px;
-			margin-bottom: 24px;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 24px 12px;
+			margin-bottom: 28px;
+			.home-footer-col.is-split {
+				grid-column: 1 / -1;
+				order: 1;
+				ul {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					column-gap: 12px;
+				}
+			}
 			h4 {
-				margin-bottom: 10px;
-				font-size: 13px;
-			}
-			.home-footer-col a,
-			.home-footer-col li {
-				font-size: 13px;
-				line-height: 1.5;
-			}
-			.home-footer-col ul {
-				gap: 6px;
+				margin-bottom: 12px;
+				font-size: 14px;
 			}
 		}
 	}
-	.home-footer-brand {
-		@include mobile {
-			p {
-				font-size: 13px;
-				line-height: 20px;
-			}
+	.home-footer-brand .logo {
+		@include tablet {
+			margin-bottom: 20px;
 		}
 	}
+	// Stacked and left-aligned so the fixed chat button (bottom right) covers neither item.
 	.home-footer-bottom {
 		@include mobile {
-			flex-direction: column;
+			flex-direction: column-reverse;
 			align-items: flex-start;
-			gap: 8px;
+			gap: 12px;
 			padding-top: 20px;
 			font-size: 12px;
 		}
@@ -330,18 +337,6 @@ body {
 			padding-bottom: 32px;
 		}
 	}
-	.home-page > .home-trust-strip .container {
-		@include tablet {
-			padding-left: 24px !important;
-			padding-right: 24px !important;
-		}
-		@include mobile {
-			padding-left: 16px !important;
-			padding-right: 16px !important;
-			gap: 12px;
-		}
-	}
-	.home-page > .home-trust-strip .container,
 	.popular-properties .sx-grid-3 {
 		@include tablet {
 			grid-template-columns: 1fr 1fr;
@@ -477,16 +472,16 @@ body {
 		.filter-rooms,
 		.filter-dates,
 		.filter-guests {
-			position: fixed;
-			top: auto;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			max-height: 75vh;
-			overflow-y: auto;
-			border-radius: 24px 24px 0 0;
+			// In the page flow under the buttons (a fixed bottom sheet breaks inside the animated search box).
+			scroll-margin-top: 80px;
+			position: static !important;
+			width: 100% !important;
+			max-height: none !important;
+			overflow: visible !important;
+			margin-top: 4px;
+			border-radius: 20px;
 			box-sizing: border-box;
-			z-index: 1300;
+			box-shadow: none !important;
 		}
 	}
 }
@@ -536,17 +531,6 @@ body {
 	.sx-results-head {
 		@include tablet {
 			flex-wrap: wrap;
-		}
-	}
-	.sx-map-callout {
-		@include mobile {
-			flex-direction: column;
-			align-items: stretch;
-			text-align: left;
-			> a,
-			> button {
-				justify-content: center;
-			}
 		}
 	}
 	.sx-filters-btn {
@@ -603,6 +587,8 @@ body {
 		}
 		.sx-filter {
 			position: static;
+			max-height: none;
+			overflow: visible;
 			box-shadow: none;
 			border-radius: 0;
 		}
@@ -760,18 +746,6 @@ body {
 /* ================= Step 3: other redesigned pages ================= */
 
 /* ---------- Hosts list ---------- */
-#site-wrap .sx-hosts-hero .sx-hosts-hero-row {
-	@include mobile {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 16px;
-	}
-}
-#site-wrap .sx-hosts-hero .sx-hosts-hero-badge {
-	@include mobile {
-		padding: 10px 14px;
-	}
-}
 #site-wrap .agent-list-page {
 	.container.sx-hosts {
 		@include tablet {
@@ -851,8 +825,9 @@ body {
 	}
 }
 
-/* ---------- Community list ---------- */
-#site-wrap #community-list-page {
+/* ---------- Community list + detail ---------- */
+#site-wrap #community-list-page,
+#site-wrap #community-detail-page {
 	.container.sx-community-layout {
 		@include tablet {
 			grid-template-columns: 1fr;
@@ -912,8 +887,8 @@ body {
 			align-items: stretch;
 			gap: 16px;
 			h2 {
-				font-size: 34px;
-				line-height: 1.1;
+				font-size: 26px;
+				line-height: 1.2;
 			}
 		}
 	}
@@ -1028,7 +1003,10 @@ body {
 			flex-direction: column;
 			gap: 20px;
 			.left-config {
+				position: static;
 				width: 100%;
+				max-height: none;
+				overflow: hidden;
 			}
 			.main-config .list-config {
 				justify-content: center;
@@ -1037,7 +1015,8 @@ body {
 	}
 }
 // Menu becomes a horizontal chip bar: groups side by side, items scroll sideways.
-#site-wrap #my-page {
+#site-wrap #my-page,
+#site-wrap #member-page {
 	@include tablet {
 		.sx-menu {
 			flex-direction: row;
@@ -1282,10 +1261,6 @@ body {
 
 // Shared fallback: no element wider than the screen, images scale down.
 #site-wrap {
-	#member-page,
-	#community-detail-page,
-	.about-page,
-	#member-follows-page,
 	#my-page .list-config {
 		@include tablet {
 			*,
@@ -1302,255 +1277,6 @@ body {
 	}
 }
 
-/* Member page */
-#site-wrap #member-page {
-	@include tablet {
-		padding-top: 24px;
-		.container .member-page {
-			flex-direction: column;
-			margin-top: 0 !important;
-			.back-frame {
-				width: 100% !important;
-				flex-direction: column !important;
-				gap: 20px;
-				padding: 16px !important;
-				.left-config,
-				.main-config {
-					width: 100% !important;
-					min-height: 0 !important;
-					height: auto !important;
-				}
-				.left-config .sections .section .sub-section {
-					width: 100% !important;
-				}
-				.main-config .list-config {
-					flex-wrap: wrap;
-					justify-content: center;
-				}
-			}
-		}
-	}
-}
-
-/* Followers / followings tables (My Page and Member page) */
-#site-wrap #member-follows-page {
-	@include tablet {
-		.main-title-box .right-box {
-			width: 100% !important;
-		}
-		.listing-title-box {
-			display: none !important;
-		}
-		.follows-card-box {
-			flex-direction: column !important;
-			align-items: stretch !important;
-			gap: 12px;
-			height: auto !important;
-			padding: 16px !important;
-			.info,
-			.details-box,
-			.action-box {
-				width: 100% !important;
-			}
-			.details-box,
-			.action-box {
-				justify-content: flex-start !important;
-			}
-		}
-	}
-}
-
-/* Community detail */
-#site-wrap #community-detail-page {
-	@include tablet {
-		padding-top: 24px;
-		.container .main-box {
-			flex-direction: column !important;
-			gap: 20px;
-			.left-config {
-				width: 100% !important;
-				height: auto !important;
-				.tab-button {
-					flex-direction: row !important;
-					flex-wrap: wrap;
-					gap: 8px;
-					button,
-					> * {
-						width: auto !important;
-						flex: 1 1 40%;
-					}
-				}
-			}
-			.community-detail-config {
-				width: 100% !important;
-				.title-box {
-					flex-direction: column !important;
-					align-items: flex-start !important;
-					gap: 8px;
-				}
-				.config .first-box-config {
-					width: 100% !important;
-					height: auto !important;
-					.content-and-info {
-						flex-direction: column !important;
-						gap: 12px;
-						height: auto !important;
-					}
-					.info {
-						flex-wrap: wrap;
-						gap: 8px;
-					}
-				}
-			}
-		}
-	}
-}
-
-/* About */
-#site-wrap .about-page {
-	@include tablet {
-		padding: 32px 0 48px;
-		.intro .container,
-		.statistics .container,
-		.statistics .container .info,
-		.agents .container .wrap,
-		.options .container {
-			flex-direction: column !important;
-			align-items: stretch !important;
-			gap: 24px;
-			height: auto !important;
-		}
-		.intro .container {
-			.left,
-			.right {
-				width: 100% !important;
-			}
-			.boxes {
-				flex-wrap: wrap;
-				gap: 16px;
-				.box {
-					width: calc(50% - 8px) !important;
-				}
-			}
-		}
-		.statistics .container .banner {
-			width: 100% !important;
-			height: 200px !important;
-		}
-		.statistics .container .info {
-			flex-direction: row !important;
-			flex-wrap: wrap;
-			justify-content: space-around;
-		}
-		.options {
-			flex-direction: column !important;
-			height: auto !important;
-			.about-banner {
-				width: 100% !important;
-				height: 220px !important;
-			}
-			.container {
-				> *,
-				.text-box,
-				.text-box * {
-					width: 100% !important;
-				}
-			}
-		}
-	}
-	@include mobile {
-		.intro .container .left {
-			span,
-			h2,
-			strong {
-				font-size: 30px !important;
-				line-height: 1.15 !important;
-			}
-		}
-		.intro .container .boxes .box {
-			width: 100% !important;
-		}
-	}
-}
-
-/* Older pages: second pass after screenshots */
-#site-wrap #member-page {
-	@include tablet {
-		padding-top: 16px !important;
-		.container .member-page .back-frame {
-			margin: 16px 0 48px !important;
-			.left-config {
-				margin: 0 !important;
-				padding: 16px !important;
-			}
-		}
-		#member-properties-page {
-			.main-title-box .right-box {
-				width: 100% !important;
-			}
-			.listing-title-box {
-				display: none !important;
-			}
-			.property-card-box {
-				flex-wrap: wrap;
-				gap: 10px;
-				height: auto !important;
-				padding: 12px 0 !important;
-				.information-box {
-					width: calc(100% - 130px) !important;
-				}
-				.date-box,
-				.status-box {
-					width: auto !important;
-				}
-			}
-		}
-	}
-}
-#site-wrap #community-detail-page {
-	@include tablet {
-		padding-top: 0 !important;
-		> .container,
-		.container {
-			padding-top: 16px !important;
-		}
-		.main-box .left-config {
-			margin-top: 0 !important;
-		}
-	}
-}
-#site-wrap .about-page {
-	@include tablet {
-		.options {
-			display: flex;
-			.about-banner {
-				position: static !important;
-				order: -1;
-			}
-			.container {
-				padding: 24px 16px !important;
-			}
-		}
-		.help {
-			margin-top: 48px !important;
-			.container {
-				flex-direction: column !important;
-				gap: 20px;
-				padding: 32px 20px !important;
-				.left strong {
-					font-size: 24px !important;
-				}
-				.right {
-					flex-wrap: wrap;
-					gap: 10px;
-					div {
-						padding: 0 18px !important;
-					}
-				}
-			}
-		}
-	}
-}
 
 /* ================= Host My Page sections ================= */
 #site-wrap #my-page {
@@ -1621,6 +1347,39 @@ body {
 			.browse-button {
 				width: 100% !important;
 			}
+		}
+	}
+}
+
+// Tablets and phones: accordion. Each search panel opens right under its own field button.
+// The field row is flattened (display: contents) so buttons and panels become siblings and can be ordered.
+#site-wrap .header-main .container .search-box.home-glass-search {
+	@include tablet {
+		.select-box {
+			display: contents !important;
+		}
+		$fields: location, type, dates, guests, rooms;
+		@each $field in $fields {
+			$i: index($fields, $field);
+			#home-search-#{$field} {
+				order: $i * 2 - 1;
+			}
+			#home-panel-#{$field} {
+				order: $i * 2;
+				margin-top: 0;
+			}
+		}
+		.search-box-other {
+			order: 20;
+		}
+	}
+}
+// Tablets (768–1199px): photo cards in 4 columns so the open panel stays short.
+#site-wrap .header-main .container .search-box.home-glass-search {
+	@media (min-width: 768px) and (max-width: 1199px) {
+		.filter-location,
+		.filter-type {
+			grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 		}
 	}
 }
