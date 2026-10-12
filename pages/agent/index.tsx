@@ -1,6 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { NextPage } from 'next';
-import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Link from 'next/link';
 import SearchIcon from '@mui/icons-material/Search';
@@ -30,7 +29,6 @@ export const getStaticProps = async ({ locale }: any) => ({
 });
 
 const AgentList: NextPage = ({ initialInput, ...props }: any) => {
-	const device = useDeviceDetect();
 	const router = useRouter();
 	const [searchFilter, setSearchFilter] = useState<any>(
 		router?.query?.input ? JSON.parse(router?.query?.input as string) : initialInput,
@@ -122,151 +120,147 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 		}
 	};
 
-	if (device === 'mobile') {
-		return <h1>AGENTS PAGE MOBILE</h1>;
-	} else {
-		const pageCount = Math.ceil(total / searchFilter.limit);
+	const pageCount = Math.ceil(total / searchFilter.limit);
 
-		return (
-			<div className={'agent-list-page'}>
-				<div className={'container sx-hosts'}>
-					<div className={'sx-hosts-controls'}>
-						<div className={'sx-hosts-controls-row'}>
-							<label className={'sx-hosts-search'}>
-								<SearchIcon aria-hidden="true" />
-								<input
-									type="text"
-									placeholder={'Search for a host by name, city, or specialty...'}
-									aria-label={'Search hosts'}
-									value={searchText}
-									onChange={(e) => setSearchText(e.target.value)}
-									onKeyDown={(event) => {
-										if (event.key === 'Enter') {
-											setSearchFilter({
-												...searchFilter,
-												search: { ...searchFilter.search, text: searchText },
-											});
-										}
-									}}
-								/>
-							</label>
-							<label className={'sx-hosts-sort'}>
-								<span>Sort by:</span>
-								<span className={'sx-hosts-select'}>
-									<select value={sortKey} onChange={(e) => sortChangeHandler(e.target.value)}>
-										<option value="recent">Recent</option>
-										<option value="old">Oldest</option>
-										<option value="likes">Most Liked</option>
-										<option value="views">Most Viewed</option>
-									</select>
-									<ExpandMoreIcon aria-hidden="true" />
-								</span>
-							</label>
-						</div>
-						<div className={'sx-hosts-chips'}>
-							<button type="button" className={'is-active'} aria-pressed={true}>
-								All Hosts ({total})
-							</button>
-						</div>
+	return (
+		<div className={'agent-list-page'}>
+			<div className={'container sx-hosts'}>
+				<div className={'sx-hosts-controls'}>
+					<div className={'sx-hosts-controls-row'}>
+						<label className={'sx-hosts-search'}>
+							<SearchIcon aria-hidden="true" />
+							<input
+								type="text"
+								placeholder={'Search for a host by name, city, or specialty...'}
+								aria-label={'Search hosts'}
+								value={searchText}
+								onChange={(e) => setSearchText(e.target.value)}
+								onKeyDown={(event) => {
+									if (event.key === 'Enter') {
+										setSearchFilter({
+											...searchFilter,
+											search: { ...searchFilter.search, text: searchText },
+										});
+									}
+								}}
+							/>
+						</label>
+						<label className={'sx-hosts-sort'}>
+							<span>Sort by:</span>
+							<span className={'sx-hosts-select'}>
+								<select value={sortKey} onChange={(e) => sortChangeHandler(e.target.value)}>
+									<option value="recent">Recent</option>
+									<option value="old">Oldest</option>
+									<option value="likes">Most Liked</option>
+									<option value="views">Most Viewed</option>
+								</select>
+								<ExpandMoreIcon aria-hidden="true" />
+							</span>
+						</label>
 					</div>
-
-					<div className={'sx-hosts-count'}>
-						<i aria-hidden="true" />
-						<strong>
-							Showing {total} verified Kostay {total === 1 ? 'host' : 'hosts'}
-						</strong>
-						<span>across Korea</span>
+					<div className={'sx-hosts-chips'}>
+						<button type="button" className={'is-active'} aria-pressed={true}>
+							All Hosts ({total})
+						</button>
 					</div>
+				</div>
 
-					{getAgentsLoading && agents.length === 0 ? (
-						<div className={'no-data'} role="status">
-							Loading hosts…
-						</div>
-					) : agents?.length === 0 ? (
-						<div className={'no-data'}>
-							<img src="/img/icons/icoAlert.svg" alt="" />
-							<p>No hosts found!</p>
-						</div>
-					) : (
-						<div className={'sx-hosts-grid'}>
-							{agents.map((agent: Member) => (
-								<AgentCard agent={agent} key={agent._id} likeMemberHandler={likeMemberHandler} />
-							))}
-						</div>
-					)}
+				<div className={'sx-hosts-count'}>
+					<i aria-hidden="true" />
+					<strong>
+						Showing {total} verified Kostay {total === 1 ? 'host' : 'hosts'}
+					</strong>
+					<span>across Korea</span>
+				</div>
 
-					{agents.length !== 0 && pageCount > 1 && (
-						<nav className={'sx-hosts-pagination'} aria-label="Pagination">
-							<button
-								type="button"
-								aria-label="Previous page"
-								disabled={currentPage <= 1}
-								onClick={() => paginationChangeHandler(null as any, currentPage - 1)}
-							>
-								<ChevronLeftIcon />
-							</button>
-							{Array.from({ length: pageCount }, (_, index) => index + 1).map((page) => (
-								<button
-									type="button"
-									key={page}
-									className={page === currentPage ? 'is-active' : ''}
-									aria-current={page === currentPage ? 'page' : undefined}
-									onClick={() => page !== currentPage && paginationChangeHandler(null as any, page)}
-								>
-									{page}
-								</button>
-							))}
-							<button
-								type="button"
-								aria-label="Next page"
-								disabled={currentPage >= pageCount}
-								onClick={() => paginationChangeHandler(null as any, currentPage + 1)}
-							>
-								<ChevronRightIcon />
-							</button>
-						</nav>
-					)}
-
-					<div className={'sx-hosts-trust'}>
-						{trustItems.map((item) => (
-							<div className={'sx-hosts-trust-item'} key={item.title}>
-								<span aria-hidden="true">{item.icon}</span>
-								<div>
-									<h3>{item.title}</h3>
-									<p>{item.text}</p>
-								</div>
-							</div>
+				{getAgentsLoading && agents.length === 0 ? (
+					<div className={'no-data'} role="status">
+						Loading hosts…
+					</div>
+				) : agents?.length === 0 ? (
+					<div className={'no-data'}>
+						<img src="/img/icons/icoAlert.svg" alt="" />
+						<p>No hosts found!</p>
+					</div>
+				) : (
+					<div className={'sx-hosts-grid'}>
+						{agents.map((agent: Member) => (
+							<AgentCard agent={agent} key={agent._id} likeMemberHandler={likeMemberHandler} />
 						))}
 					</div>
+				)}
 
-					<section className={'sx-hosts-cta'}>
-						<span className={'sx-hosts-cta-glow is-a'} aria-hidden="true" />
-						<span className={'sx-hosts-cta-glow is-b'} aria-hidden="true" />
-						<div className={'sx-hosts-cta-copy'}>
-							<span className={'sx-hosts-cta-tag'}>
-								<RoofingIcon aria-hidden="true" />
-								Open Your Doors with Kostay
-							</span>
-							<h2>Have a hanok, villa, or coastal retreat to share?</h2>
-							<p>
-								Join {total} verified {total === 1 ? 'host' : 'hosts'} across Korea. Earn steady income while introducing global
-								travelers to genuine Korean hospitality, design, and serenity.
-							</p>
+				{agents.length !== 0 && pageCount > 1 && (
+					<nav className={'sx-hosts-pagination'} aria-label="Pagination">
+						<button
+							type="button"
+							aria-label="Previous page"
+							disabled={currentPage <= 1}
+							onClick={() => paginationChangeHandler(null as any, currentPage - 1)}
+						>
+							<ChevronLeftIcon />
+						</button>
+						{Array.from({ length: pageCount }, (_, index) => index + 1).map((page) => (
+							<button
+								type="button"
+								key={page}
+								className={page === currentPage ? 'is-active' : ''}
+								aria-current={page === currentPage ? 'page' : undefined}
+								onClick={() => page !== currentPage && paginationChangeHandler(null as any, page)}
+							>
+								{page}
+							</button>
+						))}
+						<button
+							type="button"
+							aria-label="Next page"
+							disabled={currentPage >= pageCount}
+							onClick={() => paginationChangeHandler(null as any, currentPage + 1)}
+						>
+							<ChevronRightIcon />
+						</button>
+					</nav>
+				)}
+
+				<div className={'sx-hosts-trust'}>
+					{trustItems.map((item) => (
+						<div className={'sx-hosts-trust-item'} key={item.title}>
+							<span aria-hidden="true">{item.icon}</span>
+							<div>
+								<h3>{item.title}</h3>
+								<p>{item.text}</p>
+							</div>
 						</div>
-						<div className={'sx-hosts-cta-actions'}>
-							<Link href={'/account/join'} className={'is-primary'}>
-								Become a Host
-								<EastIcon aria-hidden="true" />
-							</Link>
-							<Link href={'/account/join'} className={'is-ghost'}>
-								How Hosting Works
-							</Link>
-						</div>
-					</section>
+					))}
 				</div>
+
+				<section className={'sx-hosts-cta'}>
+					<span className={'sx-hosts-cta-glow is-a'} aria-hidden="true" />
+					<span className={'sx-hosts-cta-glow is-b'} aria-hidden="true" />
+					<div className={'sx-hosts-cta-copy'}>
+						<span className={'sx-hosts-cta-tag'}>
+							<RoofingIcon aria-hidden="true" />
+							Open Your Doors with Kostay
+						</span>
+						<h2>Have a hanok, villa, or coastal retreat to share?</h2>
+						<p>
+							Join {total} verified {total === 1 ? 'host' : 'hosts'} across Korea. Earn steady income while introducing global
+							travelers to genuine Korean hospitality, design, and serenity.
+						</p>
+					</div>
+					<div className={'sx-hosts-cta-actions'}>
+						<Link href={'/account/join'} className={'is-primary'}>
+							Become a Host
+							<EastIcon aria-hidden="true" />
+						</Link>
+						<Link href={'/account/join'} className={'is-ghost'}>
+							How Hosting Works
+						</Link>
+					</div>
+				</section>
 			</div>
-		);
-	}
+		</div>
+	);
 };
 
 const trustItems = [

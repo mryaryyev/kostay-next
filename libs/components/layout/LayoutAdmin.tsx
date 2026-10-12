@@ -61,7 +61,9 @@ const withAdminLayout = (Component: ComponentType) => {
 		if (!user || user?.memberType !== MemberType.ADMIN) return null;
 
 		return (
-			<main id="pc-wrap" className="admin">
+			<main id="site-wrap" className="admin">
+				{/* The admin panel is desktop-only; small screens see this note (scss/pages/responsive.scss). */}
+				<div className="admin-small-screen">Kostay admin works best on a desktop or a wide tablet.</div>
 				<Box component={'div'} sx={{ display: 'flex' }}>
 					<AppBar
 						position="fixed"
@@ -76,9 +78,7 @@ const withAdminLayout = (Component: ComponentType) => {
 							<Tooltip title="Open settings">
 								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
 									<Avatar
-										src={
-											user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'
-										}
+										src={user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'}
 									/>
 								</IconButton>
 							</Tooltip>

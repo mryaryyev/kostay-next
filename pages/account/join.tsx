@@ -8,7 +8,6 @@ import LuggageOutlinedIcon from '@mui/icons-material/LuggageOutlined';
 import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import { logIn, signUp } from '../../libs/auth';
 import { sweetMixinErrorAlert } from '../../libs/sweetAlert';
@@ -34,7 +33,6 @@ const perks = [
 /** Login / Register: same logIn / signUp calls as before (libs/auth), Kostay design. */
 const Join: NextPage = () => {
 	const router = useRouter();
-	const device = useDeviceDetect();
 	const [input, setInput] = useState({ nick: '', password: '', phone: '', type: 'USER' });
 	const [loginView, setLoginView] = useState<boolean>(router.query.mode !== 'signup');
 	const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -71,10 +69,6 @@ const Join: NextPage = () => {
 			setSubmitting(false);
 		}
 	};
-
-	if (device === 'mobile') {
-		return <div>LOGIN MOBILE</div>;
-	}
 
 	return (
 		<div id="join-page">

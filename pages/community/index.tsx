@@ -9,7 +9,6 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
-import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import { BoardArticle } from '../../libs/types/board-article/board-article';
 import { T } from '../../libs/types/common';
@@ -30,7 +29,6 @@ export const getStaticProps = async ({ locale }: any) => ({
 });
 
 const Community: NextPage = ({ initialInput, ...props }: T) => {
-	const device = useDeviceDetect();
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 	const { query } = router;
@@ -71,7 +69,6 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 		NEWS: newsCountData?.getBoardArticles?.metaCounter?.[0]?.total ?? 0,
 		HUMOR: humorCountData?.getBoardArticles?.metaCounter?.[0]?.total ?? 0,
 	};
-
 
 	/** LIFECYCLES **/
 	useEffect(() => {
@@ -137,177 +134,173 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 		}
 	};
 
-	if (device === 'mobile') {
-		return <h1>COMMUNITY PAGE MOBILE</h1>;
-	} else {
-		const activeBoard = searchCommunity.search.articleCategory;
-		const activeMeta = boardMeta[activeBoard] ?? boardMeta.FREE;
-		const pageCount = Math.ceil(totalCount / searchCommunity.limit);
-		const goWrite = async () => {
-			// Writing needs an account; tell logged-out visitors why instead of a silent bounce from /mypage.
-			if (!user?._id) {
-				await sweetMixinErrorAlert(Messages.error2, 2000);
-				await router.push('/');
-				return;
-			}
-			await router.push({ pathname: '/mypage', query: { category: 'writeArticle' } });
-		};
+	const activeBoard = searchCommunity.search.articleCategory;
+	const activeMeta = boardMeta[activeBoard] ?? boardMeta.FREE;
+	const pageCount = Math.ceil(totalCount / searchCommunity.limit);
+	const goWrite = async () => {
+		// Writing needs an account; tell logged-out visitors why instead of a silent bounce from /mypage.
+		if (!user?._id) {
+			await sweetMixinErrorAlert(Messages.error2, 2000);
+			await router.push('/');
+			return;
+		}
+		await router.push({ pathname: '/mypage', query: { category: 'writeArticle' } });
+	};
 
-		return (
-			<div id="community-list-page">
-				<div className="container sx-community-layout">
-					<aside className="sx-community-side">
-						<div className="sx-board-menu">
-							<div className="sx-board-brand">
-								<span aria-hidden="true">
-									<HomeOutlinedIcon />
-								</span>
-								<div>
-									<strong>Kostay</strong>
-									<small>Community Lounge</small>
-								</div>
-							</div>
-							<nav aria-label="Boards">
-								{Object.values(BoardArticleCategory).map((category) => (
-									<button
-										type="button"
-										key={category}
-										className={category === activeBoard ? 'is-active' : ''}
-										aria-current={category === activeBoard ? 'page' : undefined}
-										onClick={() => tabChangeHandler({}, category)}
-									>
-										<span>{boardLabels[category]}</span>
-										<em>{boardCounts[category] ?? 0}</em>
-									</button>
-								))}
-							</nav>
-						</div>
-
-						<div className="sx-etiquette">
-							<h3>
-								<HandshakeIcon aria-hidden="true" />
-								Community Etiquette
-							</h3>
-							<p>
-								Korean hospitality thrives on mutual respect (<em>Jeong</em>). Please share truthful accounts, respect fellow
-								hosts and travelers, and avoid commercial spam.
-							</p>
-						</div>
-					</aside>
-
-					<section className="sx-community-main">
-						<div className="sx-board-head">
+	return (
+		<div id="community-list-page">
+			<div className="container sx-community-layout">
+				<aside className="sx-community-side">
+					<div className="sx-board-menu">
+						<div className="sx-board-brand">
+							<span aria-hidden="true">
+								<HomeOutlinedIcon />
+							</span>
 							<div>
-								<h2>{activeMeta.title}</h2>
-								<p>{activeMeta.description}</p>
-							</div>
-							<div className="sx-board-actions">
-								<label className="sx-board-search">
-									<SearchIcon aria-hidden="true" />
-									<input
-										type="text"
-										placeholder={activeMeta.placeholder}
-										aria-label={'Search articles'}
-										value={searchText}
-										onChange={(e) => setSearchText(e.target.value)}
-										onKeyDown={(event) => {
-											if (event.key === 'Enter') {
-												setSearchCommunity({
-													...searchCommunity,
-													page: 1,
-													search: { ...searchCommunity.search, text: searchText },
-												});
-											}
-										}}
-									/>
-								</label>
-								<button type="button" className="sx-write" onClick={goWrite}>
-									<EditNoteIcon aria-hidden="true" />
-									Write
-								</button>
+								<strong>Kostay</strong>
+								<small>Community Lounge</small>
 							</div>
 						</div>
+						<nav aria-label="Boards">
+							{Object.values(BoardArticleCategory).map((category) => (
+								<button
+									type="button"
+									key={category}
+									className={category === activeBoard ? 'is-active' : ''}
+									aria-current={category === activeBoard ? 'page' : undefined}
+									onClick={() => tabChangeHandler({}, category)}
+								>
+									<span>{boardLabels[category]}</span>
+									<em>{boardCounts[category] ?? 0}</em>
+								</button>
+							))}
+						</nav>
+					</div>
 
-						{boardArticlesLoading && boardArticles.length === 0 ? (
-							<div className={'no-data'} role="status">
-								Loading articles…
-							</div>
-						) : totalCount ? (
-							<div className="sx-post-grid">
-								{boardArticles?.map((boardArticle: BoardArticle) => (
-									<CommunityCard
-										boardArticle={boardArticle}
-										key={boardArticle?._id}
-										likeArticleHandler={likeArticleHandler}
-										variant={'board'}
-									/>
-								))}
-							</div>
-						) : (
-							<div className={'no-data'}>
-								<img src="/img/icons/icoAlert.svg" alt="" />
-								<p>No Article found!</p>
-							</div>
-						)}
+					<div className="sx-etiquette">
+						<h3>
+							<HandshakeIcon aria-hidden="true" />
+							Community Etiquette
+						</h3>
+						<p>
+							Korean hospitality thrives on mutual respect (<em>Jeong</em>). Please share truthful accounts, respect fellow
+							hosts and travelers, and avoid commercial spam.
+						</p>
+					</div>
+				</aside>
 
-						{totalCount > 0 && (
-							<div className="sx-community-pagination">
-								{pageCount > 1 && (
-									<nav aria-label="Pagination">
-										<button
-											type="button"
-											aria-label="Previous page"
-											disabled={searchCommunity.page <= 1}
-											onClick={() => paginationHandler({}, searchCommunity.page - 1)}
-										>
-											<ChevronLeftIcon />
-										</button>
-										{Array.from({ length: pageCount }, (_, index) => index + 1).map((page) => (
-											<button
-												type="button"
-												key={page}
-												className={page === searchCommunity.page ? 'is-active' : ''}
-												aria-current={page === searchCommunity.page ? 'page' : undefined}
-												onClick={() => paginationHandler({}, page)}
-											>
-												{page}
-											</button>
-										))}
-										<button
-											type="button"
-											aria-label="Next page"
-											disabled={searchCommunity.page >= pageCount}
-											onClick={() => paginationHandler({}, searchCommunity.page + 1)}
-										>
-											<ChevronRightIcon />
-										</button>
-									</nav>
-								)}
-								<p>
-									Total {totalCount} article{totalCount > 1 ? 's' : ''} available
-								</p>
-							</div>
-						)}
-
-						<div className="sx-share">
-							<div className="sx-share-copy">
-								<span aria-hidden="true">
-									<RateReviewOutlinedIcon />
-								</span>
-								<div>
-									<h3>Have a memorable moment from your Korean stay?</h3>
-									<p>Whether an unexpected Hanok discovery or a subway turnstile mystery, fellow travelers want to hear it.</p>
-								</div>
-							</div>
-							<button type="button" onClick={goWrite}>
-								Share Your Experience
+				<section className="sx-community-main">
+					<div className="sx-board-head">
+						<div>
+							<h2>{activeMeta.title}</h2>
+							<p>{activeMeta.description}</p>
+						</div>
+						<div className="sx-board-actions">
+							<label className="sx-board-search">
+								<SearchIcon aria-hidden="true" />
+								<input
+									type="text"
+									placeholder={activeMeta.placeholder}
+									aria-label={'Search articles'}
+									value={searchText}
+									onChange={(e) => setSearchText(e.target.value)}
+									onKeyDown={(event) => {
+										if (event.key === 'Enter') {
+											setSearchCommunity({
+												...searchCommunity,
+												page: 1,
+												search: { ...searchCommunity.search, text: searchText },
+											});
+										}
+									}}
+								/>
+							</label>
+							<button type="button" className="sx-write" onClick={goWrite}>
+								<EditNoteIcon aria-hidden="true" />
+								Write
 							</button>
 						</div>
-					</section>
-				</div>
+					</div>
+
+					{boardArticlesLoading && boardArticles.length === 0 ? (
+						<div className={'no-data'} role="status">
+							Loading articles…
+						</div>
+					) : totalCount ? (
+						<div className="sx-post-grid">
+							{boardArticles?.map((boardArticle: BoardArticle) => (
+								<CommunityCard
+									boardArticle={boardArticle}
+									key={boardArticle?._id}
+									likeArticleHandler={likeArticleHandler}
+									variant={'board'}
+								/>
+							))}
+						</div>
+					) : (
+						<div className={'no-data'}>
+							<img src="/img/icons/icoAlert.svg" alt="" />
+							<p>No Article found!</p>
+						</div>
+					)}
+
+					{totalCount > 0 && (
+						<div className="sx-community-pagination">
+							{pageCount > 1 && (
+								<nav aria-label="Pagination">
+									<button
+										type="button"
+										aria-label="Previous page"
+										disabled={searchCommunity.page <= 1}
+										onClick={() => paginationHandler({}, searchCommunity.page - 1)}
+									>
+										<ChevronLeftIcon />
+									</button>
+									{Array.from({ length: pageCount }, (_, index) => index + 1).map((page) => (
+										<button
+											type="button"
+											key={page}
+											className={page === searchCommunity.page ? 'is-active' : ''}
+											aria-current={page === searchCommunity.page ? 'page' : undefined}
+											onClick={() => paginationHandler({}, page)}
+										>
+											{page}
+										</button>
+									))}
+									<button
+										type="button"
+										aria-label="Next page"
+										disabled={searchCommunity.page >= pageCount}
+										onClick={() => paginationHandler({}, searchCommunity.page + 1)}
+									>
+										<ChevronRightIcon />
+									</button>
+								</nav>
+							)}
+							<p>
+								Total {totalCount} article{totalCount > 1 ? 's' : ''} available
+							</p>
+						</div>
+					)}
+
+					<div className="sx-share">
+						<div className="sx-share-copy">
+							<span aria-hidden="true">
+								<RateReviewOutlinedIcon />
+							</span>
+							<div>
+								<h3>Have a memorable moment from your Korean stay?</h3>
+								<p>Whether an unexpected Hanok discovery or a subway turnstile mystery, fellow travelers want to hear it.</p>
+							</div>
+						</div>
+						<button type="button" onClick={goWrite}>
+							Share Your Experience
+						</button>
+					</div>
+				</section>
 			</div>
-		);
-	}
+		</div>
+	);
 };
 
 const boardMeta: Record<string, { title: string; description: string; placeholder: string }> = {

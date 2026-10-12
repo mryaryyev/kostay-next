@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Stack, Typography } from '@mui/material';
 import { BoardArticle } from '../../types/board-article/board-article';
 import Moment from 'react-moment';
@@ -34,7 +33,6 @@ interface CommunityCardProps {
 
 const CommunityCard = (props: CommunityCardProps) => {
 	const { boardArticle, size = 'normal', likeArticleHandler, variant = 'default' } = props;
-	const device = useDeviceDetect();
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 	const imagePath: string = boardArticle?.articleImage
@@ -58,9 +56,7 @@ const CommunityCard = (props: CommunityCardProps) => {
 		else router.push(`/member?memberId=${id}`);
 	};
 
-	if (device === 'mobile') {
-		return <div>COMMUNITY CARD MOBILE</div>;
-	} else if (variant === 'board') {
+	if (variant === 'board') {
 		const isLiked = Boolean(boardArticle?.meLiked?.[0]?.myFavorite);
 		const author = boardArticle?.memberData;
 		const authorName = author?.memberNick ?? 'Member';

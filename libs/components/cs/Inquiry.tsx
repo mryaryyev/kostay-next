@@ -6,7 +6,6 @@ import moment from 'moment';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { userVar } from '../../../apollo/store';
 import { GET_MY_INQUIRIES } from '../../../apollo/user/query';
 import { CREATE_INQUIRY, REMOVE_MY_INQUIRY } from '../../../apollo/user/mutation';
@@ -20,7 +19,6 @@ const CONTENT_MAX = 2000;
 
 /** CS → Inquiry: a member asks the Kostay team; the admin answers on the 1:1 Inquiry page and the member is notified. */
 const Inquiry = () => {
-	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
 	const [topic, setTopic] = useState<InquiryTopic>(InquiryTopic.BOOKING);
 	const [title, setTitle] = useState<string>('');
@@ -69,10 +67,6 @@ const Inquiry = () => {
 			await sweetErrorHandling(err);
 		}
 	};
-
-	if (device === 'mobile') {
-		return <div>INQUIRY MOBILE</div>;
-	}
 
 	if (!user?._id) {
 		return (

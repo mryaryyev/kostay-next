@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Button, Stack, Typography } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { PropertyLocation, PropertyType } from '../../enums/property.enum';
 import { REACT_APP_API_URL, propertySquare } from '../../config';
 import { PropertyInput } from '../../types/property/property.input';
@@ -16,7 +15,6 @@ import { sweetErrorHandling, sweetMixinErrorAlert, sweetMixinSuccessAlert } from
 import { isPositiveInt, parsePositiveInt } from '../../utils';
 
 const AddProperty = ({ initialValues, ...props }: any) => {
-	const device = useDeviceDetect();
 	const router = useRouter();
 	const inputRef = useRef<any>(null);
 	const [insertPropertyData, setInsertPropertyData] = useState<PropertyInput>(initialValues);
@@ -207,16 +205,12 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 	const priceInvalid = priceText !== '' && parsePositiveInt(priceText) === null;
 	const guestsInvalid = guestsText !== '' && parsePositiveInt(guestsText) === null;
 
-	if (device === 'mobile') {
-		return <div>ADD NEW PROPERTY MOBILE PAGE</div>;
-	} else if (editUnavailable) {
+	if (editUnavailable) {
 		return (
 			<div id="add-property-page">
 				<Stack className="main-title-box">
 					<Typography className="main-title">Edit listing</Typography>
-					<Typography className="sub-title">
-						Only active listings can be edited. Reactivate this listing first.
-					</Typography>
+					<Typography className="sub-title">Only active listings can be edited. Reactivate this listing first.</Typography>
 				</Stack>
 				<Stack className="buttons-row">
 					<Button
@@ -246,9 +240,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 									className="description-input"
 									placeholder={'Title'}
 									value={insertPropertyData.propertyTitle}
-									onChange={({ target: { value } }) =>
-										setInsertPropertyData({ ...insertPropertyData, propertyTitle: value })
-									}
+									onChange={({ target: { value } }) => setInsertPropertyData({ ...insertPropertyData, propertyTitle: value })}
 								/>
 							</Stack>
 
@@ -332,9 +324,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 										className="description-input"
 										placeholder={'Address'}
 										value={insertPropertyData.propertyAddress}
-										onChange={({ target: { value } }) =>
-											setInsertPropertyData({ ...insertPropertyData, propertyAddress: value })
-										}
+										onChange={({ target: { value } }) => setInsertPropertyData({ ...insertPropertyData, propertyAddress: value })}
 									/>
 								</Stack>
 							</Stack>
@@ -435,9 +425,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 									id=""
 									className="description-text"
 									value={insertPropertyData.propertyDesc}
-									onChange={({ target: { value } }) =>
-										setInsertPropertyData({ ...insertPropertyData, propertyDesc: value })
-									}
+									onChange={({ target: { value } }) => setInsertPropertyData({ ...insertPropertyData, propertyDesc: value })}
 								></textarea>
 							</Stack>
 						</Stack>

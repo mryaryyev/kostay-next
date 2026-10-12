@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { Pagination, Stack, Typography } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { PropertyCard } from '../mypage/PropertyCard';
 import { Property } from '../../types/property/property';
 import { PropertiesInquiry } from '../../types/property/property.input';
@@ -11,7 +10,6 @@ import { useQuery } from '@apollo/client';
 import { GET_PROPERTIES } from '../../../apollo/user/query';
 
 const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
-	const device = useDeviceDetect();
 	const router = useRouter();
 	const { memberId } = router.query;
 	const [searchFilter, setSearchFilter] = useState<PropertiesInquiry>({ ...initialInput });
@@ -41,8 +39,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 	}, [searchFilter]);
 
 	useEffect(() => {
-		if (memberId)
-			setSearchFilter({ ...initialInput, search: { ...initialInput.search, memberId: memberId as string } });
+		if (memberId) setSearchFilter({ ...initialInput, search: { ...initialInput.search, memberId: memberId as string } });
 	}, [memberId]);
 
 	/** HANDLERS **/
@@ -50,59 +47,55 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		setSearchFilter({ ...searchFilter, page: value });
 	};
 
-	if (device === 'mobile') {
-		return <div>NESTAR PROPERTIES MOBILE</div>;
-	} else {
-		return (
-			<div id="member-properties-page">
-				<Stack className="main-title-box">
-					<Stack className="right-box">
-						<Typography className="main-title">Stays</Typography>
-					</Stack>
+	return (
+		<div id="member-properties-page">
+			<Stack className="main-title-box">
+				<Stack className="right-box">
+					<Typography className="main-title">Stays</Typography>
 				</Stack>
-				<Stack className="properties-list-box">
-					<Stack className="list-box">
-						{agentProperties?.length > 0 && (
-							<Stack className="listing-title-box">
-								<Typography className="title-text">Listing title</Typography>
-								<Typography className="title-text">Date Published</Typography>
-								<Typography className="title-text">Status</Typography>
-								<Typography className="title-text">View</Typography>
-							</Stack>
-						)}
-						{agentProperties?.length === 0 && (
-							<div className={'no-data'}>
-								<img src="/img/icons/icoAlert.svg" alt="" />
-								<p>No stays found!</p>
-							</div>
-						)}
-						{agentProperties?.map((property: Property) => {
-							return <PropertyCard property={property} memberPage={true} key={property?._id} />;
-						})}
+			</Stack>
+			<Stack className="properties-list-box">
+				<Stack className="list-box">
+					{agentProperties?.length > 0 && (
+						<Stack className="listing-title-box">
+							<Typography className="title-text">Listing title</Typography>
+							<Typography className="title-text">Date Published</Typography>
+							<Typography className="title-text">Status</Typography>
+							<Typography className="title-text">View</Typography>
+						</Stack>
+					)}
+					{agentProperties?.length === 0 && (
+						<div className={'no-data'}>
+							<img src="/img/icons/icoAlert.svg" alt="" />
+							<p>No stays found!</p>
+						</div>
+					)}
+					{agentProperties?.map((property: Property) => {
+						return <PropertyCard property={property} memberPage={true} key={property?._id} />;
+					})}
 
-						{agentProperties.length !== 0 && (
-							<Stack className="pagination-config">
-								<Stack className="pagination-box">
-									<Pagination
-										count={Math.ceil(total / searchFilter.limit)}
-										page={searchFilter.page}
-										shape="circular"
-										color="primary"
-										onChange={paginationHandler}
-									/>
-								</Stack>
-								<Stack className="total-result">
-									<Typography>
-										{total} stay{total === 1 ? '' : 's'} available
-									</Typography>
-								</Stack>
+					{agentProperties.length !== 0 && (
+						<Stack className="pagination-config">
+							<Stack className="pagination-box">
+								<Pagination
+									count={Math.ceil(total / searchFilter.limit)}
+									page={searchFilter.page}
+									shape="circular"
+									color="primary"
+									onChange={paginationHandler}
+								/>
 							</Stack>
-						)}
-					</Stack>
+							<Stack className="total-result">
+								<Typography>
+									{total} stay{total === 1 ? '' : 's'} available
+								</Typography>
+							</Stack>
+						</Stack>
+					)}
 				</Stack>
-			</div>
-		);
-	}
+			</Stack>
+		</div>
+	);
 };
 
 MyProperties.defaultProps = {

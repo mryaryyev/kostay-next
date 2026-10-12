@@ -1,7 +1,6 @@
 import SectionHeader from './SectionHeader';
 import React, { useState } from 'react';
 import { Stack, Box } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -22,7 +21,6 @@ interface TopPropertiesProps {
 
 const TopProperties = (props: TopPropertiesProps) => {
 	const { initialInput } = props;
-	const device = useDeviceDetect();
 	const [topProperties, setTopProperties] = useState<Property[]>([]);
 
 	/** APOLLO REQUESTS **/
@@ -62,75 +60,46 @@ const TopProperties = (props: TopPropertiesProps) => {
 		}
 	};
 
-	if (device === 'mobile') {
-		return (
-			<Stack className={'top-properties'}>
-				<Stack className={'container'}>
-					<Stack className={'info-box'}>
-						<span>Top stays</span>
-					</Stack>
-					<Stack className={'card-box'}>
-						<Swiper
-							className={'top-property-swiper'}
-							slidesPerView={'auto'}
-							centeredSlides={true}
-							spaceBetween={15}
-							modules={[Autoplay]}
-						>
-							{topProperties.map((property: Property) => {
-								return (
-									<SwiperSlide className={'top-property-slide'} key={property?._id}>
-										<TopPropertyCard property={property} likePropertyHandler={likePropertyHandler} />
-									</SwiperSlide>
-								);
-							})}
-						</Swiper>
-					</Stack>
+	return (
+		<Stack className={'top-properties'}>
+			<Stack className={'container'}>
+				<SectionHeader
+					eyebrow={'Top rated'}
+					title={'Top Stays'}
+					action={
+						<div className={'home-pager'}>
+							<button type={'button'} className={'swiper-top-prev'} aria-label={'Previous stays'}>
+								<ChevronLeftIcon />
+							</button>
+							<button type={'button'} className={'swiper-top-next'} aria-label={'Next stays'}>
+								<ChevronRightIcon />
+							</button>
+						</div>
+					}
+				/>
+				<Stack className={'card-box'}>
+					<Swiper
+						className={'top-property-swiper'}
+						slidesPerView={'auto'}
+						spaceBetween={24}
+						modules={[Autoplay, Navigation, Pagination]}
+						navigation={{
+							nextEl: '.swiper-top-next',
+							prevEl: '.swiper-top-prev',
+						}}
+					>
+						{topProperties.map((property: Property) => {
+							return (
+								<SwiperSlide className={'top-property-slide'} key={property?._id}>
+									<TopPropertyCard property={property} likePropertyHandler={likePropertyHandler} />
+								</SwiperSlide>
+							);
+						})}
+					</Swiper>
 				</Stack>
 			</Stack>
-		);
-	} else {
-		return (
-			<Stack className={'top-properties'}>
-				<Stack className={'container'}>
-					<SectionHeader
-						eyebrow={'Top rated'}
-						title={'Top Stays'}
-						action={
-							<div className={'home-pager'}>
-								<button type={'button'} className={'swiper-top-prev'} aria-label={'Previous stays'}>
-									<ChevronLeftIcon />
-								</button>
-								<button type={'button'} className={'swiper-top-next'} aria-label={'Next stays'}>
-									<ChevronRightIcon />
-								</button>
-							</div>
-						}
-					/>
-					<Stack className={'card-box'}>
-						<Swiper
-							className={'top-property-swiper'}
-							slidesPerView={'auto'}
-							spaceBetween={24}
-							modules={[Autoplay, Navigation, Pagination]}
-							navigation={{
-								nextEl: '.swiper-top-next',
-								prevEl: '.swiper-top-prev',
-							}}
-						>
-							{topProperties.map((property: Property) => {
-								return (
-									<SwiperSlide className={'top-property-slide'} key={property?._id}>
-										<TopPropertyCard property={property} likePropertyHandler={likePropertyHandler} />
-									</SwiperSlide>
-								);
-							})}
-						</Swiper>
-					</Stack>
-				</Stack>
-			</Stack>
-		);
-	}
+		</Stack>
+	);
 };
 
 TopProperties.defaultProps = {

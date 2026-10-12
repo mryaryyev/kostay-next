@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { NextPage } from 'next';
 import { Stack } from '@mui/material';
-import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import MyProperties from '../../libs/components/mypage/MyProperties';
 import MyFavorites from '../../libs/components/mypage/MyFavorites';
@@ -32,7 +31,6 @@ export const getStaticProps = async ({ locale }: any) => ({
 });
 
 const MyPage: NextPage = () => {
-	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
 	const router = useRouter();
 	const category: any = router.query?.category ?? 'myProfile';
@@ -113,54 +111,50 @@ const MyPage: NextPage = () => {
 	// so no section fires an auth-only query without a token ("Bearer Token is not provided!").
 	if (!user?._id) return <div id="my-page" style={{ minHeight: '60vh' }} />;
 
-	if (device === 'mobile') {
-		return <div>MY PAGE</div>;
-	} else {
-		return (
-			<div id="my-page" style={{ position: 'relative' }}>
-				<div className="container">
-					<Stack className={'my-page'}>
-						<MyIdentityCard />
-						<Stack className={'back-frame'}>
-							<Stack className={'left-config'}>
-								<MyMenu />
-							</Stack>
-							<Stack className="main-config">
-								<Stack className={'list-config'}>
-									{category === 'addProperty' && <AddProperty />}
-									{category === 'myProperties' && <MyProperties />}
-									{category === 'myFavorites' && <MyFavorites />}
-									{category === 'recentlyVisited' && <RecentlyVisited />}
-									{category === 'myArticles' && <MyArticles />}
-									{category === 'writeArticle' && <WriteArticle />}
-									{category === 'myProfile' && <MyProfile />}
-									{category === 'notifications' && <MyNotifications />}
-									{category === 'myBookings' && <MyBookings />}
-									{category === 'reservations' && <Reservations />}
-									{category === 'followers' && (
-										<MemberFollowers
-											subscribeHandler={subscribeHandler}
-											unsubscribeHandler={unsubscribeHandler}
-											likeMemberHandler={likeMemberHandler}
-											redirectToMemberPageHandler={redirectToMemberPageHandler}
-										/>
-									)}
-									{category === 'followings' && (
-										<MemberFollowings
-											subscribeHandler={subscribeHandler}
-											unsubscribeHandler={unsubscribeHandler}
-											likeMemberHandler={likeMemberHandler}
-											redirectToMemberPageHandler={redirectToMemberPageHandler}
-										/>
-									)}
-								</Stack>
+	return (
+		<div id="my-page" style={{ position: 'relative' }}>
+			<div className="container">
+				<Stack className={'my-page'}>
+					<MyIdentityCard />
+					<Stack className={'back-frame'}>
+						<Stack className={'left-config'}>
+							<MyMenu />
+						</Stack>
+						<Stack className="main-config">
+							<Stack className={'list-config'}>
+								{category === 'addProperty' && <AddProperty />}
+								{category === 'myProperties' && <MyProperties />}
+								{category === 'myFavorites' && <MyFavorites />}
+								{category === 'recentlyVisited' && <RecentlyVisited />}
+								{category === 'myArticles' && <MyArticles />}
+								{category === 'writeArticle' && <WriteArticle />}
+								{category === 'myProfile' && <MyProfile />}
+								{category === 'notifications' && <MyNotifications />}
+								{category === 'myBookings' && <MyBookings />}
+								{category === 'reservations' && <Reservations />}
+								{category === 'followers' && (
+									<MemberFollowers
+										subscribeHandler={subscribeHandler}
+										unsubscribeHandler={unsubscribeHandler}
+										likeMemberHandler={likeMemberHandler}
+										redirectToMemberPageHandler={redirectToMemberPageHandler}
+									/>
+								)}
+								{category === 'followings' && (
+									<MemberFollowings
+										subscribeHandler={subscribeHandler}
+										unsubscribeHandler={unsubscribeHandler}
+										likeMemberHandler={likeMemberHandler}
+										redirectToMemberPageHandler={redirectToMemberPageHandler}
+									/>
+								)}
 							</Stack>
 						</Stack>
 					</Stack>
-				</div>
+				</Stack>
 			</div>
-		);
-	}
+		</div>
+	);
 };
 
 export default withLayoutBasic(MyPage);

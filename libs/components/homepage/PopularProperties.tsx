@@ -1,7 +1,6 @@
 import SectionHeader from './SectionHeader';
 import React, { useState } from 'react';
 import { Stack, Box } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper';
 import EastIcon from '@mui/icons-material/East';
@@ -22,7 +21,6 @@ interface PopularPropertiesProps {
 
 const PopularProperties = (props: PopularPropertiesProps) => {
 	const { initialInput } = props;
-	const device = useDeviceDetect();
 	const [popularProperties, setPopularProperties] = useState<Property[]>([]);
 
 	/** APOLLO REQUESTS **/
@@ -62,67 +60,34 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 
 	if (!popularProperties) return null;
 
-	if (device === 'mobile') {
-		return (
-			<Stack className={'popular-properties'}>
-				<Stack className={'container'}>
-					<Stack className={'info-box'}>
-						<span>Popular stays</span>
-					</Stack>
-					<Stack className={'card-box'}>
-						<Swiper
-							className={'popular-property-swiper'}
-							slidesPerView={'auto'}
-							centeredSlides={true}
-							spaceBetween={25}
-							modules={[Autoplay]}
-						>
-							{popularProperties.map((property: Property) => {
-								return (
-									<SwiperSlide key={property._id} className={'popular-property-slide'}>
-										<PopularPropertyCard property={property} />
-									</SwiperSlide>
-								);
-							})}
-						</Swiper>
-					</Stack>
-				</Stack>
+	const visibleProperties = popularProperties.slice(0, 3);
+	return (
+		<Stack className={'popular-properties'}>
+			<Stack className={'container'}>
+				<SectionHeader
+					eyebrow={'Most viewed'}
+					title={'Popular Stays'}
+					action={
+						<Link href={'/property'} className={'home-link'}>
+							View all stays
+							<EastIcon aria-hidden="true" />
+						</Link>
+					}
+				/>
+				{visibleProperties.length === 0 ? (
+					<Box component={'div'} className={'empty-list'}>
+						No popular stays yet
+					</Box>
+				) : (
+					<div className={'sx-grid-3'}>
+						{visibleProperties.map((property: Property) => (
+							<PopularPropertyCard key={property._id} property={property} likePropertyHandler={likePropertyHandler} />
+						))}
+					</div>
+				)}
 			</Stack>
-		);
-	} else {
-		const visibleProperties = popularProperties.slice(0, 3);
-		return (
-			<Stack className={'popular-properties'}>
-				<Stack className={'container'}>
-					<SectionHeader
-						eyebrow={'Most viewed'}
-						title={'Popular Stays'}
-						action={
-							<Link href={'/property'} className={'home-link'}>
-								View all stays
-								<EastIcon aria-hidden="true" />
-							</Link>
-						}
-					/>
-					{visibleProperties.length === 0 ? (
-						<Box component={'div'} className={'empty-list'}>
-							No popular stays yet
-						</Box>
-					) : (
-						<div className={'sx-grid-3'}>
-							{visibleProperties.map((property: Property) => (
-								<PopularPropertyCard
-									key={property._id}
-									property={property}
-									likePropertyHandler={likePropertyHandler}
-								/>
-							))}
-						</div>
-					)}
-				</Stack>
-			</Stack>
-		);
-	}
+		</Stack>
+	);
 };
 
 PopularProperties.defaultProps = {

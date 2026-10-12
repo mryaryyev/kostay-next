@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import Link from 'next/link';
 import { REACT_APP_API_URL, topPropertyRank } from '../../config';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -22,7 +21,6 @@ interface AgentCardProps {
 /** Host directory card (Stitch: Kostay - Hosts Directory). */
 const AgentCard = (props: AgentCardProps) => {
 	const { agent, likeMemberHandler } = props;
-	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
 	const [imageFailed, setImageFailed] = useState(false);
 	const imagePath = agent?.memberImage ? `${REACT_APP_API_URL}/${agent.memberImage}` : '';
@@ -31,78 +29,74 @@ const AgentCard = (props: AgentCardProps) => {
 	const isLiked = Boolean(agent?.meLiked?.[0]?.myFavorite);
 	const properties = agent?.memberProperties ?? 0;
 
-	if (device === 'mobile') {
-		return <div>AGENT CARD</div>;
-	} else {
-		return (
-			<article className="sx-host">
-				<div>
-					<div className="sx-host-top">
-						{isSuperhost ? (
-							<span className="sx-host-tag is-super">
-								<WorkspacePremiumOutlinedIcon aria-hidden="true" />
-								Superhost
-							</span>
+	return (
+		<article className="sx-host">
+			<div>
+				<div className="sx-host-top">
+					{isSuperhost ? (
+						<span className="sx-host-tag is-super">
+							<WorkspacePremiumOutlinedIcon aria-hidden="true" />
+							Superhost
+						</span>
+					) : (
+						<span className="sx-host-tag">Verified Host</span>
+					)}
+					<span className="sx-host-count">
+						{properties} {properties === 1 ? 'Property' : 'Properties'}
+					</span>
+				</div>
+
+				<div className="sx-host-who">
+					<Link href={detailHref} className="sx-host-avatar" aria-label={`View ${agent?.memberNick}`}>
+						{imagePath && !imageFailed ? (
+							<img src={imagePath} alt="" loading="lazy" onError={() => setImageFailed(true)} />
 						) : (
-							<span className="sx-host-tag">Verified Host</span>
+							<PersonIcon aria-hidden="true" />
 						)}
-						<span className="sx-host-count">
-							{properties} {properties === 1 ? 'Property' : 'Properties'}
+						<span className="sx-host-verified" aria-hidden="true">
+							<CheckIcon />
 						</span>
-					</div>
-
-					<div className="sx-host-who">
-						<Link href={detailHref} className="sx-host-avatar" aria-label={`View ${agent?.memberNick}`}>
-							{imagePath && !imageFailed ? (
-								<img src={imagePath} alt="" loading="lazy" onError={() => setImageFailed(true)} />
-							) : (
-								<PersonIcon aria-hidden="true" />
-							)}
-							<span className="sx-host-verified" aria-hidden="true">
-								<CheckIcon />
-							</span>
-						</Link>
-						<div>
-							<h3>
-								<Link href={detailHref}>{agent?.memberFullName || agent?.memberNick}</Link>
-							</h3>
-							{agent?.memberAddress && (
-								<span className="sx-host-place">
-									<PlaceOutlinedIcon aria-hidden="true" />
-									{agent.memberAddress}
-								</span>
-							)}
-						</div>
-					</div>
-
-					<p className="sx-host-desc">{agent?.memberDesc || 'Kostay host welcoming guests across Korea.'}</p>
-				</div>
-
-				<div>
-					<div className="sx-host-stats">
-						<span aria-label={`${agent?.memberViews ?? 0} views`}>
-							<VisibilityOutlinedIcon aria-hidden="true" />
-							{agent?.memberViews ?? 0}
-						</span>
-						<button
-							type="button"
-							className={isLiked ? 'is-on' : ''}
-							aria-pressed={isLiked}
-							aria-label={`${isLiked ? 'Unlike' : 'Like'} ${agent?.memberNick}`}
-							onClick={() => likeMemberHandler(user, agent?._id)}
-						>
-							{isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-							{agent?.memberLikes ?? 0}
-						</button>
-					</div>
-					<Link href={detailHref} className="sx-host-cta">
-						View Stays
-						<EastIcon aria-hidden="true" />
 					</Link>
+					<div>
+						<h3>
+							<Link href={detailHref}>{agent?.memberFullName || agent?.memberNick}</Link>
+						</h3>
+						{agent?.memberAddress && (
+							<span className="sx-host-place">
+								<PlaceOutlinedIcon aria-hidden="true" />
+								{agent.memberAddress}
+							</span>
+						)}
+					</div>
 				</div>
-			</article>
-		);
-	}
+
+				<p className="sx-host-desc">{agent?.memberDesc || 'Kostay host welcoming guests across Korea.'}</p>
+			</div>
+
+			<div>
+				<div className="sx-host-stats">
+					<span aria-label={`${agent?.memberViews ?? 0} views`}>
+						<VisibilityOutlinedIcon aria-hidden="true" />
+						{agent?.memberViews ?? 0}
+					</span>
+					<button
+						type="button"
+						className={isLiked ? 'is-on' : ''}
+						aria-pressed={isLiked}
+						aria-label={`${isLiked ? 'Unlike' : 'Like'} ${agent?.memberNick}`}
+						onClick={() => likeMemberHandler(user, agent?._id)}
+					>
+						{isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+						{agent?.memberLikes ?? 0}
+					</button>
+				</div>
+				<Link href={detailHref} className="sx-host-cta">
+					View Stays
+					<EastIcon aria-hidden="true" />
+				</Link>
+			</div>
+		</article>
+	);
 };
 
 export default AgentCard;
