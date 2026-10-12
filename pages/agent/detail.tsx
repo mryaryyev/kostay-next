@@ -10,7 +10,6 @@ import EastIcon from '@mui/icons-material/East';
 import StarRoundedIcon from '@mui/icons-material/StarRounded';
 import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
-import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import PropertyCard from '../../libs/components/property/PropertyCard';
 import { Property } from '../../libs/types/property/property';
@@ -48,7 +47,6 @@ const avatar = (image?: string) => (image ? `${REACT_APP_API_URL}/${image}` : '/
 
 /** Host profile: their stays and reviews. Same queries as before (GET_MEMBER, GET_PROPERTIES, GET_COMMENTS), Kostay design. */
 const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) => {
-	const device = useDeviceDetect();
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 	const [agentId, setAgentId] = useState<string | null>(null);
@@ -159,10 +157,6 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 			sweetMixinErrorAlert(err.message).then();
 		}
 	};
-
-	if (device === 'mobile') {
-		return <div>AGENT DETAIL PAGE MOBILE</div>;
-	}
 
 	if (!agent) {
 		return (

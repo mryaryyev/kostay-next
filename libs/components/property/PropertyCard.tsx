@@ -1,6 +1,5 @@
 import React from 'react';
 import { Stack, Typography, Box } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Property } from '../../types/property/property';
@@ -42,15 +41,12 @@ const typeIcons: Record<PropertyType, JSX.Element> = {
 
 const PropertyCard = (props: PropertyCardType) => {
 	const { property, likePropertyHandler, myFavorites, recentlyVisited, variant = 'default', stayDates } = props;
-	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
 	const imagePath: string = property?.propertyImages[0]
 		? `${REACT_APP_API_URL}/${property?.propertyImages[0]}`
 		: '/img/banner/header1.svg';
 
-	if (device === 'mobile') {
-		return <div>PROPERTY CARD</div>;
-	} else if (variant === 'stays') {
+	if (variant === 'stays') {
 		const detailHref = {
 			pathname: '/property/detail',
 			query: {
@@ -180,9 +176,7 @@ const PropertyCard = (props: PropertyCardType) => {
 					<Stack className="divider"></Stack>
 					<Stack className="type-buttons">
 						<Stack className="type">
-							<Typography sx={{ fontWeight: 500, fontSize: '13px' }}>
-								Up to {property.maxGuests} guests
-							</Typography>
+							<Typography sx={{ fontWeight: 500, fontSize: '13px' }}>Up to {property.maxGuests} guests</Typography>
 						</Stack>
 						{!recentlyVisited && (
 							<Stack className="buttons">

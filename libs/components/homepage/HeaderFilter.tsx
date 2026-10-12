@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Stack, Box, Modal, Divider, Button } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
 import FormControl from '@mui/material/FormControl';
@@ -43,7 +42,6 @@ interface HeaderFilterProps {
 
 const HeaderFilter = (props: HeaderFilterProps) => {
 	const { initialInput } = props;
-	const device = useDeviceDetect();
 	const { t } = useTranslation('common');
 	const reducedMotion = useReducedMotion();
 	const panelMotion = {
@@ -322,471 +320,453 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 		}
 	};
 
-	if (device === 'mobile') {
-		return <div>HEADER FILTER MOBILE</div>;
-	} else {
-		return (
-			<>
-				<Stack
-					className="search-box home-glass-search"
-					ref={searchRef}
-					onKeyDown={(event) => {
-						if (event.key === 'Escape') {
-							const active = openLocation
-								? 'location'
-								: openType
-								? 'type'
-								: openDates
-								? 'dates'
-								: openGuests
-								? 'guests'
-								: openRooms
-								? 'rooms'
-								: null;
-							disableAllStateHandler();
-							if (active) document.getElementById(`home-search-${active}`)?.focus();
-						}
-					}}
-				>
-					<Stack className="select-box">
-						{[
-							{
-								id: 'location',
-								label: t('Location'),
-								value: searchFilter.search.locationList?.[0] || 'Where to?',
-				filled: Boolean(searchFilter.search.locationList?.[0]),
-								open: openLocation,
-								toggle: locationStateChangeHandler,
-							},
-							{
-								id: 'type',
-								label: 'Stay type',
-								value: searchFilter.search.typeList?.[0] || 'Any stay',
-				filled: Boolean(searchFilter.search.typeList?.[0]),
-								open: openType,
-								toggle: typeStateChangeHandler,
-							},
-							{
-								id: 'dates',
-								label: 'Dates',
-								value: datesLabel,
-								filled: Boolean(checkIn && checkOut),
-								open: openDates,
-								toggle: datesStateChangeHandler,
-							},
-							{
-								id: 'guests',
-								label: 'Guests',
-								value: guestsNumber ? `${guestsNumber} guest${guestsNumber > 1 ? 's' : ''}` : 'Add guests',
-				filled: Boolean(guestsNumber),
-								open: openGuests,
-								toggle: guestsStateChangeHandler,
-							},
-							{
-								id: 'rooms',
-								label: t('Rooms'),
-								value: searchFilter.search.roomsList?.[0] ? `${searchFilter.search.roomsList[0]} rooms` : 'Any rooms',
-				filled: Boolean(searchFilter.search.roomsList?.[0]),
-								open: openRooms,
-								toggle: roomStateChangeHandler,
-							},
-						].map((field) => (
-							<motion.button
-								type="button"
-								key={field.id}
-								id={`home-search-${field.id}`}
-								className={`box ${field.filled ? 'is-filled' : 'is-empty'} ${field.open ? 'on' : ''} ${
-									field.id === 'dates' && datesError ? 'invalid' : ''
-								}`}
-								aria-label={`${field.label}${field.filled ? `: ${field.value}` : ''}`}
-								aria-expanded={field.open}
-								aria-controls={field.open ? `home-panel-${field.id}` : undefined}
-								onClick={field.toggle}
-								onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
-									if (event.key === 'ArrowDown' && field.open) {
-										event.preventDefault();
-										document.getElementById(`home-panel-${field.id}`)?.querySelector<HTMLElement>('button, input')?.focus();
-									}
-								}}
-								{...feedback}
-							>
-								<span className="field-copy">
-									<span className="field-label">{field.label}</span>
-									{field.filled && <span className="field-value">{field.value}</span>}
-								</span>
-								<ExpandMoreIcon />
-							</motion.button>
-						))}
-					</Stack>
-					<Stack className="search-box-other">
+	return (
+		<>
+			<Stack
+				className="search-box home-glass-search"
+				ref={searchRef}
+				onKeyDown={(event) => {
+					if (event.key === 'Escape') {
+						const active = openLocation
+							? 'location'
+							: openType
+							? 'type'
+							: openDates
+							? 'dates'
+							: openGuests
+							? 'guests'
+							: openRooms
+							? 'rooms'
+							: null;
+						disableAllStateHandler();
+						if (active) document.getElementById(`home-search-${active}`)?.focus();
+					}
+				}}
+			>
+				<Stack className="select-box">
+					{[
+						{
+							id: 'location',
+							label: t('Location'),
+							value: searchFilter.search.locationList?.[0] || 'Where to?',
+							filled: Boolean(searchFilter.search.locationList?.[0]),
+							open: openLocation,
+							toggle: locationStateChangeHandler,
+						},
+						{
+							id: 'type',
+							label: 'Stay type',
+							value: searchFilter.search.typeList?.[0] || 'Any stay',
+							filled: Boolean(searchFilter.search.typeList?.[0]),
+							open: openType,
+							toggle: typeStateChangeHandler,
+						},
+						{
+							id: 'dates',
+							label: 'Dates',
+							value: datesLabel,
+							filled: Boolean(checkIn && checkOut),
+							open: openDates,
+							toggle: datesStateChangeHandler,
+						},
+						{
+							id: 'guests',
+							label: 'Guests',
+							value: guestsNumber ? `${guestsNumber} guest${guestsNumber > 1 ? 's' : ''}` : 'Add guests',
+							filled: Boolean(guestsNumber),
+							open: openGuests,
+							toggle: guestsStateChangeHandler,
+						},
+						{
+							id: 'rooms',
+							label: t('Rooms'),
+							value: searchFilter.search.roomsList?.[0] ? `${searchFilter.search.roomsList[0]} rooms` : 'Any rooms',
+							filled: Boolean(searchFilter.search.roomsList?.[0]),
+							open: openRooms,
+							toggle: roomStateChangeHandler,
+						},
+					].map((field) => (
 						<motion.button
 							type="button"
-							className="advanced-filter"
-							onClick={() => advancedFilterHandler(true)}
+							key={field.id}
+							id={`home-search-${field.id}`}
+							className={`box ${field.filled ? 'is-filled' : 'is-empty'} ${field.open ? 'on' : ''} ${
+								field.id === 'dates' && datesError ? 'invalid' : ''
+							}`}
+							aria-label={`${field.label}${field.filled ? `: ${field.value}` : ''}`}
+							aria-expanded={field.open}
+							aria-controls={field.open ? `home-panel-${field.id}` : undefined}
+							onClick={field.toggle}
+							onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
+								if (event.key === 'ArrowDown' && field.open) {
+									event.preventDefault();
+									document.getElementById(`home-panel-${field.id}`)?.querySelector<HTMLElement>('button, input')?.focus();
+								}
+							}}
 							{...feedback}
 						>
-							<img src="/img/icons/tune.svg" alt="" />
-							<span>{t('Advanced')}</span>
+							<span className="field-copy">
+								<span className="field-label">{field.label}</span>
+								{field.filled && <span className="field-value">{field.value}</span>}
+							</span>
+							<ExpandMoreIcon />
 						</motion.button>
-						<motion.button
-							type="button"
-							className="search-btn"
-							aria-label="Search stays"
-							onClick={pushSearchHandler}
-							{...feedback}
-						>
-							<img src="/img/icons/search_white.svg" alt="" />
-							<span>Search</span>
-						</motion.button>
-					</Stack>
-
-					{/*MENU */}
-					<AnimatePresence>
-						{openLocation && (
-							<motion.div
-								key="location"
-								id="home-panel-location"
-								role="region"
-								aria-labelledby="home-search-location"
-								className="filter-location on"
-								{...panelMotion}
-							>
-								{propertyLocation.map((location: string, index: number) => {
-									return (
-										<motion.button
-											type="button"
-											variants={optionVariants}
-											initial="hidden"
-											animate="visible"
-											transition={{ duration: reducedMotion ? 0 : 0.15, delay: reducedMotion ? 0 : index * 0.025 }}
-											aria-pressed={searchFilter.search.locationList?.includes(location as PropertyLocation) ?? false}
-											onClick={() => propertyLocationSelectHandler(location)}
-											key={location}
-										>
-											<img src={`img/banner/cities/${location}.webp`} alt="" />
-											<span>{location}</span>
-										</motion.button>
-									);
-								})}
-							</motion.div>
-						)}
-					</AnimatePresence>
-
-					<AnimatePresence>
-						{openType && (
-							<motion.div
-								key="type"
-								id="home-panel-type"
-								role="region"
-								aria-labelledby="home-search-type"
-								className="filter-type on"
-								{...panelMotion}
-							>
-								{propertyType.map((type: string, index: number) => {
-									return (
-										<motion.button
-											type="button"
-											variants={optionVariants}
-											initial="hidden"
-											animate="visible"
-											transition={{ duration: reducedMotion ? 0 : 0.15, delay: reducedMotion ? 0 : index * 0.025 }}
-											style={{ backgroundImage: `url(/img/banner/types/${type.toLowerCase()}.webp)` }}
-											aria-pressed={searchFilter.search.typeList?.includes(type as PropertyType) ?? false}
-											onClick={() => propertyTypeSelectHandler(type)}
-											key={type}
-										>
-											<span>{type}</span>
-										</motion.button>
-									);
-								})}
-							</motion.div>
-						)}
-					</AnimatePresence>
-
-					<AnimatePresence>
-						{openRooms && (
-							<motion.div
-								key="rooms"
-								id="home-panel-rooms"
-								role="region"
-								aria-labelledby="home-search-rooms"
-								className="filter-rooms on"
-								{...panelMotion}
-							>
-								{[1, 2, 3, 4, 5].map((room: number) => {
-									return (
-										<motion.button
-											type="button"
-											{...feedback}
-											aria-pressed={searchFilter.search.roomsList?.includes(room) ?? false}
-											onClick={() => propertyRoomSelectHandler(room)}
-											key={room}
-										>
-											{room} room{room > 1 ? 's' : ''}
-										</motion.button>
-									);
-								})}
-							</motion.div>
-						)}
-					</AnimatePresence>
-
-					<AnimatePresence>
-						{openDates && (
-							<motion.div
-								key="dates"
-								id="home-panel-dates"
-								role="region"
-								aria-labelledby="home-search-dates"
-								className="filter-dates on"
-								{...panelMotion}
-							>
-								<div className={'date-fields'}>
-									<label>
-										<span>Check-in</span>
-										<input
-											type="date"
-											min={today}
-											value={checkIn}
-											onChange={(e) => checkInChangeHandler(e.target.value)}
-											aria-invalid={datesError && (checkIn === '' || checkIn < today)}
-										/>
-									</label>
-									<label>
-										<span>Check-out</span>
-										<input
-											type="date"
-											min={minCheckOut}
-											value={checkOut}
-											onChange={(e) => setCheckOut(e.target.value)}
-											aria-invalid={datesError && (checkOut === '' || checkOut <= checkIn)}
-										/>
-									</label>
-								</div>
-								<div className={'date-footer'}>
-									{datesError ? (
-										<p className={'filter-error'} role="alert">
-											Choose both dates; check-out must be after check-in and not in the past.
-										</p>
-									) : (
-										<p className={'date-note'}>Availability filtering is coming soon.</p>
-									)}
-									{(checkIn || checkOut) && (
-										<button
-											type="button"
-											className={'clear-link'}
-											onClick={() => {
-												setCheckIn('');
-												setCheckOut('');
-											}}
-										>
-											Clear dates
-										</button>
-									)}
-								</div>
-							</motion.div>
-						)}
-					</AnimatePresence>
-
-					<AnimatePresence>
-						{openGuests && (
-							<motion.div
-								key="guests"
-								id="home-panel-guests"
-								role="region"
-								aria-labelledby="home-search-guests"
-								className="filter-guests on"
-								{...panelMotion}
-							>
-								<div className={'guests-row'}>
-									<div>
-										<strong>Guests</strong>
-										<span>How many people are staying?</span>
-									</div>
-									<div className={'stepper'}>
-										<button
-											type="button"
-											aria-label="Fewer guests"
-											disabled={guestsNumber <= 1}
-											onClick={() => guestsStepHandler(-1)}
-										>
-											−
-										</button>
-										<span aria-live="polite">{guestsNumber || 'Any'}</span>
-										<button
-											type="button"
-											aria-label="More guests"
-											disabled={guestsNumber >= MAX_GUESTS_STEPPER}
-											onClick={() => guestsStepHandler(1)}
-										>
-											+
-										</button>
-									</div>
-								</div>
-								{guestsCount !== '' && (
-									<button type="button" className={'clear-link'} onClick={() => setGuestsCount('')}>
-										Any number of guests
-									</button>
-								)}
-							</motion.div>
-						)}
-					</AnimatePresence>
+					))}
+				</Stack>
+				<Stack className="search-box-other">
+					<motion.button type="button" className="advanced-filter" onClick={() => advancedFilterHandler(true)} {...feedback}>
+						<img src="/img/icons/tune.svg" alt="" />
+						<span>{t('Advanced')}</span>
+					</motion.button>
+					<motion.button
+						type="button"
+						className="search-btn"
+						aria-label="Search stays"
+						onClick={pushSearchHandler}
+						{...feedback}
+					>
+						<img src="/img/icons/search_white.svg" alt="" />
+						<span>Search</span>
+					</motion.button>
 				</Stack>
 
-				{/* ADVANCED FILTER MODAL */}
-				<AnimatePresence
-					onExitComplete={() => {
-						if (openDates) document.getElementById('home-search-dates')?.focus();
-					}}
-				>
-					{openAdvancedFilter && (
-						<Modal open={openAdvancedFilter} onClose={() => advancedFilterHandler(false)} aria-labelledby="home-filter-title">
-							{/* @ts-ignore */}
-							<Box sx={style} role="dialog" aria-modal="true" aria-labelledby="home-filter-title" tabIndex={-1}>
-								<motion.div className="advanced-filter-modal home-glass-dialog" {...panelMotion}>
-									<button
+				{/*MENU */}
+				<AnimatePresence>
+					{openLocation && (
+						<motion.div
+							key="location"
+							id="home-panel-location"
+							role="region"
+							aria-labelledby="home-search-location"
+							className="filter-location on"
+							{...panelMotion}
+						>
+							{propertyLocation.map((location: string, index: number) => {
+								return (
+									<motion.button
 										type="button"
-										aria-label="Close filters"
-										className="close"
-										onClick={() => advancedFilterHandler(false)}
+										variants={optionVariants}
+										initial="hidden"
+										animate="visible"
+										transition={{ duration: reducedMotion ? 0 : 0.15, delay: reducedMotion ? 0 : index * 0.025 }}
+										aria-pressed={searchFilter.search.locationList?.includes(location as PropertyLocation) ?? false}
+										onClick={() => propertyLocationSelectHandler(location)}
+										key={location}
 									>
-										<CloseIcon />
-									</button>
-									<div className={'top'}>
-										<span id="home-filter-title">Find your stay</span>
-										<div className={'search-input-box'}>
-											<img src="/img/icons/search.svg" alt="" />
-											<input
-												value={searchFilter?.search?.text ?? ''}
-												type="text"
-												placeholder={'What are you looking for?'}
-												aria-label="Search stays by keyword"
-												onChange={(e: any) => {
-													setSearchFilter({
-														...searchFilter,
-														search: { ...searchFilter.search, text: e.target.value },
-													});
-												}}
-											/>
-										</div>
-									</div>
-									<Divider sx={{ mt: '30px', mb: '35px' }} />
-									<div className={'middle'}>
-										<div className={'row-box'}>
-											<div className={'box'}>
-												<span>bedrooms</span>
-												<div className={'inside'}>
-													<button
-														type="button"
-														className={`room ${!searchFilter?.search?.bedsList ? 'active' : ''}`}
-														aria-pressed={!searchFilter.search.bedsList}
-														onClick={() => propertyBedSelectHandler(0)}
-													>
-														Any
-													</button>
-													{[1, 2, 3, 4, 5].map((bed: number) => (
-														<button
-															type="button"
-															className={`room ${searchFilter?.search?.bedsList?.includes(bed) ? 'active' : ''}`}
-															aria-pressed={searchFilter.search.bedsList?.includes(bed) ?? false}
-															onClick={() => propertyBedSelectHandler(bed)}
-															key={bed}
-														>
-															{bed == 0 ? 'Any' : bed}
-														</button>
-													))}
-												</div>
-											</div>
-											<div className="box guest-filter">
-												<label htmlFor="homepage-guests">Guests</label>
-												<input
-													id="homepage-guests"
-													type="number"
-													min={1}
-													max={2147483647}
-													step={1}
-													placeholder="Any"
-													value={guestsCount}
-													onChange={(e) => setGuestsCount(e.target.value)}
-													aria-invalid={guestError}
-													aria-describedby={guestError ? 'homepage-guests-error' : undefined}
-												/>
-												{guestError && (
-													<p id="homepage-guests-error" role="alert">
-														Enter a positive whole number of guests.
-													</p>
-												)}
-											</div>
-										</div>
-										<div className={'row-box'} style={{ marginTop: '44px' }}>
-											<div className={'box'}>
-												<span>square meter</span>
-												<div className={'inside space-between align-center'}>
-													<FormControl sx={{ width: '122px' }}>
-														<Select
-															value={searchFilter?.search?.squaresRange?.start}
-															onChange={(e: any) => propertySquareHandler(e, 'start')}
-															displayEmpty
-															inputProps={{ 'aria-label': 'Minimum stay size' }}
-															MenuProps={MenuProps}
-														>
-															{propertySquare.map((square: number) => (
-																<MenuItem
-																	value={square}
-																	disabled={(searchFilter?.search?.squaresRange?.end || 0) < square}
-																	key={square}
-																>
-																	{square}
-																</MenuItem>
-															))}
-														</Select>
-													</FormControl>
-													<div className={'minus-line'}></div>
-													<FormControl sx={{ width: '122px' }}>
-														<Select
-															value={searchFilter?.search?.squaresRange?.end}
-															onChange={(e: any) => propertySquareHandler(e, 'end')}
-															displayEmpty
-															inputProps={{ 'aria-label': 'Maximum stay size' }}
-															MenuProps={MenuProps}
-														>
-															{propertySquare.map((square: number) => (
-																<MenuItem
-																	value={square}
-																	disabled={(searchFilter?.search?.squaresRange?.start || 0) > square}
-																	key={square}
-																>
-																	{square}
-																</MenuItem>
-															))}
-														</Select>
-													</FormControl>
-												</div>
-											</div>
-										</div>
-									</div>
-									<Divider sx={{ mt: '60px', mb: '18px' }} />
-									<div className={'bottom'}>
-										<button type="button" className="reset-filters" onClick={resetFilterHandler}>
-											<img src="/img/icons/reset.svg" alt="" />
-											<span>Reset all filters</span>
-										</button>
-										<Button
-											startIcon={<img src={'/img/icons/search.svg'} />}
-											className={'search-btn'}
-											disabled={guestError}
-											onClick={pushSearchHandler}
-										>
-											Search
-										</Button>
-									</div>
-								</motion.div>
-							</Box>
-						</Modal>
+										<img src={`img/banner/cities/${location}.webp`} alt="" />
+										<span>{location}</span>
+									</motion.button>
+								);
+							})}
+						</motion.div>
 					)}
 				</AnimatePresence>
-			</>
-		);
-	}
+
+				<AnimatePresence>
+					{openType && (
+						<motion.div
+							key="type"
+							id="home-panel-type"
+							role="region"
+							aria-labelledby="home-search-type"
+							className="filter-type on"
+							{...panelMotion}
+						>
+							{propertyType.map((type: string, index: number) => {
+								return (
+									<motion.button
+										type="button"
+										variants={optionVariants}
+										initial="hidden"
+										animate="visible"
+										transition={{ duration: reducedMotion ? 0 : 0.15, delay: reducedMotion ? 0 : index * 0.025 }}
+										style={{ backgroundImage: `url(/img/banner/types/${type.toLowerCase()}.webp)` }}
+										aria-pressed={searchFilter.search.typeList?.includes(type as PropertyType) ?? false}
+										onClick={() => propertyTypeSelectHandler(type)}
+										key={type}
+									>
+										<span>{type}</span>
+									</motion.button>
+								);
+							})}
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				<AnimatePresence>
+					{openRooms && (
+						<motion.div
+							key="rooms"
+							id="home-panel-rooms"
+							role="region"
+							aria-labelledby="home-search-rooms"
+							className="filter-rooms on"
+							{...panelMotion}
+						>
+							{[1, 2, 3, 4, 5].map((room: number) => {
+								return (
+									<motion.button
+										type="button"
+										{...feedback}
+										aria-pressed={searchFilter.search.roomsList?.includes(room) ?? false}
+										onClick={() => propertyRoomSelectHandler(room)}
+										key={room}
+									>
+										{room} room{room > 1 ? 's' : ''}
+									</motion.button>
+								);
+							})}
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				<AnimatePresence>
+					{openDates && (
+						<motion.div
+							key="dates"
+							id="home-panel-dates"
+							role="region"
+							aria-labelledby="home-search-dates"
+							className="filter-dates on"
+							{...panelMotion}
+						>
+							<div className={'date-fields'}>
+								<label>
+									<span>Check-in</span>
+									<input
+										type="date"
+										min={today}
+										value={checkIn}
+										onChange={(e) => checkInChangeHandler(e.target.value)}
+										aria-invalid={datesError && (checkIn === '' || checkIn < today)}
+									/>
+								</label>
+								<label>
+									<span>Check-out</span>
+									<input
+										type="date"
+										min={minCheckOut}
+										value={checkOut}
+										onChange={(e) => setCheckOut(e.target.value)}
+										aria-invalid={datesError && (checkOut === '' || checkOut <= checkIn)}
+									/>
+								</label>
+							</div>
+							<div className={'date-footer'}>
+								{datesError ? (
+									<p className={'filter-error'} role="alert">
+										Choose both dates; check-out must be after check-in and not in the past.
+									</p>
+								) : (
+									<p className={'date-note'}>Availability filtering is coming soon.</p>
+								)}
+								{(checkIn || checkOut) && (
+									<button
+										type="button"
+										className={'clear-link'}
+										onClick={() => {
+											setCheckIn('');
+											setCheckOut('');
+										}}
+									>
+										Clear dates
+									</button>
+								)}
+							</div>
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				<AnimatePresence>
+					{openGuests && (
+						<motion.div
+							key="guests"
+							id="home-panel-guests"
+							role="region"
+							aria-labelledby="home-search-guests"
+							className="filter-guests on"
+							{...panelMotion}
+						>
+							<div className={'guests-row'}>
+								<div>
+									<strong>Guests</strong>
+									<span>How many people are staying?</span>
+								</div>
+								<div className={'stepper'}>
+									<button
+										type="button"
+										aria-label="Fewer guests"
+										disabled={guestsNumber <= 1}
+										onClick={() => guestsStepHandler(-1)}
+									>
+										−
+									</button>
+									<span aria-live="polite">{guestsNumber || 'Any'}</span>
+									<button
+										type="button"
+										aria-label="More guests"
+										disabled={guestsNumber >= MAX_GUESTS_STEPPER}
+										onClick={() => guestsStepHandler(1)}
+									>
+										+
+									</button>
+								</div>
+							</div>
+							{guestsCount !== '' && (
+								<button type="button" className={'clear-link'} onClick={() => setGuestsCount('')}>
+									Any number of guests
+								</button>
+							)}
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</Stack>
+
+			{/* ADVANCED FILTER MODAL */}
+			<AnimatePresence
+				onExitComplete={() => {
+					if (openDates) document.getElementById('home-search-dates')?.focus();
+				}}
+			>
+				{openAdvancedFilter && (
+					<Modal open={openAdvancedFilter} onClose={() => advancedFilterHandler(false)} aria-labelledby="home-filter-title">
+						{/* @ts-ignore */}
+						<Box sx={style} role="dialog" aria-modal="true" aria-labelledby="home-filter-title" tabIndex={-1}>
+							<motion.div className="advanced-filter-modal home-glass-dialog" {...panelMotion}>
+								<button type="button" aria-label="Close filters" className="close" onClick={() => advancedFilterHandler(false)}>
+									<CloseIcon />
+								</button>
+								<div className={'top'}>
+									<span id="home-filter-title">Find your stay</span>
+									<div className={'search-input-box'}>
+										<img src="/img/icons/search.svg" alt="" />
+										<input
+											value={searchFilter?.search?.text ?? ''}
+											type="text"
+											placeholder={'What are you looking for?'}
+											aria-label="Search stays by keyword"
+											onChange={(e: any) => {
+												setSearchFilter({
+													...searchFilter,
+													search: { ...searchFilter.search, text: e.target.value },
+												});
+											}}
+										/>
+									</div>
+								</div>
+								<Divider sx={{ mt: '30px', mb: '35px' }} />
+								<div className={'middle'}>
+									<div className={'row-box'}>
+										<div className={'box'}>
+											<span>bedrooms</span>
+											<div className={'inside'}>
+												<button
+													type="button"
+													className={`room ${!searchFilter?.search?.bedsList ? 'active' : ''}`}
+													aria-pressed={!searchFilter.search.bedsList}
+													onClick={() => propertyBedSelectHandler(0)}
+												>
+													Any
+												</button>
+												{[1, 2, 3, 4, 5].map((bed: number) => (
+													<button
+														type="button"
+														className={`room ${searchFilter?.search?.bedsList?.includes(bed) ? 'active' : ''}`}
+														aria-pressed={searchFilter.search.bedsList?.includes(bed) ?? false}
+														onClick={() => propertyBedSelectHandler(bed)}
+														key={bed}
+													>
+														{bed == 0 ? 'Any' : bed}
+													</button>
+												))}
+											</div>
+										</div>
+										<div className="box guest-filter">
+											<label htmlFor="homepage-guests">Guests</label>
+											<input
+												id="homepage-guests"
+												type="number"
+												min={1}
+												max={2147483647}
+												step={1}
+												placeholder="Any"
+												value={guestsCount}
+												onChange={(e) => setGuestsCount(e.target.value)}
+												aria-invalid={guestError}
+												aria-describedby={guestError ? 'homepage-guests-error' : undefined}
+											/>
+											{guestError && (
+												<p id="homepage-guests-error" role="alert">
+													Enter a positive whole number of guests.
+												</p>
+											)}
+										</div>
+									</div>
+									<div className={'row-box'} style={{ marginTop: '44px' }}>
+										<div className={'box'}>
+											<span>square meter</span>
+											<div className={'inside space-between align-center'}>
+												<FormControl sx={{ width: '122px' }}>
+													<Select
+														value={searchFilter?.search?.squaresRange?.start}
+														onChange={(e: any) => propertySquareHandler(e, 'start')}
+														displayEmpty
+														inputProps={{ 'aria-label': 'Minimum stay size' }}
+														MenuProps={MenuProps}
+													>
+														{propertySquare.map((square: number) => (
+															<MenuItem value={square} disabled={(searchFilter?.search?.squaresRange?.end || 0) < square} key={square}>
+																{square}
+															</MenuItem>
+														))}
+													</Select>
+												</FormControl>
+												<div className={'minus-line'}></div>
+												<FormControl sx={{ width: '122px' }}>
+													<Select
+														value={searchFilter?.search?.squaresRange?.end}
+														onChange={(e: any) => propertySquareHandler(e, 'end')}
+														displayEmpty
+														inputProps={{ 'aria-label': 'Maximum stay size' }}
+														MenuProps={MenuProps}
+													>
+														{propertySquare.map((square: number) => (
+															<MenuItem
+																value={square}
+																disabled={(searchFilter?.search?.squaresRange?.start || 0) > square}
+																key={square}
+															>
+																{square}
+															</MenuItem>
+														))}
+													</Select>
+												</FormControl>
+											</div>
+										</div>
+									</div>
+								</div>
+								<Divider sx={{ mt: '60px', mb: '18px' }} />
+								<div className={'bottom'}>
+									<button type="button" className="reset-filters" onClick={resetFilterHandler}>
+										<img src="/img/icons/reset.svg" alt="" />
+										<span>Reset all filters</span>
+									</button>
+									<Button
+										startIcon={<img src={'/img/icons/search.svg'} />}
+										className={'search-btn'}
+										disabled={guestError}
+										onClick={pushSearchHandler}
+									>
+										Search
+									</Button>
+								</div>
+							</motion.div>
+						</Box>
+					</Modal>
+				)}
+			</AnimatePresence>
+		</>
+	);
 };
 
 HeaderFilter.defaultProps = {

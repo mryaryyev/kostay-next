@@ -7,6 +7,36 @@ $font: 'Poppins', sans-serif;
 // Stitch typeface; currently used by the homepage only.
 $font-display: 'Plus Jakarta Sans', sans-serif;
 
+/** BREAKPOINTS **/
+// Responsive-first: pages share one markup, these mixins change the layout. Keep `mobile` in sync with
+// MOBILE_QUERY in libs/hooks/useDeviceDetect.ts.
+@mixin mobile {
+	@media (max-width: 767px) {
+		@content;
+	}
+}
+// Tablets (iPad Mini 768 → iPad Pro 13 portrait 1024) and small laptops.
+@mixin tablet {
+	@media (max-width: 1199px) {
+		@content;
+	}
+}
+
+/** BREAKPOINTS **/
+// Responsive-first: pages share one markup, these mixins change the layout. Keep `mobile` in sync with
+// MOBILE_QUERY in libs/hooks/useDeviceDetect.ts.
+@mixin mobile {
+	@media (max-width: 767px) {
+		@content;
+	}
+}
+// Tablets (iPad Mini 768 → iPad Pro 13 portrait 1024) and small laptops.
+@mixin tablet {
+	@media (max-width: 1199px) {
+		@content;
+	}
+}
+
 /** DESIGN TOKENS (Stitch: Kostay Homepage Desktop) **/
 
 // Colors

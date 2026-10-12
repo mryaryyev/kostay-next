@@ -13,7 +13,6 @@ import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import withLayoutFull from '../../libs/components/layout/LayoutFull';
-import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import { userVar } from '../../apollo/store';
 import { GET_BOOKED_DATES, GET_PROPERTY } from '../../apollo/user/query';
 import { BOOK_AND_PAY } from '../../apollo/user/mutation';
@@ -52,7 +51,6 @@ const paymentMethods = [
 
 /** Instant Book step 2: review the stay and pay. Booking + payment are saved together by bookAndPay. */
 const Checkout: NextPage = () => {
-	const device = useDeviceDetect();
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 	const { propertyId, checkIn, checkOut, guests } = router.query;
@@ -109,8 +107,6 @@ const Checkout: NextPage = () => {
 			await sweetErrorHandling(err);
 		}
 	};
-
-	if (device === 'mobile') return <div>CHECKOUT</div>;
 
 	if (!router.isReady || propertyLoading || !user?._id) {
 		return (

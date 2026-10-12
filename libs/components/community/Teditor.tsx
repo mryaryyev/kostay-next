@@ -118,8 +118,8 @@ const TuiEditor = () => {
 
 	return (
 		<Stack>
-			<Stack direction="row" style={{ margin: '40px' }} justifyContent="space-evenly">
-				<Box component={'div'} className={'form_row'} style={{ width: '300px' }}>
+			<Stack direction="row" className={'teditor-fields'} style={{ margin: '40px' }} justifyContent="space-evenly">
+				<Box component={'div'} className={'form_row teditor-field'} style={{ width: '300px' }}>
 					<Typography style={{ color: '#7f838d', margin: '10px' }} variant="h3">
 						Category
 					</Typography>
@@ -139,7 +139,7 @@ const TuiEditor = () => {
 						</Select>
 					</FormControl>
 				</Box>
-				<Box component={'div'} style={{ width: '300px', flexDirection: 'column' }}>
+				<Box component={'div'} className={'teditor-field'} style={{ width: '300px', flexDirection: 'column' }}>
 					<Typography style={{ color: '#7f838d', margin: '10px' }} variant="h3">
 						Title
 					</Typography>
@@ -147,7 +147,7 @@ const TuiEditor = () => {
 						onChange={articleTitleHandler}
 						id="filled-basic"
 						label="Type Title"
-						style={{ width: '300px', background: 'white' }}
+						style={{ width: '100%', background: 'white' }}
 					/>
 				</Box>
 			</Stack>

@@ -1,7 +1,6 @@
 import SectionHeader from './SectionHeader';
 import React, { useState } from 'react';
 import { Stack, Box } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -22,7 +21,6 @@ interface TrendPropertiesProps {
 
 const TrendProperties = (props: TrendPropertiesProps) => {
 	const { initialInput } = props;
-	const device = useDeviceDetect();
 	const [trendProperties, setTrendProperties] = useState<Property[]>([]);
 
 	/** APOLLO REQUESTS **/
@@ -66,87 +64,52 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 	if (trendProperties) console.log('trendProperties:', trendProperties);
 	if (!trendProperties) return null;
 
-	if (device === 'mobile') {
-		return (
-			<Stack className={'trend-properties'}>
-				<Stack className={'container'}>
-					<Stack className={'info-box'}>
-						<span>Trending Stays</span>
-					</Stack>
-					<Stack className={'card-box'}>
-						{trendProperties.length === 0 ? (
-							<Box component={'div'} className={'empty-list'}>
-								Trends Empty
-							</Box>
-						) : (
-							<Swiper
-								className={'trend-property-swiper'}
-								slidesPerView={'auto'}
-								centeredSlides={true}
-								spaceBetween={15}
-								modules={[Autoplay]}
-							>
-								{trendProperties.map((property: Property) => {
-									return (
-										<SwiperSlide key={property._id} className={'trend-property-slide'}>
-											<TrendPropertyCard property={property} likePropertyHandler={likePropertyHandler} />
-										</SwiperSlide>
-									);
-								})}
-							</Swiper>
-						)}
-					</Stack>
+	return (
+		<Stack className={'trend-properties'}>
+			<Stack className={'container'}>
+				<SectionHeader
+					eyebrow={'Liked most'}
+					title={'Trending Stays'}
+					action={
+						<div className={'home-pager'}>
+							<button type={'button'} className={'swiper-trend-prev'} aria-label={'Previous stays'}>
+								<ChevronLeftIcon />
+							</button>
+							<button type={'button'} className={'swiper-trend-next'} aria-label={'Next stays'}>
+								<ChevronRightIcon />
+							</button>
+						</div>
+					}
+				/>
+				<Stack className={'card-box'}>
+					{trendProperties.length === 0 ? (
+						<Box component={'div'} className={'empty-list'}>
+							Trends Empty
+						</Box>
+					) : (
+						<Swiper
+							className={'trend-property-swiper'}
+							slidesPerView={'auto'}
+							spaceBetween={24}
+							modules={[Autoplay, Navigation, Pagination]}
+							navigation={{
+								nextEl: '.swiper-trend-next',
+								prevEl: '.swiper-trend-prev',
+							}}
+						>
+							{trendProperties.map((property: Property) => {
+								return (
+									<SwiperSlide key={property._id} className={'trend-property-slide'}>
+										<TrendPropertyCard property={property} likePropertyHandler={likePropertyHandler} />
+									</SwiperSlide>
+								);
+							})}
+						</Swiper>
+					)}
 				</Stack>
 			</Stack>
-		);
-	} else {
-		return (
-			<Stack className={'trend-properties'}>
-				<Stack className={'container'}>
-					<SectionHeader
-						eyebrow={'Liked most'}
-						title={'Trending Stays'}
-						action={
-							<div className={'home-pager'}>
-								<button type={'button'} className={'swiper-trend-prev'} aria-label={'Previous stays'}>
-									<ChevronLeftIcon />
-								</button>
-								<button type={'button'} className={'swiper-trend-next'} aria-label={'Next stays'}>
-									<ChevronRightIcon />
-								</button>
-							</div>
-						}
-					/>
-					<Stack className={'card-box'}>
-						{trendProperties.length === 0 ? (
-							<Box component={'div'} className={'empty-list'}>
-								Trends Empty
-							</Box>
-						) : (
-							<Swiper
-								className={'trend-property-swiper'}
-								slidesPerView={'auto'}
-								spaceBetween={24}
-								modules={[Autoplay, Navigation, Pagination]}
-								navigation={{
-									nextEl: '.swiper-trend-next',
-									prevEl: '.swiper-trend-prev',
-								}}
-							>
-								{trendProperties.map((property: Property) => {
-									return (
-										<SwiperSlide key={property._id} className={'trend-property-slide'}>
-											<TrendPropertyCard property={property} likePropertyHandler={likePropertyHandler} />
-										</SwiperSlide>
-									);
-								})}
-							</Swiper>
-						)}
-					</Stack>
-				</Stack>
-			</Stack>
-		);
-	}
+		</Stack>
+	);
 };
 
 TrendProperties.defaultProps = {

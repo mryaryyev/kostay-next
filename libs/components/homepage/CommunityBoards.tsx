@@ -2,7 +2,6 @@ import SectionHeader from './SectionHeader';
 import EastIcon from '@mui/icons-material/East';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import CommunityCard from './CommunityCard';
 import { BoardArticle } from '../../types/board-article/board-article';
 import { useQuery } from '@apollo/client';
@@ -11,7 +10,6 @@ import { BoardArticleCategory } from '../../enums/board-article.enum';
 import { T } from '../../types/common';
 
 const CommunityBoards = () => {
-	const device = useDeviceDetect();
 	const [searchCommunity, setSearchCommunity] = useState({
 		page: 1,
 		sort: 'articleViews',
@@ -49,43 +47,39 @@ const CommunityBoards = () => {
 		},
 	});
 
-	if (device === 'mobile') {
-		return <div>COMMUNITY BOARDS (MOBILE)</div>;
-	} else {
-		const [featured, ...others] = [...newsArticles, ...freeArticles].sort(
-			(a, b) => (b?.articleViews ?? 0) - (a?.articleViews ?? 0),
-		);
+	const [featured, ...others] = [...newsArticles, ...freeArticles].sort(
+		(a, b) => (b?.articleViews ?? 0) - (a?.articleViews ?? 0),
+	);
 
-		return (
-			<section className={'community-board'}>
-				<div className={'container'}>
-					<SectionHeader
-						eyebrow={'From guests'}
-						title={'Community Travel Notes'}
-						subtitle={'Travel notes and news from the Kostay community'}
-						action={
-							<Link href={'/community'} className={'home-link'}>
-								All articles
-								<EastIcon aria-hidden="true" />
-							</Link>
-						}
-					/>
-					{!featured ? (
-						<p className={'empty-list'}>No articles yet</p>
-					) : (
-						<div className={'sx-community'}>
-							<CommunityCard vertical={true} article={featured} index={0} />
-							<div className={'sx-community-list'}>
-								{others.slice(0, 3).map((article, index) => (
-									<CommunityCard vertical={false} article={article} index={index + 1} key={article?._id} />
-								))}
-							</div>
+	return (
+		<section className={'community-board'}>
+			<div className={'container'}>
+				<SectionHeader
+					eyebrow={'From guests'}
+					title={'Community Travel Notes'}
+					subtitle={'Travel notes and news from the Kostay community'}
+					action={
+						<Link href={'/community'} className={'home-link'}>
+							All articles
+							<EastIcon aria-hidden="true" />
+						</Link>
+					}
+				/>
+				{!featured ? (
+					<p className={'empty-list'}>No articles yet</p>
+				) : (
+					<div className={'sx-community'}>
+						<CommunityCard vertical={true} article={featured} index={0} />
+						<div className={'sx-community-list'}>
+							{others.slice(0, 3).map((article, index) => (
+								<CommunityCard vertical={false} article={article} index={index + 1} key={article?._id} />
+							))}
 						</div>
-					)}
-				</div>
-			</section>
-		);
-	}
+					</div>
+				)}
+			</div>
+		</section>
+	);
 };
 
 export default CommunityBoards;

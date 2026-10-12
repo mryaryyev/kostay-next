@@ -1,0 +1,1626 @@
+// Shared responsive rules (tablet ≤1023px, mobile ≤767px). Page-specific rules live in each page's SCSS.
+// Imported last in main.scss so these win over the desktop defaults.
+
+html,
+body {
+	@include tablet {
+		overflow-x: hidden;
+	}
+}
+
+// Every width: the 1300px desktop container shrinks with the window instead of overflowing
+// (small laptops and tablets between 1200 and 1348px).
+#site-wrap .container {
+	width: min(1300px, calc(100% - 48px)) !important;
+	max-width: 100% !important;
+	box-sizing: border-box;
+}
+#site-wrap .home-footer-inner {
+	width: min(1300px, calc(100% - 48px));
+}
+#site-wrap .header-main .container .search-box.home-glass-search {
+	max-width: 100%;
+}
+
+#site-wrap {
+	// Tablet and below: full width with side gutters
+	// Several page files pin .container to 1300px with more specific selectors, so this one must win.
+	.container {
+		@include tablet {
+			width: 100% !important;
+			max-width: 100% !important;
+			padding-left: 24px;
+			padding-right: 24px;
+			box-sizing: border-box;
+		}
+		@include mobile {
+			padding-left: 16px;
+			padding-right: 16px;
+		}
+	}
+
+	/* Navbar: links, login and language move into the drawer (Top.tsx) */
+	#top .navbar .navbar-main {
+		.nav-burger {
+			display: none;
+		}
+		@include tablet {
+			height: 64px;
+			.container {
+				grid-template-columns: auto 1fr;
+				gap: 12px;
+			}
+			.logo-box .kostay-logo {
+				width: 110px;
+				height: 44px;
+			}
+			.router-box,
+			.join-box,
+			.lang-switch {
+				display: none !important;
+			}
+			.user-box {
+				justify-content: flex-end;
+				gap: 8px;
+			}
+			.nav-burger {
+				width: 42px;
+				height: 42px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0;
+				border: 1px solid #d6d2cb;
+				border-radius: 12px;
+				background: #fff;
+				color: #031636;
+				cursor: pointer;
+			}
+		}
+	}
+
+	/* Page heroes: 340px desktop → shorter with smaller titles */
+	.sx-stays-hero,
+	.sx-cs-hero,
+	.sx-hosts-hero,
+	.sx-mypage-hero,
+	.sx-community-hero,
+	#host-detail-page .sx-host-hero {
+		// The fixed navbar is 64px on phones: let the hero grow instead of hiding the title under it.
+		@include mobile {
+			height: auto;
+			min-height: 260px;
+			padding-top: 88px;
+			box-sizing: border-box;
+			.container {
+				padding-bottom: 28px;
+			}
+			h1 {
+				font-size: 34px;
+			}
+			p {
+				font-size: 14px;
+				line-height: 21px;
+			}
+		}
+	}
+
+	/* Footer */
+	.home-footer-inner {
+		@include tablet {
+			width: 100%;
+			padding: 48px 24px 32px;
+			box-sizing: border-box;
+		}
+		@include mobile {
+			padding: 32px 16px 20px;
+		}
+	}
+	// Brand and newsletter span the full width; the link columns sit side by side to keep the footer short.
+	.home-footer-grid {
+		@include tablet {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 24px 16px;
+			margin-bottom: 32px;
+			.home-footer-brand,
+			.home-footer-news {
+				grid-column: 1 / -1;
+			}
+		}
+		@include mobile {
+			gap: 20px 12px;
+			margin-bottom: 24px;
+			h4 {
+				margin-bottom: 10px;
+				font-size: 13px;
+			}
+			.home-footer-col a,
+			.home-footer-col li {
+				font-size: 13px;
+				line-height: 1.5;
+			}
+			.home-footer-col ul {
+				gap: 6px;
+			}
+		}
+	}
+	.home-footer-brand {
+		@include mobile {
+			p {
+				font-size: 13px;
+				line-height: 20px;
+			}
+		}
+	}
+	.home-footer-bottom {
+		@include mobile {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+			padding-top: 20px;
+			font-size: 12px;
+		}
+	}
+}
+
+/* Mobile menu drawer (MUI portal, outside #site-wrap) */
+.nav-drawer {
+	width: min(320px, 86vw);
+	padding: 16px 20px 24px;
+	box-sizing: border-box;
+	background: #fdf9f3 !important;
+	font-family: $font-display;
+	* {
+		font-family: $font-display;
+	}
+	a {
+		text-decoration: none;
+	}
+}
+.nav-drawer-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+	button {
+		display: flex;
+		padding: 6px;
+		border: 0;
+		border-radius: 50%;
+		background: none;
+		color: #031636;
+		cursor: pointer;
+	}
+}
+.nav-drawer-user {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 12px;
+	padding: 12px;
+	border-radius: 16px;
+	background: #031636;
+	color: #fff;
+	img {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		object-fit: cover;
+		background: #fff;
+	}
+	div {
+		display: flex;
+		flex-direction: column;
+	}
+	strong {
+		font-size: 15px;
+	}
+	span {
+		color: #cbd5e1;
+		font-size: 12px;
+	}
+}
+.nav-drawer-links {
+	display: flex;
+	flex-direction: column;
+	a {
+		padding: 14px 4px;
+		border-bottom: 1px solid #e6e2dc;
+		color: #1c1c18;
+		font-size: 16px;
+		font-weight: 600;
+		&[aria-current='page'] {
+			color: #aa3614;
+			font-weight: 800;
+		}
+	}
+}
+.nav-drawer-lang {
+	display: flex;
+	gap: 6px;
+	margin: 20px 0;
+	button {
+		flex: 1;
+		padding: 10px 0;
+		border: 1px solid #d6d2cb;
+		border-radius: 999px;
+		background: #fff;
+		color: #44474e;
+		font-weight: 700;
+		cursor: pointer;
+		&.is-active {
+			border-color: #031636;
+			background: #031636;
+			color: #fff;
+		}
+	}
+}
+.nav-drawer-foot {
+	button,
+	.nav-drawer-login {
+		width: 100%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 13px 0;
+		border: 0;
+		border-radius: 999px;
+		background: #aa3614;
+		color: #fff;
+		font-size: 15px;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	button {
+		background: #fff;
+		border: 1px solid #d6d2cb;
+		color: #1c1c18;
+	}
+}
+
+/* ================= Step 2: booking flow ================= */
+
+/* ---------- Home ---------- */
+#site-wrap.is-home {
+	.header-main.home-hero {
+		@include tablet {
+			padding: 88px 0 40px;
+		}
+	}
+	.home-hero-grid {
+		@include tablet {
+			grid-template-columns: 1fr;
+			gap: 24px;
+		}
+	}
+	.home-hero-copy {
+		@include mobile {
+			padding-right: 0;
+			h1 {
+				font-size: 38px;
+				line-height: 1.05;
+			}
+			p {
+				font-size: 16px;
+				line-height: 24px;
+				margin-bottom: 20px;
+			}
+		}
+	}
+	.home-hero-collage {
+		@include tablet {
+			height: 320px;
+		}
+		@include mobile {
+			height: 220px;
+			gap: 8px;
+		}
+	}
+	.home-section-header h2 {
+		@include mobile {
+			font-size: 28px;
+			line-height: 1.15;
+		}
+	}
+	.home-page > section,
+	.home-page > div {
+		@include mobile {
+			padding-top: 32px;
+			padding-bottom: 32px;
+		}
+	}
+	.home-page > .home-trust-strip .container {
+		@include tablet {
+			padding-left: 24px !important;
+			padding-right: 24px !important;
+		}
+		@include mobile {
+			padding-left: 16px !important;
+			padding-right: 16px !important;
+			gap: 12px;
+		}
+	}
+	.home-page > .home-trust-strip .container,
+	.popular-properties .sx-grid-3 {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	.top-properties .trend-property-slide,
+	.top-properties .top-property-slide,
+	.top-agents .top-agents-slide {
+		@include tablet {
+			width: 46%;
+		}
+		@include mobile {
+			width: 82%;
+		}
+	}
+	.top-agents .sx-host-nav {
+		@include mobile {
+			display: none;
+		}
+	}
+	// Events: a swipeable row on tablets and phones instead of a tall stack.
+	.events .events-grid {
+		@include tablet {
+			display: flex;
+			gap: 16px;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			padding-bottom: 8px;
+			-webkit-overflow-scrolling: touch;
+			scrollbar-width: none;
+			&::-webkit-scrollbar {
+				display: none;
+			}
+			> * {
+				flex: 0 0 42%;
+				scroll-snap-align: start;
+			}
+		}
+		@include mobile {
+			> * {
+				flex-basis: 78%;
+			}
+		}
+	}
+	.sx-community {
+		@include tablet {
+			grid-template-columns: 1fr;
+		}
+	}
+	.home-film .film-frame {
+		@include mobile {
+			min-height: 340px;
+			.film-copy {
+				padding: 32px 20px;
+				h2 {
+					font-size: 32px;
+				}
+			}
+		}
+	}
+	h2 {
+		@include mobile {
+			max-width: 100%;
+		}
+	}
+	// "Have a room, a hanok or a villa to share?": copy above the button on small screens.
+	.home-page > .home-host-cta {
+		@include mobile {
+			padding-bottom: 48px;
+		}
+	}
+	.home-host-cta .cta-panel {
+		@include tablet {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+			padding: 36px 32px;
+			.cta-copy {
+				max-width: 100%;
+			}
+		}
+		@include mobile {
+			padding: 28px 20px;
+			border-radius: 20px;
+			h2 {
+				font-size: 26px;
+				line-height: 32px;
+				letter-spacing: -0.02em;
+			}
+			p {
+				font-size: 15px;
+				line-height: 22px;
+			}
+			.home-btn {
+				width: 100%;
+				justify-content: center;
+				box-sizing: border-box;
+			}
+		}
+	}
+}
+
+// Home search: stacked fields on phones.
+#site-wrap .header-main .container .search-box.home-glass-search {
+	@include tablet {
+		width: 100%;
+		flex-direction: column;
+		align-items: stretch;
+		border-radius: 24px;
+		.select-box {
+			flex-direction: column;
+			width: 100%;
+			.box {
+				width: 100%;
+				height: auto !important;
+				min-height: 52px;
+				box-sizing: border-box;
+			}
+		}
+		.search-box-other {
+			width: 100%;
+			justify-content: space-between;
+			.search-btn {
+				flex: 1;
+				width: auto;
+			}
+		}
+		.filter-location,
+		.filter-type,
+		.filter-rooms,
+		.filter-dates,
+		.filter-guests {
+			position: fixed;
+			top: auto;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			max-height: 75vh;
+			overflow-y: auto;
+			border-radius: 24px 24px 0 0;
+			box-sizing: border-box;
+			z-index: 1300;
+		}
+	}
+}
+
+/* ---------- Stays ---------- */
+#site-wrap .sx-stays-hero .sx-stays-hero-metrics {
+	@include mobile {
+		gap: 10px;
+		margin-top: 16px;
+		li + li {
+			padding-left: 0;
+			border-left: 0;
+		}
+	}
+}
+
+#site-wrap #property-list-page {
+	// Desktop: the wrapper is invisible so the filter stays a sticky grid column.
+	.sx-filter-wrap,
+	.sx-filter-sheet {
+		display: contents;
+	}
+	.sx-filter-backdrop,
+	.sx-filter-close,
+	.sx-filter-done,
+	.sx-filters-btn {
+		display: none;
+	}
+
+	.sx-stays-layout {
+		@include tablet {
+			grid-template-columns: 1fr;
+			padding: 24px 24px !important;
+		}
+		@include mobile {
+			padding: 16px 16px !important;
+		}
+	}
+	.sx-stays-grid {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	.sx-results-head {
+		@include tablet {
+			flex-wrap: wrap;
+		}
+	}
+	.sx-map-callout {
+		@include mobile {
+			flex-direction: column;
+			align-items: stretch;
+			text-align: left;
+			> a,
+			> button {
+				justify-content: center;
+			}
+		}
+	}
+	.sx-filters-btn {
+		@include tablet {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			order: -1;
+			padding: 10px 16px;
+			border: 1.5px solid #031636;
+			border-radius: 999px;
+			background: #fff;
+			color: #031636;
+			font-size: 14px;
+			font-weight: 800;
+			svg {
+				width: 18px;
+				height: 18px;
+			}
+		}
+	}
+
+	// Tablet and phones: the filter is a bottom sheet.
+	@include tablet {
+		.sx-filter-wrap {
+			display: block;
+			position: fixed;
+			inset: 0;
+			z-index: 1200;
+			pointer-events: none;
+		}
+		.sx-filter-backdrop {
+			display: block;
+			position: absolute;
+			inset: 0;
+			border: 0;
+			background: rgba(3, 22, 54, 0.45);
+			opacity: 0;
+			transition: opacity 200ms ease;
+		}
+		.sx-filter-sheet {
+			display: flex;
+			flex-direction: column;
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			max-height: 88vh;
+			overflow-y: auto;
+			border-radius: 24px 24px 0 0;
+			background: #fff;
+			transform: translateY(100%);
+			transition: transform 260ms ease;
+		}
+		.sx-filter {
+			position: static;
+			box-shadow: none;
+			border-radius: 0;
+		}
+		.sx-filter-close {
+			display: flex;
+			align-self: flex-end;
+			margin: 12px 12px -36px 0;
+			padding: 6px;
+			border: 0;
+			border-radius: 50%;
+			background: #f1ede7;
+			color: #031636;
+			z-index: 1;
+		}
+		.sx-filter-done {
+			display: block;
+			position: sticky;
+			bottom: 0;
+			margin: 0 16px 16px;
+			padding: 14px 0;
+			border: 0;
+			border-radius: 999px;
+			background: #aa3614;
+			color: #fff;
+			font-size: 15px;
+			font-weight: 700;
+		}
+		.sx-filter-wrap.is-open {
+			pointer-events: auto;
+			.sx-filter-backdrop {
+				opacity: 1;
+			}
+			.sx-filter-sheet {
+				transform: translateY(0);
+			}
+		}
+	}
+}
+
+/* ---------- Stay detail ---------- */
+#site-wrap #property-detail-page {
+	.sx-mobile-bookbar {
+		display: none;
+	}
+	@include tablet {
+		padding: 84px 0 110px;
+		.sx-detail-body {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+		.sx-detail-side {
+			position: static;
+		}
+		.sx-facts {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		.sx-mobile-bookbar {
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 1100;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+			border-top: 1px solid #e6e2dc;
+			background: #fff;
+			box-shadow: 0 -8px 24px rgba(26, 43, 76, 0.08);
+			div {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: baseline;
+				gap: 4px;
+			}
+			strong {
+				color: #031636;
+				font-size: 18px;
+				font-weight: 800;
+			}
+			span {
+				color: #75777f;
+				font-size: 13px;
+			}
+			small {
+				width: 100%;
+				color: #44474e;
+				font-size: 12px;
+			}
+			button {
+				padding: 12px 22px;
+				border: 0;
+				border-radius: 999px;
+				background: #aa3614;
+				color: #fff;
+				font-size: 15px;
+				font-weight: 700;
+				white-space: nowrap;
+			}
+		}
+	}
+	@include mobile {
+		.sx-detail-title-row {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 12px;
+			h1 {
+				font-size: 28px;
+				line-height: 34px;
+			}
+		}
+		.sx-gallery-main {
+			height: 260px;
+			border-radius: 18px;
+		}
+		.sx-gallery-thumbs button {
+			flex-basis: 96px;
+			height: 68px;
+		}
+		.sx-facts {
+			grid-template-columns: 1fr 1fr;
+		}
+		.sx-calendar {
+			width: calc(100vw - 32px);
+			max-width: 340px;
+		}
+	}
+}
+
+/* ---------- Checkout ---------- */
+#site-wrap #checkout-page {
+	@include tablet {
+		padding: 84px 0 64px;
+		.sx-checkout-body {
+			grid-template-columns: 1fr;
+			gap: 24px;
+		}
+		.sx-checkout-summary {
+			order: -1;
+			position: static;
+		}
+	}
+	@include mobile {
+		.sx-checkout-title {
+			font-size: 28px;
+			line-height: 34px;
+		}
+		.sx-checkout-methods {
+			grid-template-columns: 1fr;
+		}
+	}
+}
+
+/* ================= Step 3: other redesigned pages ================= */
+
+/* ---------- Hosts list ---------- */
+#site-wrap .sx-hosts-hero .sx-hosts-hero-row {
+	@include mobile {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+	}
+}
+#site-wrap .sx-hosts-hero .sx-hosts-hero-badge {
+	@include mobile {
+		padding: 10px 14px;
+	}
+}
+#site-wrap .agent-list-page {
+	.container.sx-hosts {
+		@include tablet {
+			padding: 24px 24px !important;
+		}
+		@include mobile {
+			padding: 16px 16px !important;
+		}
+	}
+	.sx-hosts-controls-row {
+		@include mobile {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 12px;
+		}
+	}
+	.sx-hosts-search {
+		@include mobile {
+			width: 100%;
+			max-width: 100%;
+		}
+	}
+	.sx-hosts-grid,
+	.sx-hosts-trust {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+			gap: 20px;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	.sx-hosts-trust {
+		@include mobile {
+			padding: 20px;
+		}
+	}
+}
+
+/* ---------- Host detail ---------- */
+#site-wrap #host-detail-page {
+	.sx-host-section .sx-stays-grid {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	@include mobile {
+		.sx-host-hero {
+			height: auto;
+			min-height: 300px;
+			padding-top: 72px;
+		}
+		.sx-host-head {
+			flex-wrap: wrap;
+			gap: 16px;
+		}
+		.sx-host-avatar {
+			width: 72px;
+			height: 72px;
+		}
+		.sx-host-title h1 {
+			font-size: 28px;
+		}
+		.sx-host-profile-btn {
+			width: 100%;
+			justify-content: center;
+			padding: 13px 0;
+			font-size: 15px;
+		}
+		.sx-host-section {
+			padding: 18px;
+			border-radius: 18px;
+		}
+	}
+}
+
+/* ---------- Community list ---------- */
+#site-wrap #community-list-page {
+	.container.sx-community-layout {
+		@include tablet {
+			grid-template-columns: 1fr;
+			padding: 24px 16px 48px;
+		}
+	}
+	.sx-community-side {
+		@include tablet {
+			position: static;
+		}
+	}
+	// Phones: boards become a swipeable chip row; the etiquette box is hidden to reach posts faster.
+	@include mobile {
+		.container.sx-community-layout {
+			gap: 16px;
+		}
+		.sx-community-side,
+		.sx-community-main {
+			min-width: 0;
+		}
+		.sx-board-menu {
+			min-width: 0;
+			max-width: 100%;
+			overflow: hidden;
+			padding: 12px;
+			.sx-board-brand {
+				display: none;
+			}
+			nav {
+				display: flex;
+				flex-direction: row;
+				gap: 8px;
+				overflow-x: auto;
+			}
+			button {
+				flex-shrink: 0;
+				width: auto;
+				gap: 8px;
+				white-space: nowrap;
+			}
+		}
+		.sx-etiquette {
+			display: none;
+		}
+	}
+	.sx-post-grid {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	.sx-board-head {
+		@include tablet {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 16px;
+			h2 {
+				font-size: 34px;
+				line-height: 1.1;
+			}
+		}
+	}
+	.sx-board-actions {
+		@include mobile {
+			width: 100%;
+			flex-wrap: wrap;
+			.sx-board-search {
+				flex: 1;
+				min-width: 0;
+			}
+		}
+	}
+	input {
+		@include mobile {
+			width: 100%;
+		}
+	}
+	.sx-share {
+		@include tablet {
+			flex-direction: column;
+			align-items: stretch;
+			padding: 24px;
+			button {
+				width: 100%;
+			}
+		}
+		@include mobile {
+			.sx-share-copy {
+				align-items: flex-start;
+			}
+			h3 {
+				font-size: 20px;
+				line-height: 26px;
+			}
+		}
+	}
+}
+
+/* ---------- Help ---------- */
+#site-wrap #cs-page {
+	@include tablet {
+		.sx-cs-layout {
+			grid-template-columns: 1fr;
+		}
+		.sx-cs-aside {
+			position: static;
+		}
+	}
+	@include mobile {
+		padding: 24px 0 64px;
+		.sx-cs-toolbar {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.sx-cs-tabs {
+			overflow-x: auto;
+			button {
+				padding: 10px 12px;
+				white-space: nowrap;
+			}
+		}
+		.sx-cs-search {
+			flex-basis: auto;
+		}
+		.sx-cs-panel {
+			padding: 18px;
+			border-radius: 18px;
+		}
+		.sx-notice-list li > button,
+		.sx-faq-list li > button {
+			flex-wrap: wrap;
+			gap: 8px 12px;
+			padding: 14px;
+		}
+		.sx-notice-list time,
+		.sx-inquiry-list small {
+			display: none;
+		}
+		.sx-notice-list .sx-notice-body {
+			padding: 0 14px 16px;
+		}
+		.sx-faq-groups {
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			padding-bottom: 4px;
+			button {
+				white-space: nowrap;
+			}
+		}
+	}
+}
+
+/* ---------- My Page ---------- */
+#site-wrap .sx-identity {
+	@include mobile {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+		padding: 20px;
+		.sx-identity-avatar {
+			width: 80px;
+			height: 80px;
+		}
+	}
+}
+#site-wrap #my-page .container .my-page {
+	@include tablet {
+		margin: 24px 0 64px;
+		gap: 20px;
+		.back-frame {
+			flex-direction: column;
+			gap: 20px;
+			.left-config {
+				width: 100%;
+			}
+			.main-config .list-config {
+				justify-content: center;
+			}
+		}
+	}
+}
+// Menu becomes a horizontal chip bar: groups side by side, items scroll sideways.
+#site-wrap #my-page {
+	@include tablet {
+		.sx-menu {
+			flex-direction: row;
+			align-items: center;
+			gap: 8px;
+			padding: 12px;
+			overflow-x: auto;
+			ul {
+				flex-direction: row;
+				gap: 6px;
+			}
+		}
+		.sx-menu-head,
+		.sx-menu-group h6 {
+			display: none;
+		}
+		.sx-menu-group + .sx-menu-group {
+			margin-top: 0;
+		}
+		.sx-menu-item {
+			white-space: nowrap;
+			border-radius: 999px;
+		}
+		.sx-earnings {
+			grid-template-columns: 1fr 1fr;
+		}
+		.sx-booking-card {
+			grid-template-columns: 1fr;
+		}
+	}
+}
+
+/* ---------- Login / Register ---------- */
+#site-wrap #join-page {
+	@include tablet {
+		padding: 88px 0 48px;
+		.sx-join {
+			grid-template-columns: 1fr;
+			width: calc(100% - 32px);
+			min-height: 0;
+		}
+		.sx-join-side {
+			display: none;
+		}
+	}
+	@include mobile {
+		.sx-join-card {
+			padding: 28px 20px;
+		}
+	}
+}
+
+/* ---------- Notification bell menu ---------- */
+.sx-bell-menu {
+	@include mobile {
+		width: calc(100vw - 24px) !important;
+		max-width: 380px;
+	}
+}
+
+/* ================= Step 4: admin is desktop-only ================= */
+.admin-small-screen {
+	display: none;
+}
+#site-wrap.admin .admin-small-screen {
+	@include tablet {
+		display: block;
+		position: sticky;
+		top: 0;
+		z-index: 2000;
+		padding: 10px 16px;
+		background: #aa3614;
+		color: #fff;
+		font-size: 14px;
+		font-weight: 700;
+		text-align: center;
+	}
+}
+
+// The homepage search is a 9999px pill on desktop; on small screens the stacked box needs normal corners.
+#site-wrap.is-home .header-main.home-hero .container .search-box.home-glass-search {
+	@include tablet {
+		border-radius: 24px;
+		padding: 12px;
+	}
+}
+
+/* ================= My Page sections ================= */
+#site-wrap #my-page {
+	@include tablet {
+		// Flex children may not grow wider than the screen.
+		.main-config,
+		.list-config,
+		.list-config > * {
+			min-width: 0;
+			max-width: 100%;
+		}
+		.list-config > * {
+			width: 100%;
+		}
+	}
+
+	// Profile information
+	@include mobile {
+		.sx-profile-head,
+		.sx-profile-body {
+			padding-left: 18px;
+			padding-right: 18px;
+		}
+		.sx-profile-head h2,
+		.sx-profile-head h3 {
+			font-size: 22px;
+		}
+		.sx-profile-photo {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 14px;
+		}
+		.sx-profile-grid {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+		.sx-profile-footer {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 12px;
+		}
+		.sx-profile-footer-actions {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+			button {
+				width: 100%;
+			}
+		}
+	}
+
+	// Notifications
+	@include mobile {
+		.sx-notifications-head {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 12px;
+		}
+		.sx-notifications-list li,
+		.sx-notification-main,
+		.sx-notification-body {
+			min-width: 0;
+		}
+		.sx-notification-message,
+		.sx-notification-subject {
+			overflow-wrap: anywhere;
+		}
+	}
+
+	// Bookings and reservations
+	.sx-notifications-filters {
+		@include mobile {
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			padding-bottom: 4px;
+			button {
+				flex-shrink: 0;
+				white-space: nowrap;
+			}
+		}
+	}
+	@include mobile {
+		.sx-bookings-head h2 {
+			font-size: 24px;
+		}
+		.sx-booking-card {
+			gap: 12px;
+			padding: 14px;
+		}
+		.sx-booking-photo {
+			height: 160px;
+		}
+		.sx-booking-info,
+		.sx-booking-side {
+			min-width: 0;
+		}
+		.sx-booking-side {
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			text-align: left;
+		}
+		.sx-booking-facts {
+			flex-wrap: wrap;
+		}
+		.sx-booking-actions {
+			flex-basis: 100%;
+			width: 100%;
+			button {
+				flex: 1;
+				width: 100%;
+			}
+		}
+	}
+
+	// Write article (toast editor)
+	@include tablet {
+		.teditor-fields {
+			flex-direction: column !important;
+			gap: 12px;
+			margin: 16px 0 20px !important;
+		}
+		.teditor-field {
+			width: 100% !important;
+		}
+		.toastui-editor-defaultUI {
+			max-width: 100%;
+		}
+	}
+}
+
+/* ================= Older (Nestar-style) pages: readable on phones until they are redesigned ================= */
+
+// Old banner used by Member, Community detail and About.
+#site-wrap .header-basic {
+	@include tablet {
+		height: 220px !important;
+		padding-top: 64px;
+		box-sizing: border-box;
+		.container {
+			margin-top: 0 !important;
+			flex-direction: column;
+			justify-content: center;
+			strong {
+				font-size: 32px !important;
+				line-height: 1.15 !important;
+			}
+			span {
+				font-size: 15px !important;
+			}
+		}
+	}
+}
+
+// Shared fallback: no element wider than the screen, images scale down.
+#site-wrap {
+	#member-page,
+	#community-detail-page,
+	.about-page,
+	#member-follows-page,
+	#my-page .list-config {
+		@include tablet {
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				max-width: 100%;
+			}
+			img,
+			video {
+				height: auto;
+			}
+		}
+	}
+}
+
+/* Member page */
+#site-wrap #member-page {
+	@include tablet {
+		padding-top: 24px;
+		.container .member-page {
+			flex-direction: column;
+			margin-top: 0 !important;
+			.back-frame {
+				width: 100% !important;
+				flex-direction: column !important;
+				gap: 20px;
+				padding: 16px !important;
+				.left-config,
+				.main-config {
+					width: 100% !important;
+					min-height: 0 !important;
+					height: auto !important;
+				}
+				.left-config .sections .section .sub-section {
+					width: 100% !important;
+				}
+				.main-config .list-config {
+					flex-wrap: wrap;
+					justify-content: center;
+				}
+			}
+		}
+	}
+}
+
+/* Followers / followings tables (My Page and Member page) */
+#site-wrap #member-follows-page {
+	@include tablet {
+		.main-title-box .right-box {
+			width: 100% !important;
+		}
+		.listing-title-box {
+			display: none !important;
+		}
+		.follows-card-box {
+			flex-direction: column !important;
+			align-items: stretch !important;
+			gap: 12px;
+			height: auto !important;
+			padding: 16px !important;
+			.info,
+			.details-box,
+			.action-box {
+				width: 100% !important;
+			}
+			.details-box,
+			.action-box {
+				justify-content: flex-start !important;
+			}
+		}
+	}
+}
+
+/* Community detail */
+#site-wrap #community-detail-page {
+	@include tablet {
+		padding-top: 24px;
+		.container .main-box {
+			flex-direction: column !important;
+			gap: 20px;
+			.left-config {
+				width: 100% !important;
+				height: auto !important;
+				.tab-button {
+					flex-direction: row !important;
+					flex-wrap: wrap;
+					gap: 8px;
+					button,
+					> * {
+						width: auto !important;
+						flex: 1 1 40%;
+					}
+				}
+			}
+			.community-detail-config {
+				width: 100% !important;
+				.title-box {
+					flex-direction: column !important;
+					align-items: flex-start !important;
+					gap: 8px;
+				}
+				.config .first-box-config {
+					width: 100% !important;
+					height: auto !important;
+					.content-and-info {
+						flex-direction: column !important;
+						gap: 12px;
+						height: auto !important;
+					}
+					.info {
+						flex-wrap: wrap;
+						gap: 8px;
+					}
+				}
+			}
+		}
+	}
+}
+
+/* About */
+#site-wrap .about-page {
+	@include tablet {
+		padding: 32px 0 48px;
+		.intro .container,
+		.statistics .container,
+		.statistics .container .info,
+		.agents .container .wrap,
+		.options .container {
+			flex-direction: column !important;
+			align-items: stretch !important;
+			gap: 24px;
+			height: auto !important;
+		}
+		.intro .container {
+			.left,
+			.right {
+				width: 100% !important;
+			}
+			.boxes {
+				flex-wrap: wrap;
+				gap: 16px;
+				.box {
+					width: calc(50% - 8px) !important;
+				}
+			}
+		}
+		.statistics .container .banner {
+			width: 100% !important;
+			height: 200px !important;
+		}
+		.statistics .container .info {
+			flex-direction: row !important;
+			flex-wrap: wrap;
+			justify-content: space-around;
+		}
+		.options {
+			flex-direction: column !important;
+			height: auto !important;
+			.about-banner {
+				width: 100% !important;
+				height: 220px !important;
+			}
+			.container {
+				> *,
+				.text-box,
+				.text-box * {
+					width: 100% !important;
+				}
+			}
+		}
+	}
+	@include mobile {
+		.intro .container .left {
+			span,
+			h2,
+			strong {
+				font-size: 30px !important;
+				line-height: 1.15 !important;
+			}
+		}
+		.intro .container .boxes .box {
+			width: 100% !important;
+		}
+	}
+}
+
+/* Older pages: second pass after screenshots */
+#site-wrap #member-page {
+	@include tablet {
+		padding-top: 16px !important;
+		.container .member-page .back-frame {
+			margin: 16px 0 48px !important;
+			.left-config {
+				margin: 0 !important;
+				padding: 16px !important;
+			}
+		}
+		#member-properties-page {
+			.main-title-box .right-box {
+				width: 100% !important;
+			}
+			.listing-title-box {
+				display: none !important;
+			}
+			.property-card-box {
+				flex-wrap: wrap;
+				gap: 10px;
+				height: auto !important;
+				padding: 12px 0 !important;
+				.information-box {
+					width: calc(100% - 130px) !important;
+				}
+				.date-box,
+				.status-box {
+					width: auto !important;
+				}
+			}
+		}
+	}
+}
+#site-wrap #community-detail-page {
+	@include tablet {
+		padding-top: 0 !important;
+		> .container,
+		.container {
+			padding-top: 16px !important;
+		}
+		.main-box .left-config {
+			margin-top: 0 !important;
+		}
+	}
+}
+#site-wrap .about-page {
+	@include tablet {
+		.options {
+			display: flex;
+			.about-banner {
+				position: static !important;
+				order: -1;
+			}
+			.container {
+				padding: 24px 16px !important;
+			}
+		}
+		.help {
+			margin-top: 48px !important;
+			.container {
+				flex-direction: column !important;
+				gap: 20px;
+				padding: 32px 20px !important;
+				.left strong {
+					font-size: 24px !important;
+				}
+				.right {
+					flex-wrap: wrap;
+					gap: 10px;
+					div {
+						padding: 0 18px !important;
+					}
+				}
+			}
+		}
+	}
+}
+
+/* ================= Host My Page sections ================= */
+#site-wrap #my-page {
+	// My Stays: table rows become cards
+	@include tablet {
+		.list-box .listing-title-box {
+			display: none !important;
+		}
+		.list-box {
+			min-height: 0 !important;
+			padding: 16px !important;
+		}
+		// MUI Stack is a column by default: force a wrapping row so items flow onto new lines.
+		.list-box .property-card-box {
+			flex-direction: row !important;
+			flex-wrap: wrap !important;
+			align-items: center;
+			gap: 10px 14px;
+			height: auto !important;
+			margin-top: 16px !important;
+			padding: 0 0 16px !important;
+			.information-box {
+				width: calc(100% - 130px) !important;
+			}
+			.date-box,
+			.status-box,
+			.views-box,
+			.action-box {
+				width: auto !important;
+				height: auto !important;
+			}
+		}
+		.property-list-box .tab-name-box .tab-name,
+		.property-list-box .tab-name-box .active-tab-name {
+			width: 50% !important;
+		}
+	}
+
+	// Add Stay: one field per row on phones
+	@include mobile {
+		.config .description-box {
+			padding: 18px !important;
+			.config-row {
+				flex-direction: column !important;
+				gap: 14px;
+				> * {
+					width: 100% !important;
+				}
+				.price-year-after-price {
+					width: 100% !important;
+					.description-input,
+					.select-description {
+						width: 100% !important;
+					}
+				}
+			}
+			.buttons-row {
+				flex-wrap: wrap;
+				gap: 10px;
+				.prev-button,
+				.next-button {
+					width: 100% !important;
+				}
+			}
+		}
+		.images-box .upload-box {
+			padding: 20px 14px !important;
+			.browse-button {
+				width: 100% !important;
+			}
+		}
+	}
+}

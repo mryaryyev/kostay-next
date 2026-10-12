@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import Head from 'next/head';
 import Top from '../Top';
-import Footer from '../Footer';
 import HomeFooter from '../homepage/HomeFooter';
 import { Stack } from '@mui/material';
 import { getJwtToken, updateUserInfo } from '../../auth';
@@ -17,7 +15,6 @@ import 'swiper/css/navigation';
 const withLayoutFull = (Component: any) => {
 	return (props: any) => {
 		const router = useRouter();
-		const device = useDeviceDetect();
 		const user = useReactiveVar(userVar);
 
 		/** LIFECYCLES **/
@@ -28,53 +25,30 @@ const withLayoutFull = (Component: any) => {
 
 		/** HANDLERS **/
 
-		if (device == 'mobile') {
-			return (
-				<>
-					<Head>
-						<title>Kostay</title>
-						<meta name={'title'} content={`Kostay`} />
-					</Head>
-					<Stack id="mobile-wrap">
-						<Stack id={'top'}>
-							<Top />
-						</Stack>
-
-						<Stack id={'main'}>
-							<Component {...props} />
-						</Stack>
-
-						<Stack id={'footer'}>
-							<Footer />
-						</Stack>
+		return (
+			<>
+				<Head>
+					<title>Kostay</title>
+					<meta name="viewport" content="width=device-width, initial-scale=1" />
+					<meta name={'title'} content={`Kostay`} />
+				</Head>
+				<Stack id="site-wrap">
+					<Stack id={'top'}>
+						<Top />
 					</Stack>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<Head>
-						<title>Kostay</title>
-						<meta name={'title'} content={`Kostay`} />
-					</Head>
-					<Stack id="pc-wrap">
-						<Stack id={'top'}>
-							<Top />
-						</Stack>
 
-						<Stack id={'main'}>
-							<Component {...props} />
-						</Stack>
-
-						<Chat />
-
-						<Stack id={'footer'}>
-							<HomeFooter />
-						</Stack>
+					<Stack id={'main'}>
+						<Component {...props} />
 					</Stack>
-				</>
-			);
-		}
+
+					<Chat />
+
+					<Stack id={'footer'}>
+						<HomeFooter />
+					</Stack>
+				</Stack>
+			</>
+		);
 	};
 };
 

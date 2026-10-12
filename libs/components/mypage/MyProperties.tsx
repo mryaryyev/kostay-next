@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { NextPage } from 'next';
 import { Pagination, Stack, Typography } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { PropertyCard } from './PropertyCard';
 import { Property } from '../../types/property/property';
 import { AgentPropertiesInquiry } from '../../types/property/property.input';
@@ -15,7 +14,6 @@ import { GET_AGENT_PROPERTIES } from '../../../apollo/user/query';
 import { sweetConfirmAlert, sweetErrorHandling } from '../../sweetAlert';
 
 const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
-	const device = useDeviceDetect();
 	const [searchFilter, setSearchFilter] = useState<AgentPropertiesInquiry>(initialInput);
 	const [agentProperties, setAgentProperties] = useState<Property[]>([]);
 	const [total, setTotal] = useState<number>(0);
@@ -103,84 +101,78 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		router.back();
 	}
 
-	if (device === 'mobile') {
-		return <div>NESTAR PROPERTIES MOBILE</div>;
-	} else {
-		return (
-			<div id="my-property-page">
-				<Stack className="main-title-box">
-					<Stack className="right-box">
-						<Typography className="main-title">My Stays</Typography>
-						<Typography className="sub-title">We are glad to see you again!</Typography>
-					</Stack>
+	return (
+		<div id="my-property-page">
+			<Stack className="main-title-box">
+				<Stack className="right-box">
+					<Typography className="main-title">My Stays</Typography>
+					<Typography className="sub-title">We are glad to see you again!</Typography>
 				</Stack>
-				<Stack className="property-list-box">
-					<Stack className="tab-name-box">
-						<Typography
-							onClick={() => changeStatusHandler(PropertyStatus.ACTIVE)}
-							className={searchFilter.search.propertyStatus === 'ACTIVE' ? 'active-tab-name' : 'tab-name'}
-						>
-							Active
-						</Typography>
-						<Typography
-							onClick={() => changeStatusHandler(PropertyStatus.INACTIVE)}
-							className={searchFilter.search.propertyStatus === 'INACTIVE' ? 'active-tab-name' : 'tab-name'}
-						>
-							Inactive
-						</Typography>
+			</Stack>
+			<Stack className="property-list-box">
+				<Stack className="tab-name-box">
+					<Typography
+						onClick={() => changeStatusHandler(PropertyStatus.ACTIVE)}
+						className={searchFilter.search.propertyStatus === 'ACTIVE' ? 'active-tab-name' : 'tab-name'}
+					>
+						Active
+					</Typography>
+					<Typography
+						onClick={() => changeStatusHandler(PropertyStatus.INACTIVE)}
+						className={searchFilter.search.propertyStatus === 'INACTIVE' ? 'active-tab-name' : 'tab-name'}
+					>
+						Inactive
+					</Typography>
+				</Stack>
+				<Stack className="list-box">
+					<Stack className="listing-title-box">
+						<Typography className="title-text">Listing title</Typography>
+						<Typography className="title-text">Date Published</Typography>
+						<Typography className="title-text">Status</Typography>
+						<Typography className="title-text">View</Typography>
+						{searchFilter.search.propertyStatus === 'ACTIVE' && <Typography className="title-text">Action</Typography>}
 					</Stack>
-					<Stack className="list-box">
-						<Stack className="listing-title-box">
-							<Typography className="title-text">Listing title</Typography>
-							<Typography className="title-text">Date Published</Typography>
-							<Typography className="title-text">Status</Typography>
-							<Typography className="title-text">View</Typography>
-							{searchFilter.search.propertyStatus === 'ACTIVE' && (
-								<Typography className="title-text">Action</Typography>
-							)}
-						</Stack>
 
-						{agentProperties?.length === 0 ? (
-							<div className={'no-data'}>
-								<img src="/img/icons/icoAlert.svg" alt="" />
-								<p>No stays found!</p>
-							</div>
-						) : (
-							agentProperties.map((property: Property) => {
-								return (
-									<PropertyCard
-										key={property._id}
-										property={property}
-										deletePropertyHandler={deletePropertyHandler}
-										updatePropertyHandler={updatePropertyHandler}
-									/>
-								);
-							})
-						)}
+					{agentProperties?.length === 0 ? (
+						<div className={'no-data'}>
+							<img src="/img/icons/icoAlert.svg" alt="" />
+							<p>No stays found!</p>
+						</div>
+					) : (
+						agentProperties.map((property: Property) => {
+							return (
+								<PropertyCard
+									key={property._id}
+									property={property}
+									deletePropertyHandler={deletePropertyHandler}
+									updatePropertyHandler={updatePropertyHandler}
+								/>
+							);
+						})
+					)}
 
-						{agentProperties.length !== 0 && (
-							<Stack className="pagination-config">
-								<Stack className="pagination-box">
-									<Pagination
-										count={Math.ceil(total / searchFilter.limit)}
-										page={searchFilter.page}
-										shape="circular"
-										color="primary"
-										onChange={paginationHandler}
-									/>
-								</Stack>
-								<Stack className="total-result">
-									<Typography>
-										{total} stay{total === 1 ? '' : 's'} available
-									</Typography>
-								</Stack>
+					{agentProperties.length !== 0 && (
+						<Stack className="pagination-config">
+							<Stack className="pagination-box">
+								<Pagination
+									count={Math.ceil(total / searchFilter.limit)}
+									page={searchFilter.page}
+									shape="circular"
+									color="primary"
+									onChange={paginationHandler}
+								/>
 							</Stack>
-						)}
-					</Stack>
+							<Stack className="total-result">
+								<Typography>
+									{total} stay{total === 1 ? '' : 's'} available
+								</Typography>
+							</Stack>
+						</Stack>
+					)}
 				</Stack>
-			</div>
-		);
-	}
+			</Stack>
+		</div>
+	);
 };
 
 MyProperties.defaultProps = {

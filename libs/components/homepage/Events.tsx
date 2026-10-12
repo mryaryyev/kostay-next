@@ -2,7 +2,6 @@ import SectionHeader from './SectionHeader';
 import React from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 
 interface EventData {
 	eventTitle: string;
@@ -14,8 +13,7 @@ const eventsData: EventData[] = [
 	{
 		eventTitle: 'Paradise City Theme Park',
 		city: 'Incheon',
-		description:
-			'Experience magic and wonder in Incheon with a visit to the night-themed indoor theme park wonderbox.',
+		description: 'Experience magic and wonder in Incheon with a visit to the night-themed indoor theme park wonderbox.',
 		imageSrc: '/img/events/INCHEON.webp',
 	},
 	{
@@ -40,57 +38,46 @@ const eventsData: EventData[] = [
 ];
 
 const EventCard = ({ event }: { event: EventData }) => {
-	const device = useDeviceDetect();
-
-	if (device === 'mobile') {
-		return <div>EVENT CARD</div>;
-	} else {
-		return (
-			<article className="home-event-card">
-				<img src={event?.imageSrc} alt={event?.eventTitle} loading="lazy" />
-				<div className={'event-copy'}>
-					<span className={'event-city'}>{event?.city}</span>
-					<strong>{event?.eventTitle}</strong>
-					<p>{event?.description}</p>
-				</div>
-			</article>
-		);
-	}
+	return (
+		<article className="home-event-card">
+			<img src={event?.imageSrc} alt={event?.eventTitle} loading="lazy" />
+			<div className={'event-copy'}>
+				<span className={'event-city'}>{event?.city}</span>
+				<strong>{event?.eventTitle}</strong>
+				<p>{event?.description}</p>
+			</div>
+		</article>
+	);
 };
 
 const Events = () => {
-	const device = useDeviceDetect();
 
-	if (device === 'mobile') {
-		return <div>EVENT CARD</div>;
-	} else {
-		return (
-			<section className={'events'}>
-				<div className={'container'}>
-					<SectionHeader
-						eyebrow={'Happening now'}
-						title={'Events & Festivals'}
-						subtitle={'Festivals worth planning an authentic seasonal stay around'}
-						action={
-							<div className={'home-pager'}>
-								<button type={'button'} aria-label={'Previous festival'} disabled>
-									<ChevronLeftIcon />
-								</button>
-								<button type={'button'} aria-label={'Next festival'} disabled>
-									<ChevronRightIcon />
-								</button>
-							</div>
-						}
-					/>
-					<div className={'events-grid'}>
-						{eventsData.map((event: EventData) => {
-							return <EventCard event={event} key={event?.eventTitle} />;
-						})}
-					</div>
+	return (
+		<section className={'events'}>
+			<div className={'container'}>
+				<SectionHeader
+					eyebrow={'Happening now'}
+					title={'Events & Festivals'}
+					subtitle={'Festivals worth planning an authentic seasonal stay around'}
+					action={
+						<div className={'home-pager'}>
+							<button type={'button'} aria-label={'Previous festival'} disabled>
+								<ChevronLeftIcon />
+							</button>
+							<button type={'button'} aria-label={'Next festival'} disabled>
+								<ChevronRightIcon />
+							</button>
+						</div>
+					}
+				/>
+				<div className={'events-grid'}>
+					{eventsData.map((event: EventData) => {
+						return <EventCard event={event} key={event?.eventTitle} />;
+					})}
 				</div>
-			</section>
-		);
-	}
+			</div>
+		</section>
+	);
 };
 
 export default Events;

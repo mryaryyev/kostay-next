@@ -1,0 +1,318 @@
+// Login / Register (/account/join): Kostay palette.
+$jn-navy: #031636;
+$jn-navy-soft: #1a2b4c;
+$jn-cta: #aa3614;
+$jn-cta-bright: #e05d38;
+$jn-ink: #1c1c18;
+$jn-body: #44474e;
+$jn-outline: #75777f;
+$jn-line: #d6d2cb;
+$jn-canvas: #fdf9f3;
+$jn-low: #f7f3ed;
+$jn-error: #ba1a1a;
+
+#site-wrap #join-page {
+	padding: 136px 0 96px;
+	background: $jn-canvas;
+	&,
+	* {
+		font-family: $font-display;
+	}
+	button {
+		font-family: inherit;
+		cursor: pointer;
+	}
+
+	.sx-join {
+		display: grid;
+		grid-template-columns: 1fr 480px;
+		width: min(1080px, calc(100% - 48px));
+		min-height: 640px;
+		margin: 0 auto;
+		overflow: hidden;
+		border-radius: 28px;
+		background: #fff;
+		box-shadow: 0 24px 60px rgba(26, 43, 76, 0.12);
+	}
+
+	/* Left: photo panel */
+	.sx-join-side {
+		position: relative;
+		display: flex;
+		align-items: flex-end;
+		padding: 48px;
+		color: #fff;
+	}
+	.sx-join-side-bg {
+		position: absolute;
+		inset: 0;
+		background: url('/img/banner/cities/JEJU.webp') center / cover no-repeat;
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(to top, rgba(3, 22, 54, 0.95), rgba(3, 22, 54, 0.6) 55%, rgba(3, 22, 54, 0.25));
+		}
+	}
+	.sx-join-side-content {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	.sx-join-kicker {
+		color: #ff9b78;
+		font-size: 13px;
+		font-weight: 800;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+	}
+	h1 {
+		margin: 0;
+		max-width: 420px;
+		font-size: 40px;
+		line-height: 1.1;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+	}
+	.sx-join-side-content > p {
+		margin: 0;
+		max-width: 420px;
+		color: #e2e8f0;
+		font-size: 15px;
+		line-height: 1.6;
+	}
+	ul {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin: 10px 0 0;
+		padding: 0;
+		list-style: none;
+		li {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			color: #f1f5f9;
+			font-size: 14px;
+			svg {
+				width: 20px;
+				height: 20px;
+				color: #ff9b78;
+			}
+		}
+	}
+
+	/* Right: form card */
+	.sx-join-card {
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+		padding: 44px 44px 36px;
+		header h2 {
+			margin: 0;
+			color: $jn-navy;
+			font-size: 28px;
+			font-weight: 800;
+			letter-spacing: -0.01em;
+		}
+		header p {
+			margin: 6px 0 0;
+			color: $jn-body;
+			font-size: 14px;
+		}
+		form {
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+		}
+	}
+
+	.sx-join-switch {
+		display: flex;
+		gap: 4px;
+		padding: 4px;
+		border-radius: 999px;
+		background: #f1ede7;
+		button {
+			flex: 1;
+			padding: 10px 0;
+			border: 0;
+			border-radius: 999px;
+			background: transparent;
+			color: $jn-body;
+			font-size: 14px;
+			font-weight: 700;
+			&.active {
+				background: $jn-navy;
+				color: #fff;
+			}
+			&:focus-visible {
+				outline: none;
+				box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.35);
+			}
+		}
+	}
+
+	.sx-join-types {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+		button {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 4px;
+			padding: 14px 16px;
+			border: 1.5px solid $jn-line;
+			border-radius: 16px;
+			background: #fff;
+			text-align: left;
+			transition: border-color 160ms ease, background 160ms ease;
+			svg {
+				width: 24px;
+				height: 24px;
+				color: $jn-outline;
+			}
+			strong {
+				color: $jn-navy;
+				font-size: 15px;
+				font-weight: 800;
+			}
+			small {
+				color: $jn-body;
+				font-size: 12px;
+			}
+			&:hover {
+				border-color: $jn-navy;
+			}
+			&.active {
+				border-color: $jn-cta;
+				background: #fff8f4;
+				svg {
+					color: $jn-cta;
+				}
+			}
+			&:focus-visible {
+				outline: none;
+				box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.35);
+			}
+		}
+	}
+
+	.sx-join-field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		> span {
+			color: $jn-navy;
+			font-size: 12px;
+			font-weight: 800;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+		}
+		input {
+			width: 100%;
+			padding: 13px 14px;
+			border: 1px solid $jn-line;
+			border-radius: 14px;
+			outline: none;
+			background: #fff;
+			color: $jn-ink;
+			font-size: 15px;
+			transition: border-color 160ms ease, box-shadow 160ms ease;
+			&::placeholder {
+				color: $jn-outline;
+			}
+			&:focus {
+				border-color: $jn-cta-bright;
+				box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.2);
+			}
+		}
+		small {
+			color: $jn-error;
+			font-size: 12px;
+		}
+		&.has-error input {
+			border-color: $jn-error;
+		}
+	}
+
+	.sx-join-password {
+		position: relative;
+		input {
+			padding-right: 48px;
+		}
+		button {
+			position: absolute;
+			top: 50%;
+			right: 8px;
+			display: flex;
+			padding: 6px;
+			border: 0;
+			border-radius: 50%;
+			background: none;
+			color: $jn-outline;
+			transform: translateY(-50%);
+			&:hover {
+				color: $jn-navy;
+			}
+		}
+	}
+
+	.sx-join-submit {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin-top: 6px;
+		padding: 14px 0;
+		border: 0;
+		border-radius: 999px;
+		background: $jn-cta;
+		color: #fff;
+		font-size: 16px;
+		font-weight: 700;
+		transition: background 160ms ease;
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+		&:hover:not(:disabled) {
+			background: #c2410c;
+		}
+		&:disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+	}
+
+	.sx-join-alt,
+	.sx-join-help {
+		margin: 0;
+		color: $jn-body;
+		font-size: 14px;
+		text-align: center;
+		button,
+		a {
+			padding: 0;
+			border: 0;
+			background: none;
+			color: $jn-cta;
+			font-size: 14px;
+			font-weight: 700;
+			text-decoration: none;
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+	.sx-join-help {
+		margin-top: auto;
+		font-size: 13px;
+		a {
+			font-size: 13px;
+		}
+	}
+}

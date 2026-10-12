@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_UNREAD_NOTIFICATION_COUNT } from '../../../apollo/user/query';
 import { userVar } from '../../../apollo/store';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { logOut } from '../../auth';
 import { sweetConfirmAlert } from '../../sweetAlert';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
@@ -32,7 +31,6 @@ type MenuItem = {
 };
 
 const MyMenu = () => {
-	const device = useDeviceDetect();
 	const router = useRouter();
 	const category: any = router.query?.category ?? 'myProfile';
 	const user = useReactiveVar(userVar);
@@ -144,38 +142,34 @@ const MyMenu = () => {
 		);
 	};
 
-	if (device === 'mobile') {
-		return <div>MY MENU</div>;
-	} else {
-		return (
-			<nav className="sx-menu" aria-label="Account navigation">
-				<div className="sx-menu-head">
-					<h5>Account</h5>
-					{user?.memberType === 'ADMIN' ? (
-						<a href="/_admin/users" target={'_blank'} className="sx-menu-hub">
-							Admin
-						</a>
-					) : (
-						<span className="sx-menu-hub">{isHost ? 'Host' : 'Guest'}</span>
-					)}
+	return (
+		<nav className="sx-menu" aria-label="Account navigation">
+			<div className="sx-menu-head">
+				<h5>Account</h5>
+				{user?.memberType === 'ADMIN' ? (
+					<a href="/_admin/users" target={'_blank'} className="sx-menu-hub">
+						Admin
+					</a>
+				) : (
+					<span className="sx-menu-hub">{isHost ? 'Host' : 'Guest'}</span>
+				)}
+			</div>
+			{groups.map((group) => (
+				<div key={group.title} className="sx-menu-group">
+					<h6>{group.title}</h6>
+					<ul>{group.items.map(renderItem)}</ul>
 				</div>
-				{groups.map((group) => (
-					<div key={group.title} className="sx-menu-group">
-						<h6>{group.title}</h6>
-						<ul>{group.items.map(renderItem)}</ul>
-					</div>
-				))}
-				<ul>
-					<li className="sx-menu-logout">
-						<button type="button" className="sx-menu-item logout" onClick={logoutHandler}>
-							<LogoutIcon />
-							<span>Log Out</span>
-						</button>
-					</li>
-				</ul>
-			</nav>
-		);
-	}
+			))}
+			<ul>
+				<li className="sx-menu-logout">
+					<button type="button" className="sx-menu-item logout" onClick={logoutHandler}>
+						<LogoutIcon />
+						<span>Log Out</span>
+					</button>
+				</li>
+			</ul>
+		</nav>
+	);
 };
 
 export default MyMenu;
