@@ -704,6 +704,10 @@
 	}
 
 	// Host totals above Reservations (getHostEarnings).
+	.sx-bookings-head + .sx-earnings {
+		margin-top: 16px;
+	}
+
 	.sx-earnings {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));

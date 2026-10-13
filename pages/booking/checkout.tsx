@@ -166,20 +166,24 @@ const Checkout: NextPage = () => {
 									</div>
 									<dl className="sx-checkout-trip">
 										<div>
-											<dt>Dates</dt>
+											<dt>Check-in</dt>
 											<dd>
-												{validQuery ? `${checkIn} → ${checkOut}` : '—'} · {nights} {nights === 1 ? 'night' : 'nights'}
+												{validQuery ? checkIn : '—'}
+												<small>From {CHECK_IN_TIME}</small>
 											</dd>
 										</div>
 										<div>
-											<dt>Times</dt>
+											<dt>Check-out</dt>
 											<dd>
-												Check-in from {CHECK_IN_TIME} · Check-out by {CHECK_OUT_TIME}
+												{validQuery ? checkOut : '—'}
+												<small>By {CHECK_OUT_TIME}</small>
 											</dd>
 										</div>
-										<div>
-											<dt>Guests</dt>
+										<div className="sx-checkout-trip-summary">
+											<dt>Your stay</dt>
 											<dd>
+												{nights} {nights === 1 ? 'night' : 'nights'}
+												<span aria-hidden="true"> · </span>
 												{guestsCount} {guestsCount === 1 ? 'guest' : 'guests'}
 											</dd>
 										</div>
@@ -191,7 +195,7 @@ const Checkout: NextPage = () => {
 										<h2>Guest details</h2>
 										<Link href={{ pathname: '/mypage', query: { category: 'myProfile' } }}>Edit profile</Link>
 									</div>
-									<dl className="sx-checkout-trip">
+									<dl className="sx-checkout-trip sx-checkout-guest">
 										<div>
 											<dt>Name</dt>
 											<dd>{user.memberFullName || user.memberNick}</dd>

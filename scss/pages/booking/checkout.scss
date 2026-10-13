@@ -67,7 +67,7 @@ $ck-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 
 	.sx-checkout-body {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 420px;
+		grid-template-columns: minmax(0, 1fr) 440px;
 		align-items: start;
 		gap: 56px;
 	}
@@ -119,17 +119,29 @@ $ck-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 	}
 
 	.sx-checkout-trip {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 20px 28px;
 		margin: 0;
-		div {
+		padding: 22px 24px;
+		border: 1px solid $ck-line;
+		border-radius: 18px;
+		background: $ck-surface;
+		> div {
 			display: flex;
 			flex-direction: column;
-			gap: 2px;
+			gap: 14px;
+			min-width: 0;
+		}
+		> div:nth-child(2) {
+			padding-left: 28px;
+			border-left: 1px solid $ck-line;
+		}
+		> div:not(.sx-checkout-trip-summary) > dt {
+			color: $ck-cta;
 		}
 		dt {
-			color: $ck-outline;
+			color: $ck-body;
 			font-size: 12px;
 			font-weight: 700;
 			letter-spacing: 0.06em;
@@ -137,10 +149,47 @@ $ck-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 		}
 		dd {
 			margin: 0;
-			color: $ck-ink;
-			font-size: 15px;
+			color: $ck-navy;
+			font-size: 18px;
 			font-weight: 600;
 			font-variant-numeric: tabular-nums;
+			overflow-wrap: anywhere;
+			small {
+				display: block;
+				margin-top: 10px;
+				color: $ck-body;
+				font-size: 13px;
+				font-weight: 400;
+			}
+		}
+		.sx-checkout-trip-summary {
+			grid-column: 1 / -1;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			padding-top: 16px;
+			border-top: 1px solid $ck-line;
+			dd {
+				font-size: 14px;
+			}
+		}
+	}
+
+	.sx-checkout-guest dd {
+		font-size: 16px;
+	}
+
+	@media (max-width: 600px) {
+		.sx-checkout-trip {
+			padding: 18px;
+			gap: 18px 16px;
+			> div:nth-child(2) {
+				padding-left: 16px;
+			}
+			dd {
+				font-size: 15px;
+			}
 		}
 	}
 
@@ -241,13 +290,13 @@ $ck-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 	.sx-checkout-summary {
 		position: sticky;
 		top: 100px;
-		padding: 24px;
+		padding: 30px;
 		border: 1px solid $ck-line;
 		border-radius: 24px;
 		background: $ck-surface;
 		box-shadow: $ck-shadow-lg;
 		h3 {
-			margin: 20px 0 12px;
+			margin: 26px 0 18px;
 			color: $ck-navy;
 			font-size: 17px;
 			font-weight: 800;
@@ -257,11 +306,11 @@ $ck-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 	.sx-checkout-stay {
 		display: flex;
 		gap: 14px;
-		padding-bottom: 20px;
+		padding-bottom: 26px;
 		border-bottom: 1px solid $ck-line;
 		img {
 			width: 120px;
-			height: 96px;
+			height: 108px;
 			flex-shrink: 0;
 			border-radius: 14px;
 			object-fit: cover;
@@ -299,7 +348,7 @@ $ck-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 	.sx-checkout-price {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: 16px;
 		margin: 0;
 		div {
 			display: flex;
@@ -313,7 +362,7 @@ $ck-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 			margin: 0;
 		}
 		.is-total {
-			padding-top: 12px;
+			padding-top: 18px;
 			border-top: 1px solid $ck-line;
 			color: $ck-navy;
 			font-size: 17px;

@@ -10,6 +10,8 @@ $ch-line: #e6e2dc;
 $ch-low: #f7f3ed;
 $ch-surface: #ffffff;
 $ch-green: #22c55e;
+$ch-blue: #c5e1f7;
+$ch-blue-hover: #afd3f0;
 
 #site-wrap .chatting {
 	&,
@@ -28,23 +30,29 @@ $ch-green: #22c55e;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border: 0;
-		border-radius: 50%;
-		background: $ch-navy;
-		box-shadow: 0 10px 24px rgba(3, 22, 54, 0.28);
-		color: #fff;
+		border: 1px solid #a9cceb;
+		border-radius: 18px;
+		background: $ch-blue;
+		box-shadow: 0 6px 18px rgba(58, 105, 150, 0.2);
+		color: $ch-navy;
 		cursor: pointer;
-		transition: transform 200ms ease, background 200ms ease;
+		transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 		svg {
 			width: 24px;
 			height: 24px;
 		}
-		&:hover {
-			background: $ch-navy-soft;
-			transform: scale(1.06);
+		@media (hover: hover) and (pointer: fine) {
+			&:hover {
+				border-color: #8bb9df;
+				background: $ch-blue-hover;
+				transform: translateY(-2px);
+			}
+		}
+		&:active {
+			transform: scale(0.97);
 		}
 		&:focus-visible {
-			outline: 3px solid rgba(224, 93, 56, 0.6);
+			outline: 3px solid rgba(58, 105, 150, 0.6);
 			outline-offset: 3px;
 		}
 		@media (max-width: 767px) {
@@ -87,8 +95,8 @@ $ch-green: #22c55e;
 		align-items: center;
 		gap: 10px;
 		padding: 18px 20px;
-		background: linear-gradient(120deg, $ch-navy, $ch-navy-soft);
-		color: #fff;
+		background: $ch-blue;
+		color: $ch-navy;
 		font-size: 17px;
 		font-weight: 800;
 		letter-spacing: -0.01em;
@@ -104,7 +112,7 @@ $ch-green: #22c55e;
 			transform: none;
 			border-radius: 999px;
 			background: rgba(34, 197, 94, 0.18) !important;
-			color: #bbf7d0 !important;
+			color: #166534 !important;
 			font-size: 12px;
 			font-weight: 700;
 			&::after {
@@ -122,7 +130,7 @@ $ch-green: #22c55e;
 		padding: 3px 10px;
 		border-radius: 999px;
 		background: rgba(251, 191, 36, 0.18);
-		color: #fde68a;
+		color: #854d0e;
 		font-size: 12px;
 		font-weight: 700;
 		&::before {
@@ -261,8 +269,8 @@ $ch-green: #22c55e;
 
 	.msg-right {
 		border-radius: 18px 18px 4px 18px;
-		background: $ch-navy;
-		color: #fff;
+		background: $ch-blue;
+		color: $ch-navy;
 	}
 
 	/* ---------- Composer ---------- */
@@ -339,7 +347,8 @@ $ch-green: #22c55e;
 		justify-content: center;
 		border: 0;
 		border-radius: 50%;
-		background: $ch-cta;
+		background: $ch-blue;
+		color: $ch-navy;
 		cursor: pointer;
 		transition: background 160ms ease;
 		svg {
@@ -347,7 +356,7 @@ $ch-green: #22c55e;
 			height: 20px;
 		}
 		&:hover:not(:disabled) {
-			background: $ch-cta-hover;
+			background: $ch-blue-hover;
 		}
 		&:disabled {
 			background: $ch-line;
