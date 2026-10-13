@@ -1278,44 +1278,6 @@ body {
 }
 
 
-/* ================= Host My Page sections ================= */
-#site-wrap #my-page {
-	// Add Stay: one field per row on phones
-	@include mobile {
-		.config .description-box {
-			padding: 18px !important;
-			.config-row {
-				flex-direction: column !important;
-				gap: 14px;
-				> * {
-					width: 100% !important;
-				}
-				.price-year-after-price {
-					width: 100% !important;
-					.description-input,
-					.select-description {
-						width: 100% !important;
-					}
-				}
-			}
-			.buttons-row {
-				flex-wrap: wrap;
-				gap: 10px;
-				.prev-button,
-				.next-button {
-					width: 100% !important;
-				}
-			}
-		}
-		.images-box .upload-box {
-			padding: 20px 14px !important;
-			.browse-button {
-				width: 100% !important;
-			}
-		}
-	}
-}
-
 // Tablets and phones: accordion. Each search panel opens right under its own field button.
 // The field row is flattened (display: contents) so buttons and panels become siblings and can be ordered.
 #site-wrap .header-main .container .search-box.home-glass-search {

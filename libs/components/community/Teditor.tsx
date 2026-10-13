@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, FormControl, MenuItem, Stack, Typography, Select, TextField } from '@mui/material';
+import { Stack } from '@mui/material';
+import FormSelect from '../common/FormSelect';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { BoardArticleCategory } from '../../enums/board-article.enum';
@@ -108,9 +109,12 @@ const TuiEditor = () => {
 		else sweetMixinErrorAlert('Image upload failed, please try again.').then();
 	};
 
-	const changeCategoryHandler = (e: any) => {
-		setArticleCategory(e.target.value);
-	};
+	const categoryOptions = [
+		{ value: BoardArticleCategory.FREE, label: 'Free' },
+		{ value: BoardArticleCategory.HUMOR, label: 'Humor' },
+		{ value: BoardArticleCategory.NEWS, label: 'News' },
+		{ value: BoardArticleCategory.RECOMMEND, label: 'Recommendation' },
+	];
 
 	const handleSubmit = async () => {
 		const articleContent = (editorRef.current?.getInstance().getHTML() as string) ?? '';
@@ -153,49 +157,33 @@ const TuiEditor = () => {
 
 	return (
 		<Stack className="sx-teditor">
-			<Stack
-				direction="row"
-				className={'teditor-fields'}
-				style={{ margin: '16px 40px 8px' }}
-				justifyContent="space-evenly"
-			>
-				<Box component={'div'} className={'form_row teditor-field'} style={{ width: '300px' }}>
-					<Typography style={{ color: '#7f838d', margin: '10px' }} variant="h3">
-						Category
-					</Typography>
-					<FormControl sx={{ width: '100%', background: 'white' }}>
-						<Select
-							value={articleCategory}
-							onChange={changeCategoryHandler}
-							displayEmpty
-							disabled={isEdit}
-							inputProps={{ 'aria-label': 'Without label' }}
-						>
-							<MenuItem value={BoardArticleCategory.FREE}>
-								<span>Free</span>
-							</MenuItem>
-							<MenuItem value={BoardArticleCategory.HUMOR}>Humor</MenuItem>
-							<MenuItem value={BoardArticleCategory.NEWS}>News</MenuItem>
-							<MenuItem value={BoardArticleCategory.RECOMMEND}>Recommendation</MenuItem>
-						</Select>
-					</FormControl>
-				</Box>
-				<Box component={'div'} className={'teditor-field'} style={{ width: '300px', flexDirection: 'column' }}>
-					<Typography style={{ color: '#7f838d', margin: '10px' }} variant="h3">
-						Title
-					</Typography>
-					<TextField
+			<div className="sx-article-fields">
+				<div className="sx-article-field">
+					<span id="article-category-label">Category</span>
+					<FormSelect
+						labelId="article-category-label"
+						value={articleCategory}
+						options={categoryOptions}
+						disabled={isEdit}
+						onChange={(value) => setArticleCategory(value as BoardArticleCategory)}
+					/>
+				</div>
+				<label className="sx-article-field">
+					<span>Title</span>
+					<input
+						type="text"
+						placeholder="Give your article a title"
 						value={articleTitle}
 						onChange={(e) => setArticleTitle(e.target.value.slice(0, TITLE_MAX))}
-						id="filled-basic"
-						helperText={`${articleTitle.length}/${TITLE_MAX}`}
-						sx={{ width: '100%', '& .MuiInputBase-root': { background: 'white' } }}
 					/>
-				</Box>
-			</Stack>
+					<small>
+						{articleTitle.length}/{TITLE_MAX}
+					</small>
+				</label>
+			</div>
 
 			<div className="sx-cover-field">
-				<Typography className="sx-cover-label">Cover image</Typography>
+				<span className="sx-cover-label">Cover image</span>
 				{articleImage ? (
 					<div className="sx-cover-preview">
 						<img src={`${REACT_APP_API_URL}/${articleImage}`} alt="Cover" />
@@ -219,7 +207,13 @@ const TuiEditor = () => {
 						{coverUploading ? 'Uploading…' : 'Add a cover photo (shown on the article card)'}
 					</button>
 				)}
-				<input ref={coverInputRef} type="file" accept="image/png,image/jpeg,image/jpg" hidden onChange={coverChangeHandler} />
+				<input
+					ref={coverInputRef}
+					type="file"
+					accept="image/png,image/jpeg,image/jpg"
+					hidden
+					onChange={coverChangeHandler}
+				/>
 			</div>
 
 			<div className="sx-editor-wrap">
