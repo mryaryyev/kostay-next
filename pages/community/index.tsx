@@ -3,6 +3,7 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import CommunityCard, { boardLabels, boardMeta } from '../../libs/components/common/CommunityCard';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import SearchOffOutlinedIcon from '@mui/icons-material/SearchOffOutlined';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
@@ -262,7 +263,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 						</div>
 					) : (
 						<div className={'no-data'}>
-							<img src="/img/icons/icoAlert.svg" alt="" />
+							<SearchOffOutlinedIcon aria-hidden="true" />
 							<p>
 								{searchCommunity.search.text
 									? `No articles match "${searchCommunity.search.text}".`

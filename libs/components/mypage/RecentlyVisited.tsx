@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { NextPage } from 'next';
-import { Pagination, Stack, Typography } from '@mui/material';
+import { Pagination } from '@mui/material';
+import Link from 'next/link';
+import HistoryIcon from '@mui/icons-material/History';
 import PropertyCard from '../property/PropertyCard';
 import { Property } from '../../types/property/property';
 import { T } from '../../types/common';
@@ -37,43 +39,38 @@ const RecentlyVisited: NextPage = () => {
 	};
 
 	return (
-		<div id="my-favorites-page">
-			<Stack className="main-title-box">
-				<Stack className="right-box">
-					<Typography className="main-title">Recently Visited</Typography>
-					<Typography className="sub-title">We are glad to see you again!</Typography>
-				</Stack>
-			</Stack>
-			<Stack className="favorites-list-box">
-				{recentlyVisited?.length ? (
-					recentlyVisited?.map((property: Property) => {
-						return <PropertyCard property={property} recentlyVisited={true} />;
-					})
-				) : (
-					<div className={'no-data'}>
-						<img src="/img/icons/icoAlert.svg" alt="" />
-						<p>No recently visited stays found!</p>
-					</div>
-				)}
-			</Stack>
+		<div id="my-visited-page" className="sx-saved-section">
+			<div className="sx-saved-head">
+				<div>
+					<h3>Recently Visited</h3>
+					<p>Stays you opened recently.</p>
+				</div>
+				<span>
+					{total} {total === 1 ? 'stay' : 'stays'}
+				</span>
+			</div>
 			{recentlyVisited?.length ? (
-				<Stack className="pagination-config">
-					<Stack className="pagination-box">
-						<Pagination
-							count={Math.ceil(total / searchVisited.limit)}
-							page={searchVisited.page}
-							shape="circular"
-							color="primary"
-							onChange={paginationHandler}
-						/>
-					</Stack>
-					<Stack className="total-result">
-						<Typography>
-							Total {total} recently visited stay{total === 1 ? '' : 's'}
-						</Typography>
-					</Stack>
-				</Stack>
-			) : null}
+				<div className="sx-stays-grid">
+					{recentlyVisited.map((property: Property) => (
+						<PropertyCard key={property._id} property={property} variant={'stays'} />
+					))}
+				</div>
+			) : (
+				<div className="sx-saved-empty">
+					<HistoryIcon aria-hidden="true" />
+					<p>You haven't visited any stays yet.</p>
+					<Link href="/stay">Browse stays</Link>
+				</div>
+			)}
+			{total > searchVisited.limit && (
+				<Pagination
+					className="sx-saved-pagination"
+					count={Math.ceil(total / searchVisited.limit)}
+					page={searchVisited.page}
+					shape="circular"
+					onChange={paginationHandler}
+				/>
+			)}
 		</div>
 	);
 };

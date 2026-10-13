@@ -19,6 +19,13 @@ import { Member } from '../../../types/member/member';
 import { REACT_APP_API_URL } from '../../../config';
 import { MemberStatus, MemberType } from '../../../enums/member.enum';
 
+/** Visible names for member types (the API value stays AGENT; the UI says Host). Same as the type filter on the Users page. */
+const memberTypeLabels: Record<string, string> = {
+	[MemberType.USER]: 'User',
+	[MemberType.AGENT]: 'Host',
+	[MemberType.ADMIN]: 'Admin',
+};
+
 interface Data {
 	id: string;
 	nickname: string;
@@ -182,7 +189,7 @@ export const MemberPanelList = (props: MemberPanelListType) => {
 
 										<TableCell align="center">
 											<Button onClick={(e: any) => menuIconClickHandler(e, index)} className={'badge success'}>
-												{member.memberType}
+												{memberTypeLabels[member.memberType] ?? member.memberType}
 											</Button>
 
 											<Menu
@@ -204,7 +211,7 @@ export const MemberPanelList = (props: MemberPanelListType) => {
 															key={type}
 														>
 															<Typography variant={'subtitle1'} component={'span'}>
-																{type}
+																{memberTypeLabels[type] ?? type}
 															</Typography>
 														</MenuItem>
 													))}

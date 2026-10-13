@@ -3,6 +3,7 @@ import { NextPage } from 'next';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Link from 'next/link';
 import SearchIcon from '@mui/icons-material/Search';
+import SearchOffOutlinedIcon from '@mui/icons-material/SearchOffOutlined';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Menu, MenuItem } from '@mui/material';
@@ -229,8 +230,9 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 					</div>
 				) : agents?.length === 0 ? (
 					<div className={'no-data'}>
-						<img src="/img/icons/icoAlert.svg" alt="" />
-						<p>No hosts found!</p>
+						<SearchOffOutlinedIcon aria-hidden="true" />
+						<strong>No hosts found</strong>
+						<p>Try another name or city.</p>
 					</div>
 				) : (
 					<div className={'sx-hosts-grid'}>

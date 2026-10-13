@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { NextPage } from 'next';
-import { Pagination, Stack, Typography } from '@mui/material';
+import { Pagination } from '@mui/material';
+import Link from 'next/link';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import PropertyCard from '../property/PropertyCard';
 import { Property } from '../../types/property/property';
 import { T } from '../../types/common';
@@ -59,44 +61,47 @@ const MyFavorites: NextPage = () => {
 		}
 	};
 
+	// Every stay here is liked by the viewer, but GET_FAVORITES has no meLiked: mark them so the heart shows filled.
+	const favoriteStays = myFavorites?.map((property) => ({ ...property, meLiked: [{ myFavorite: true }] })) as Property[];
+
 	return (
-		<div id="my-favorites-page">
-			<Stack className="main-title-box">
-				<Stack className="right-box">
-					<Typography className="main-title">My Favorites</Typography>
-					<Typography className="sub-title">We are glad to see you again!</Typography>
-				</Stack>
-			</Stack>
-			<Stack className="favorites-list-box">
-				{myFavorites?.length ? (
-					myFavorites?.map((property: Property) => {
-						return <PropertyCard property={property} myFavorites={true} likePropertyHandler={likePropertyHandler} />;
-					})
-				) : (
-					<div className={'no-data'}>
-						<img src="/img/icons/icoAlert.svg" alt="" />
-						<p>No Favorites found!</p>
-					</div>
-				)}
-			</Stack>
-			{myFavorites?.length ? (
-				<Stack className="pagination-config">
-					<Stack className="pagination-box">
-						<Pagination
-							count={Math.ceil(total / searchFavorites.limit)}
-							page={searchFavorites.page}
-							shape="circular"
-							color="primary"
-							onChange={paginationHandler}
+		<div id="my-favorites-page" className="sx-saved-section">
+			<div className="sx-saved-head">
+				<div>
+					<h3>My Favorites</h3>
+					<p>Stays you liked.</p>
+				</div>
+				<span>
+					{total} {total === 1 ? 'stay' : 'stays'}
+				</span>
+			</div>
+			{favoriteStays?.length ? (
+				<div className="sx-stays-grid">
+					{favoriteStays.map((property: Property) => (
+						<PropertyCard
+							key={property._id}
+							property={property}
+							likePropertyHandler={likePropertyHandler}
+							variant={'stays'}
 						/>
-					</Stack>
-					<Stack className="total-result">
-						<Typography>
-							Total {total} favorite stay{total === 1 ? '' : 's'}
-						</Typography>
-					</Stack>
-				</Stack>
-			) : null}
+					))}
+				</div>
+			) : (
+				<div className="sx-saved-empty">
+					<FavoriteBorderIcon aria-hidden="true" />
+					<p>No favorite stays yet.</p>
+					<Link href="/stay">Browse stays</Link>
+				</div>
+			)}
+			{total > searchFavorites.limit && (
+				<Pagination
+					className="sx-saved-pagination"
+					count={Math.ceil(total / searchFavorites.limit)}
+					page={searchFavorites.page}
+					shape="circular"
+					onChange={paginationHandler}
+				/>
+			)}
 		</div>
 	);
 };

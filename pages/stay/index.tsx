@@ -10,6 +10,7 @@ import { PropertiesInquiry } from '../../libs/types/property/property.input';
 import { Property } from '../../libs/types/property/property';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SearchOffOutlinedIcon from '@mui/icons-material/SearchOffOutlined';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -230,8 +231,9 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 						</div>
 					) : properties.length === 0 ? (
 						<div className={'no-data'}>
-							<img src="/img/icons/icoAlert.svg" alt="" />
-							<p>No stays found!</p>
+							<SearchOffOutlinedIcon aria-hidden="true" />
+							<strong>No stays match your filters</strong>
+							<p>Try another region, dates or price range.</p>
 						</div>
 					) : (
 						<div className={`sx-stays-grid ${isUpdating ? 'is-updating' : ''}`} aria-busy={isUpdating}>
