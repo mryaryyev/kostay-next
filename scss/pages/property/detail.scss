@@ -488,6 +488,81 @@ $dt-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 		box-shadow: $dt-shadow-lg;
 	}
 
+	// Shown instead of the booking box when the stay is pending or paused (only admins / the owner get here).
+	.sx-review-card {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+		padding: 28px;
+		border: 1px solid $dt-line;
+		border-radius: 24px;
+		background: $dt-surface;
+		box-shadow: $dt-shadow-lg;
+		h3 {
+			margin: 0;
+			color: $dt-navy;
+			font-size: 22px;
+			line-height: 28px;
+			font-weight: 800;
+		}
+		p {
+			margin: 0;
+			color: $dt-body;
+			font-size: 14px;
+			line-height: 22px;
+		}
+	}
+	.sx-review-badge {
+		padding: 4px 12px;
+		border-radius: 999px;
+		background: $dt-container;
+		color: $dt-body;
+		font-size: 12px;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		&.is-pending {
+			background: #fff4d6;
+			color: #92600a;
+		}
+	}
+	.sx-review-actions {
+		width: 100%;
+		display: flex;
+		gap: 10px;
+		margin-top: 4px;
+		button {
+			flex: 1;
+			padding: 12px 16px;
+			border-radius: 12px;
+			font-size: 15px;
+			font-weight: 700;
+			cursor: pointer;
+			transition: background 160ms ease;
+			&:focus-visible {
+				outline: 2px solid $dt-navy;
+				outline-offset: 2px;
+			}
+		}
+		.is-approve {
+			border: 0;
+			background: $dt-navy;
+			color: #fff;
+			&:hover {
+				background: $dt-navy-soft;
+			}
+		}
+		.is-reject {
+			border: 1px solid #fecdd3;
+			background: #fff;
+			color: #e11d48;
+			&:hover {
+				background: #fff1f2;
+			}
+		}
+	}
+
 	.sx-booking-price {
 		display: flex;
 		align-items: baseline;

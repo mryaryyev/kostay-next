@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
-import { Pagination, Stack, Typography } from '@mui/material';
+import { Pagination } from '@mui/material';
+import Link from 'next/link';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined';
 import { PropertyCard } from './PropertyCard';
 import { Property } from '../../types/property/property';
 import { AgentPropertiesInquiry } from '../../types/property/property.input';
@@ -45,6 +48,11 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		scrollToListTop('#my-page .main-config');
 	};
 
+	// After "Add Stay" the host lands here with ?status=PENDING to see the stay waiting for review.
+	useEffect(() => {
+		if (router.isReady && router.query.status === PropertyStatus.PENDING) changeStatusHandler(PropertyStatus.PENDING);
+	}, [router.isReady, router.query.status]);
+
 	const changeStatusHandler = (value: PropertyStatus) => {
 		setSearchFilter({ ...searchFilter, page: 1, search: { propertyStatus: value } });
 	};
@@ -81,7 +89,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		try {
 			const message =
 				status === PropertyStatus.INACTIVE
-					? 'Deactivate this listing? It will be hidden from guests until you reactivate it.'
+					? 'Pause this listing? It will be hidden from guests until you reactivate it.'
 					: 'Reactivate this listing? It will be visible to guests again.';
 			if (await sweetConfirmAlert(message)) {
 				await updateProperty({
@@ -103,76 +111,78 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		router.back();
 	}
 
+	const tabs = [
+		{ status: PropertyStatus.ACTIVE, label: 'Active', empty: 'No active stays yet.' },
+		{ status: PropertyStatus.PENDING, label: 'In review', empty: 'No stays waiting for review.' },
+		{ status: PropertyStatus.INACTIVE, label: 'Paused', empty: 'No paused stays.' },
+	];
+	const currentTab = tabs.find((tab) => tab.status === searchFilter.search.propertyStatus) ?? tabs[0];
+	const addStayHref = { pathname: '/mypage', query: { category: 'addProperty' } };
+
 	return (
 		<div id="my-property-page">
-			<Stack className="main-title-box">
-				<Stack className="right-box">
-					<Typography className="main-title">My Stays</Typography>
-					<Typography className="sub-title">We are glad to see you again!</Typography>
-				</Stack>
-			</Stack>
-			<Stack className="property-list-box">
-				<Stack className="tab-name-box">
-					<Typography
-						onClick={() => changeStatusHandler(PropertyStatus.ACTIVE)}
-						className={searchFilter.search.propertyStatus === 'ACTIVE' ? 'active-tab-name' : 'tab-name'}
-					>
-						Active
-					</Typography>
-					<Typography
-						onClick={() => changeStatusHandler(PropertyStatus.INACTIVE)}
-						className={searchFilter.search.propertyStatus === 'INACTIVE' ? 'active-tab-name' : 'tab-name'}
-					>
-						Inactive
-					</Typography>
-				</Stack>
-				<Stack className="list-box">
-					<Stack className="listing-title-box">
-						<Typography className="title-text">Listing title</Typography>
-						<Typography className="title-text">Date Published</Typography>
-						<Typography className="title-text">Status</Typography>
-						<Typography className="title-text">View</Typography>
-						{searchFilter.search.propertyStatus === 'ACTIVE' && <Typography className="title-text">Action</Typography>}
-					</Stack>
+			<div className="sx-stays-head">
+				<div>
+					<h3>My Stays</h3>
+					<p>Manage your listings and their visibility.</p>
+				</div>
+				<Link href={addStayHref} scroll={false} className="sx-stays-add">
+					<AddRoundedIcon aria-hidden="true" />
+					Add Stay
+				</Link>
+			</div>
 
-					{agentProperties?.length === 0 ? (
-						<div className={'no-data'}>
-							<img src="/img/icons/icoAlert.svg" alt="" />
-							<p>No stays found!</p>
-						</div>
-					) : (
-						agentProperties.map((property: Property) => {
-							return (
-								<PropertyCard
-									key={property._id}
-									property={property}
-									deletePropertyHandler={deletePropertyHandler}
-									updatePropertyHandler={updatePropertyHandler}
-								/>
-							);
-						})
-					)}
+			<div className="sx-stays-tabs" role="tablist" aria-label="Stay status">
+				{tabs.map((tab) => {
+					const active = tab.status === currentTab.status;
+					return (
+						<button
+							key={tab.status}
+							type="button"
+							role="tab"
+							aria-selected={active}
+							className={active ? 'is-active' : ''}
+							onClick={() => changeStatusHandler(tab.status)}
+						>
+							{tab.label}
+							{active && <em>{total}</em>}
+						</button>
+					);
+				})}
+			</div>
 
-					{agentProperties.length !== 0 && (
-						<Stack className="pagination-config">
-							<Stack className="pagination-box">
-								<Pagination
-									count={Math.ceil(total / searchFilter.limit)}
-									page={searchFilter.page}
-									shape="circular"
-									color="primary"
-									onChange={paginationHandler}
-								/>
-							</Stack>
-							<Stack className="total-result">
-								<Typography>
-									{total} stay{total === 1 ? '' : 's'} available
-								</Typography>
-							</Stack>
-						</Stack>
+			{agentProperties?.length === 0 ? (
+				<div className="sx-stays-empty">
+					<HomeWorkOutlinedIcon aria-hidden="true" />
+					<p>{currentTab.empty}</p>
+					{currentTab.status === PropertyStatus.ACTIVE && (
+						<Link href={addStayHref} scroll={false}>
+							Add your first stay
+						</Link>
 					)}
-				</Stack>
-			</Stack>
+				</div>
+			) : (
+				<ul className="sx-stays-list">
+					{agentProperties.map((property: Property) => (
+						<PropertyCard
+							key={property._id}
+							property={property}
+							deletePropertyHandler={deletePropertyHandler}
+							updatePropertyHandler={updatePropertyHandler}
+						/>
+					))}
+				</ul>
+			)}
+
+			{total > searchFilter.limit && (
+				<Pagination
+					className="sx-stays-pagination"
+					count={Math.ceil(total / searchFilter.limit)}
+					page={searchFilter.page}
+					shape="circular"
+					onChange={paginationHandler}
+				/>
+			)}
 		</div>
 	);
 };

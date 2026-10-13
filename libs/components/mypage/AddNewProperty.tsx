@@ -161,11 +161,12 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 				},
 			});
 
-			await sweetMixinSuccessAlert('This listing has been created successfully.');
+			await sweetMixinSuccessAlert('Your stay was submitted for review. It will appear in search once the Kostay team approves it.');
 			await router.push({
 				pathname: '/mypage',
 				query: {
 					category: 'myProperties',
+					status: 'PENDING',
 				},
 			});
 		} catch (err: any) {

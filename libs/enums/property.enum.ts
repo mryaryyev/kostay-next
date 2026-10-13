@@ -6,6 +6,7 @@ export enum PropertyType {
 }
 
 export enum PropertyStatus {
+	PENDING = 'PENDING', // new stay waiting for admin approval
 	ACTIVE = 'ACTIVE',
 	INACTIVE = 'INACTIVE',
 	DELETE = 'DELETE',

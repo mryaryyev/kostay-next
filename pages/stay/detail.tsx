@@ -45,7 +45,11 @@ import { BookingStatus, PaymentStatus } from '../../libs/enums/booking.enum';
 import { T } from '../../libs/types/common';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { CREATE_COMMENT, LIKE_TARGET_PROPERTY, SEND_MESSAGE_TO_HOST } from '../../apollo/user/mutation';
+import { UPDATE_PROPERTY_BY_ADMIN } from '../../apollo/admin/mutation';
+import { PropertyStatus } from '../../libs/enums/property.enum';
+import { MemberType } from '../../libs/enums/member.enum';
 import {
+	sweetConfirmAlert,
 	sweetLoginConfirmAlert,
 	sweetErrorHandling,
 	sweetMixinErrorAlert,
@@ -103,6 +107,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY);
 	const [createComment] = useMutation(CREATE_COMMENT);
 	const [sendMessageToHost, { loading: sendingMessage }] = useMutation(SEND_MESSAGE_TO_HOST);
+	const [updatePropertyByAdmin] = useMutation(UPDATE_PROPERTY_BY_ADMIN);
 
 	const {
 		loading: getPropertyLoading,
@@ -202,6 +207,23 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	/** HANDLERS **/
 	const changeImageHandler = (image: string) => {
 		setSlideImage(image);
+	};
+
+	/** Admin review from the detail page: approve publishes the stay, reject removes it. The host is notified. */
+	const reviewHandler = async (status: PropertyStatus) => {
+		try {
+			const title = property?.propertyTitle ?? 'this stay';
+			if (status === PropertyStatus.DELETE && !(await sweetConfirmAlert(`Reject "${title}"?`))) return;
+			await updatePropertyByAdmin({ variables: { input: { _id: property?._id, propertyStatus: status } } });
+			if (status === PropertyStatus.DELETE) {
+				await router.push({ pathname: '/_admin/stays', query: { status: PropertyStatus.PENDING } });
+				return;
+			}
+			await getPropertyRefetch({ input: propertyId });
+			await sweetTopSmallSuccessAlert('Stay approved', 800);
+		} catch (err: any) {
+			sweetErrorHandling(err).then();
+		}
 	};
 
 	const likePropertyHandler = async (user: T, id: string) => {
@@ -360,6 +382,10 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const mainImage = slideImage || images[0];
 	const host = property?.memberData;
 	const isOwnStay = !!user?._id && user._id === host?._id;
+	// Only admins and the owner can open a stay that is not ACTIVE (the API hides it from everyone else).
+	const isPublic = property?.propertyStatus === PropertyStatus.ACTIVE;
+	const isPending = property?.propertyStatus === PropertyStatus.PENDING;
+	const isAdmin = user?.memberType === MemberType.ADMIN;
 	const hostImage = host?.memberImage ? `${REACT_APP_API_URL}/${host.memberImage}` : '/img/profile/defaultUser.svg';
 	const typeLabel = toLabel(property?.propertyType ?? '');
 	const locationLabel = toLabel(property?.propertyLocation ?? '');
@@ -530,172 +556,197 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 						</section>
 					</div>
 
-					<aside className="sx-detail-side">
-						<div className="sx-booking" id="booking-box">
-							<div className="sx-booking-price">
-								<strong>{formatKRW(property?.pricePerNight)}</strong>
-								<span>/ night</span>
-							</div>
-							<div className="sx-booking-dates">
-								{(['checkIn', 'checkOut'] as const).map((field) => {
-									const value = field === 'checkIn' ? checkIn : checkOut;
-									return (
+					{isPublic ? (
+						<aside className="sx-detail-side">
+							<div className="sx-booking" id="booking-box">
+								<div className="sx-booking-price">
+									<strong>{formatKRW(property?.pricePerNight)}</strong>
+									<span>/ night</span>
+								</div>
+								<div className="sx-booking-dates">
+									{(['checkIn', 'checkOut'] as const).map((field) => {
+										const value = field === 'checkIn' ? checkIn : checkOut;
+										return (
+											<button
+												type="button"
+												key={field}
+												className={`sx-date-field ${openCalendar === field ? 'is-open' : ''}`}
+												aria-expanded={openCalendar === field}
+												onClick={() => setOpenCalendar(openCalendar === field ? null : field)}
+											>
+												<span>{field === 'checkIn' ? 'Check-in' : 'Check-out'}</span>
+												<strong className={value ? '' : 'is-empty'}>{value || 'Add date'}</strong>
+											</button>
+										);
+									})}
+									{openCalendar && (
+										<BookingCalendar
+											mode={openCalendar}
+											value={openCalendar === 'checkIn' ? checkIn : checkOut}
+											checkIn={checkIn}
+											checkOut={checkOut}
+											min={openCalendar === 'checkIn' ? today : addDays(checkIn || today, 1)}
+											bookedRanges={bookedRanges}
+											onSelect={calendarSelectHandler}
+											onClose={closeCalendar}
+										/>
+									)}
+								</div>
+								<p className="sx-booking-times">
+									Check-in from {CHECK_IN_TIME} · Check-out by {CHECK_OUT_TIME}
+								</p>
+								<div className="sx-booking-guests">
+									<div>
+										<span>Guests</span>
+										<small>Up to {maxGuests}</small>
+									</div>
+									<div className="sx-stepper">
+										<button type="button" aria-label="Fewer guests" disabled={guests <= 1} onClick={() => setGuests(guests - 1)}>
+											<RemoveIcon />
+										</button>
+										<output aria-live="polite">{guests}</output>
 										<button
 											type="button"
-											key={field}
-											className={`sx-date-field ${openCalendar === field ? 'is-open' : ''}`}
-											aria-expanded={openCalendar === field}
-											onClick={() => setOpenCalendar(openCalendar === field ? null : field)}
+											aria-label="More guests"
+											disabled={guests >= maxGuests}
+											onClick={() => setGuests(guests + 1)}
 										>
-											<span>{field === 'checkIn' ? 'Check-in' : 'Check-out'}</span>
-											<strong className={value ? '' : 'is-empty'}>{value || 'Add date'}</strong>
+											<AddIcon />
 										</button>
-									);
-								})}
-								{openCalendar && (
-									<BookingCalendar
-										mode={openCalendar}
-										value={openCalendar === 'checkIn' ? checkIn : checkOut}
-										checkIn={checkIn}
-										checkOut={checkOut}
-										min={openCalendar === 'checkIn' ? today : addDays(checkIn || today, 1)}
-										bookedRanges={bookedRanges}
-										onSelect={calendarSelectHandler}
-										onClose={closeCalendar}
-									/>
-								)}
-							</div>
-							<p className="sx-booking-times">
-								Check-in from {CHECK_IN_TIME} · Check-out by {CHECK_OUT_TIME}
-							</p>
-							<div className="sx-booking-guests">
-								<div>
-									<span>Guests</span>
-									<small>Up to {maxGuests}</small>
+									</div>
 								</div>
-								<div className="sx-stepper">
-									<button type="button" aria-label="Fewer guests" disabled={guests <= 1} onClick={() => setGuests(guests - 1)}>
-										<RemoveIcon />
-									</button>
-									<output aria-live="polite">{guests}</output>
+
+								{myStayBookings.length > 0 && (
+									<div className="sx-booked">
+										<div className="sx-booked-head">
+											<EventAvailableOutlinedIcon aria-hidden="true" />
+											<strong>{myStayBookings.length === 1 ? 'Your booking' : 'Your bookings'}</strong>
+										</div>
+										<ul>
+											{myStayBookings.map((booking) => (
+												<li key={booking.id}>
+													<span>
+														{booking.checkIn} → {booking.checkOut}
+													</span>
+													<em>{booking.paymentStatus === PaymentStatus.SUCCEEDED ? 'Confirmed · Paid' : 'Not paid'}</em>
+												</li>
+											))}
+										</ul>
+										<Link href={{ pathname: '/mypage', query: { category: 'myBookings' } }}>Manage in My Bookings</Link>
+									</div>
+								)}
+								{datesValid && (
+									<dl className="sx-booking-breakdown">
+										<div>
+											<dt>
+												{formatKRW(property?.pricePerNight)} × {nights} {nights === 1 ? 'night' : 'nights'}
+											</dt>
+											<dd>{formatKRW(totalPrice)}</dd>
+										</div>
+										<div className="is-total">
+											<dt>Total</dt>
+											<dd>{formatKRW(totalPrice)}</dd>
+										</div>
+									</dl>
+								)}
+
+								{datesTaken && (
+									<p className="sx-booking-alert" role="alert">
+										Those dates are already booked. Please choose other dates.
+									</p>
+								)}
+								<button type="button" className="sx-reserve" disabled={!datesValid || isOwnStay} onClick={reserveHandler}>
+									{isOwnStay ? 'This is your stay' : datesValid ? 'Booking' : 'Select dates'}
+								</button>
+								<p className="sx-booking-note">You won't be charged yet — review and pay on the next step</p>
+							</div>
+
+							{!isOwnStay && (
+								<div className="sx-contact">
+									<h3>Contact the host</h3>
+									<div className="sx-contact-host">
+										<img src={hostImage} alt="" />
+										<div>
+											<strong>{host?.memberFullName || host?.memberNick}</strong>
+											{host?.memberPhone && (
+												<span>
+													<PhoneOutlinedIcon aria-hidden="true" />
+													{host.memberPhone}
+												</span>
+											)}
+											<Link href={`/member?memberId=${host?._id}`}>View listings</Link>
+										</div>
+									</div>
+									<label className="sx-contact-field">
+										<span>Name</span>
+										<input
+											type="text"
+											placeholder="Enter your name"
+											value={contactName}
+											onChange={({ target: { value } }) => setContactName(value)}
+										/>
+									</label>
+									<label className="sx-contact-field">
+										<span>Phone</span>
+										<input
+											type="tel"
+											placeholder="Enter your phone"
+											value={contactPhone}
+											onChange={({ target: { value } }) => setContactPhone(value)}
+										/>
+									</label>
+									<label className="sx-contact-field">
+										<span>
+											Message
+											<small>
+												{contactMessage.length} / {MESSAGE_LIMIT}
+											</small>
+										</span>
+										<textarea
+											rows={4}
+											maxLength={MESSAGE_LIMIT}
+											placeholder={`Hello, I'm interested in "${property?.propertyTitle}".`}
+											value={contactMessage}
+											onChange={({ target: { value } }) => setContactMessage(value)}
+										/>
+									</label>
 									<button
 										type="button"
-										aria-label="More guests"
-										disabled={guests >= maxGuests}
-										onClick={() => setGuests(guests + 1)}
+										className="sx-btn-primary sx-contact-send"
+										disabled={!user?._id || !contactMessage.trim() || sendingMessage}
+										onClick={sendMessageHandler}
 									>
-										<AddIcon />
+										Send Message
+										<SendOutlinedIcon aria-hidden="true" />
 									</button>
-								</div>
-							</div>
-
-							{myStayBookings.length > 0 && (
-								<div className="sx-booked">
-									<div className="sx-booked-head">
-										<EventAvailableOutlinedIcon aria-hidden="true" />
-										<strong>{myStayBookings.length === 1 ? 'Your booking' : 'Your bookings'}</strong>
-									</div>
-									<ul>
-										{myStayBookings.map((booking) => (
-											<li key={booking.id}>
-												<span>
-													{booking.checkIn} → {booking.checkOut}
-												</span>
-												<em>{booking.paymentStatus === PaymentStatus.SUCCEEDED ? 'Confirmed · Paid' : 'Not paid'}</em>
-											</li>
-										))}
-									</ul>
-									<Link href={{ pathname: '/mypage', query: { category: 'myBookings' } }}>Manage in My Bookings</Link>
+									{!user?._id && <p className="sx-contact-hint">Log in to message the host</p>}
 								</div>
 							)}
-							{datesValid && (
-								<dl className="sx-booking-breakdown">
-									<div>
-										<dt>
-											{formatKRW(property?.pricePerNight)} × {nights} {nights === 1 ? 'night' : 'nights'}
-										</dt>
-										<dd>{formatKRW(totalPrice)}</dd>
-									</div>
-									<div className="is-total">
-										<dt>Total</dt>
-										<dd>{formatKRW(totalPrice)}</dd>
-									</div>
-								</dl>
-							)}
-
-							{datesTaken && (
-								<p className="sx-booking-alert" role="alert">
-									Those dates are already booked. Please choose other dates.
+						</aside>
+					) : (
+						<aside className="sx-detail-side">
+							{/* Not public yet: no booking. Admins review it here; the owner sees its status. */}
+							<div className="sx-review-card">
+								<span className={`sx-review-badge${isPending ? ' is-pending' : ''}`}>{isPending ? 'In review' : 'Paused'}</span>
+								<h3>{isPending ? 'Waiting for approval' : 'Hidden from search'}</h3>
+								<p>
+									{isPending
+										? 'This stay is not visible to guests yet. It appears in search once the Kostay team approves it.'
+										: 'The host paused this stay, so guests cannot find or book it.'}
 								</p>
-							)}
-							<button type="button" className="sx-reserve" disabled={!datesValid || isOwnStay} onClick={reserveHandler}>
-								{isOwnStay ? 'This is your stay' : datesValid ? 'Booking' : 'Select dates'}
-							</button>
-							<p className="sx-booking-note">You won't be charged yet — review and pay on the next step</p>
-						</div>
-
-						{!isOwnStay && (
-							<div className="sx-contact">
-								<h3>Contact the host</h3>
-								<div className="sx-contact-host">
-									<img src={hostImage} alt="" />
-									<div>
-										<strong>{host?.memberFullName || host?.memberNick}</strong>
-										{host?.memberPhone && (
-											<span>
-												<PhoneOutlinedIcon aria-hidden="true" />
-												{host.memberPhone}
-											</span>
-										)}
-										<Link href={`/member?memberId=${host?._id}`}>View listings</Link>
+								{isPending && isAdmin && (
+									<div className="sx-review-actions">
+										<button type="button" className="is-approve" onClick={() => reviewHandler(PropertyStatus.ACTIVE)}>
+											Approve
+										</button>
+										<button type="button" className="is-reject" onClick={() => reviewHandler(PropertyStatus.DELETE)}>
+											Reject
+										</button>
 									</div>
-								</div>
-								<label className="sx-contact-field">
-									<span>Name</span>
-									<input
-										type="text"
-										placeholder="Enter your name"
-										value={contactName}
-										onChange={({ target: { value } }) => setContactName(value)}
-									/>
-								</label>
-								<label className="sx-contact-field">
-									<span>Phone</span>
-									<input
-										type="tel"
-										placeholder="Enter your phone"
-										value={contactPhone}
-										onChange={({ target: { value } }) => setContactPhone(value)}
-									/>
-								</label>
-								<label className="sx-contact-field">
-									<span>
-										Message
-										<small>
-											{contactMessage.length} / {MESSAGE_LIMIT}
-										</small>
-									</span>
-									<textarea
-										rows={4}
-										maxLength={MESSAGE_LIMIT}
-										placeholder={`Hello, I'm interested in "${property?.propertyTitle}".`}
-										value={contactMessage}
-										onChange={({ target: { value } }) => setContactMessage(value)}
-									/>
-								</label>
-								<button
-									type="button"
-									className="sx-btn-primary sx-contact-send"
-									disabled={!user?._id || !contactMessage.trim() || sendingMessage}
-									onClick={sendMessageHandler}
-								>
-									Send Message
-									<SendOutlinedIcon aria-hidden="true" />
-								</button>
-								{!user?._id && <p className="sx-contact-hint">Log in to message the host</p>}
+								)}
 							</div>
-						)}
-					</aside>
+						</aside>
+					)}
 				</div>
 
 				{destinationProperties.length !== 0 && (
@@ -734,23 +785,25 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 				)}
 			</div>
 			{/* Phones: sticky price bar that scrolls to the booking box (hidden on desktop by CSS). */}
-			<div className="sx-mobile-bookbar">
-				<div>
-					<strong>{formatKRW(property?.pricePerNight)}</strong>
-					<span>/ night</span>
-					{datesValid && (
-						<small>
-							{nights} {nights === 1 ? 'night' : 'nights'} · {formatKRW(totalPrice)}
-						</small>
-					)}
+			{isPublic && (
+				<div className="sx-mobile-bookbar">
+					<div>
+						<strong>{formatKRW(property?.pricePerNight)}</strong>
+						<span>/ night</span>
+						{datesValid && (
+							<small>
+								{nights} {nights === 1 ? 'night' : 'nights'} · {formatKRW(totalPrice)}
+							</small>
+						)}
+					</div>
+					<button
+						type="button"
+						onClick={() => document.getElementById('booking-box')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+					>
+						{datesValid ? 'Review booking' : 'Check dates'}
+					</button>
 				</div>
-				<button
-					type="button"
-					onClick={() => document.getElementById('booking-box')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-				>
-					{datesValid ? 'Review booking' : 'Check dates'}
-				</button>
-			</div>
+			)}
 		</div>
 	);
 };

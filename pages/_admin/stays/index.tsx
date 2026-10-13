@@ -18,6 +18,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { GET_ALL_PROPERTIES_BY_ADMIN } from '../../../apollo/admin/query';
 import { REMOVE_PROPERTY_BY_ADMIN, UPDATE_PROPERTY_BY_ADMIN } from '../../../apollo/admin/mutation';
 import { T } from '../../../libs/types/common';
+import { useRouter } from 'next/router';
 
 const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 	const [anchorEl, setAnchorEl] = useState<[] | HTMLElement[]>([]);
@@ -28,6 +29,7 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 		propertiesInquiry?.search?.propertyStatus ? propertiesInquiry?.search?.propertyStatus : 'ALL',
 	);
 	const [searchLocation, setSearchLocation] = useState('ALL');
+	const router = useRouter();
 
 	/** APOLLO REQUESTS **/
 	const [updatePropertyByAdmin] = useMutation(UPDATE_PROPERTY_BY_ADMIN);
@@ -52,6 +54,11 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 	useEffect(() => {
 		getAllPropertiesByAdminRefetch({ input: propertiesInquiry }).then();
 	}, [propertiesInquiry]);
+
+	// A "submitted a stay for review" notification links here with ?status=PENDING.
+	useEffect(() => {
+		if (router.isReady && router.query.status === PropertyStatus.PENDING) tabChangeHandler(null, PropertyStatus.PENDING);
+	}, [router.isReady, router.query.status]);
 
 	/** HANDLERS **/
 	const changePageHandler = async (event: unknown, newPage: number) => {
@@ -81,6 +88,16 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 		setValue(newValue);
 
 		switch (newValue) {
+			case 'PENDING':
+				setPropertiesInquiry({
+					...propertiesInquiry,
+					page: 1,
+					search: {
+						...propertiesInquiry.search,
+						propertyStatus: PropertyStatus.PENDING,
+					},
+				});
+				break;
 			case 'ACTIVE':
 				setPropertiesInquiry({
 					...propertiesInquiry,
@@ -188,6 +205,13 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 							<List className={'tab-menu'}>
 								<ListItem onClick={(e) => tabChangeHandler(e, 'ALL')} value="ALL" className={value === 'ALL' ? 'li on' : 'li'}>
 									All
+								</ListItem>
+								<ListItem
+									onClick={(e) => tabChangeHandler(e, 'PENDING')}
+									value="PENDING"
+									className={value === 'PENDING' ? 'li on' : 'li'}
+								>
+									Pending
 								</ListItem>
 								<ListItem
 									onClick={(e) => tabChangeHandler(e, 'ACTIVE')}
