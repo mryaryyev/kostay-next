@@ -28,6 +28,8 @@ const AgentCard = (props: AgentCardProps) => {
 	const isSuperhost = (agent?.memberRank ?? 0) >= topPropertyRank;
 	const isLiked = Boolean(agent?.meLiked?.[0]?.myFavorite);
 	const properties = agent?.memberProperties ?? 0;
+	const description = agent?.memberDesc?.trim() || 'Kostay host welcoming guests across Korea.';
+	const firstSentence = description.match(/^[\s\S]*?[.!?](?=\s|$)/)?.[0] ?? description;
 
 	return (
 		<article className="sx-host">
@@ -70,7 +72,7 @@ const AgentCard = (props: AgentCardProps) => {
 					</div>
 				</div>
 
-				<p className="sx-host-desc">{agent?.memberDesc || 'Kostay host welcoming guests across Korea.'}</p>
+				<p className="sx-host-desc">{firstSentence}</p>
 			</div>
 
 			<div>

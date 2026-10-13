@@ -159,7 +159,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 							<SearchIcon aria-hidden="true" />
 							<input
 								type="text"
-								placeholder={'Search for a host by name, city, or specialty...'}
+								placeholder={'Search for a host by name and city'}
 								aria-label={'Search hosts'}
 								value={searchText}
 								onChange={(e) => setSearchText(e.target.value)}

@@ -96,8 +96,8 @@ const MyMenu = () => {
 		{
 			title: 'Stays',
 			items: [
-				// Guests book stays; hosts see incoming bookings under Hosting → Reservations instead.
-				...(isHost ? [] : [{ label: 'My Bookings', icon: <LuggageOutlinedIcon />, category: 'myBookings' }]),
+				// Every member can book stays; incoming host bookings live under Reservations.
+				{ label: 'My Bookings', icon: <LuggageOutlinedIcon />, category: 'myBookings' },
 				{ label: 'My Favorites', icon: <FavoriteBorderIcon />, category: 'myFavorites' },
 				{ label: 'Recently Visited', icon: <HistoryIcon />, category: 'recentlyVisited' },
 			],
