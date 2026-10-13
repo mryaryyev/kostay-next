@@ -1280,41 +1280,6 @@ body {
 
 /* ================= Host My Page sections ================= */
 #site-wrap #my-page {
-	// My Stays: table rows become cards
-	@include tablet {
-		.list-box .listing-title-box {
-			display: none !important;
-		}
-		.list-box {
-			min-height: 0 !important;
-			padding: 16px !important;
-		}
-		// MUI Stack is a column by default: force a wrapping row so items flow onto new lines.
-		.list-box .property-card-box {
-			flex-direction: row !important;
-			flex-wrap: wrap !important;
-			align-items: center;
-			gap: 10px 14px;
-			height: auto !important;
-			margin-top: 16px !important;
-			padding: 0 0 16px !important;
-			.information-box {
-				width: calc(100% - 130px) !important;
-			}
-			.date-box,
-			.status-box,
-			.views-box,
-			.action-box {
-				width: auto !important;
-				height: auto !important;
-			}
-		}
-		.property-list-box .tab-name-box .tab-name,
-		.property-list-box .tab-name-box .active-tab-name {
-			width: 50% !important;
-		}
-	}
-
 	// Add Stay: one field per row on phones
 	@include mobile {
 		.config .description-box {

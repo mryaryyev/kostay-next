@@ -336,6 +336,7 @@ export const GET_ADMIN_DASHBOARD = gql`
 			hosts
 			activeStays
 			pausedStays
+			pendingStays
 			activeArticles
 			waitingInquiries
 			confirmedBookings

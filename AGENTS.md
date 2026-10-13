@@ -16,7 +16,7 @@ This client project is being migrated from nestar-next to kostay-next.
 Backend project is in ../kostay/
 
 - Kostay is a booking platform: properties have `pricePerNight` and `maxGuests`.
-- `propertyStatus` is ACTIVE / INACTIVE / DELETE. A booking never changes it.
+- `propertyStatus` is ACTIVE / INACTIVE / DELETE/ PENDING. A booking never changes it.
 - Bookings and payments live in PostgreSQL; the frontend only talks to GraphQL.
 - Booking dates are plain `YYYY-MM-DD` strings (no time, no `toISOString()`).
 

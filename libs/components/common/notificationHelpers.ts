@@ -10,10 +10,19 @@ const NEW_INQUIRY_TITLE = 'sent an inquiry';
 const isAnswerFromHelp = (notification: Notification) =>
 	notification.notificationType === NotificationType.INQUIRY && notification.notificationTitle !== NEW_INQUIRY_TITLE;
 
+/** Set by the property service: admins get the first, hosts get the approve / reject decision. */
+const LISTING_SUBMITTED_TITLE = 'submitted a stay for review';
+const LISTING_REJECTED_TITLE = 'Did not approve your stay';
+const isListingDecision = (notification: Notification) =>
+	notification.notificationType === NotificationType.LISTING &&
+	notification.notificationTitle !== LISTING_SUBMITTED_TITLE;
+
 /** Who did it: full name, nick, or a neutral fallback. */
 export const notificationAuthor = (notification: Notification): string =>
 	isAnswerFromHelp(notification)
 		? 'Kostay Help'
+		: isListingDecision(notification)
+		? 'Kostay team'
 		: notification.authorData?.memberFullName || notification.authorData?.memberNick || 'Someone';
 
 /** "liked your stay", "sent you a message", ... (the author's name is rendered separately in bold). */
@@ -35,6 +44,12 @@ export const notificationHref = (notification: Notification) => {
 		return isAnswerFromHelp(notification)
 			? { pathname: '/help', query: { tab: 'inquiry' } }
 			: { pathname: '/_admin/cs/inquiry' };
+	}
+	if (notification.notificationType === NotificationType.LISTING) {
+		if (!isListingDecision(notification)) return { pathname: '/_admin/stays', query: { status: 'PENDING' } };
+		return notification.notificationTitle === LISTING_REJECTED_TITLE || !notification.propertyId
+			? { pathname: '/mypage', query: { category: 'myProperties' } }
+			: { pathname: '/stay/detail', query: { id: notification.propertyId } };
 	}
 	if (notification.notificationType === NotificationType.BOOKING) {
 		// New bookings and guest cancellations go to the host (Reservations); anything else to the guest.

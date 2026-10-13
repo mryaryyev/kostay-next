@@ -15,6 +15,7 @@ interface AdminDashboardData {
 	hosts: number;
 	activeStays: number;
 	pausedStays: number;
+	pendingStays: number;
 	activeArticles: number;
 	waitingInquiries: number;
 	confirmedBookings: number;
@@ -74,6 +75,13 @@ const AdminHome: NextPage = () => {
 					note: stats.waitingInquiries ? 'Need an answer' : 'All answered',
 					href: '/_admin/cs/inquiry',
 					warn: stats.waitingInquiries > 0,
+				},
+				{
+					label: 'Stays to review',
+					value: stats.pendingStays,
+					note: stats.pendingStays ? 'Waiting for approval' : 'Nothing to review',
+					href: '/_admin/stays?status=PENDING',
+					warn: stats.pendingStays > 0,
 				},
 		  ]
 		: [];

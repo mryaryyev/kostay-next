@@ -20,6 +20,7 @@ import { REACT_APP_API_URL } from '../../../config';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Typography from '@mui/material/Typography';
 import { PropertyStatus } from '../../../enums/property.enum';
+import { sweetConfirmAlert } from '../../../sweetAlert';
 
 interface Data {
 	id: string;
@@ -191,6 +192,31 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 												</Button>
 											)}
 
+											{/* New stay waiting for review: approve publishes it, reject removes it (the host is notified). */}
+											{property.propertyStatus === PropertyStatus.PENDING && (
+												<Stack direction={'row'} spacing={1} justifyContent={'center'}>
+													<Button
+														size="small"
+														variant="contained"
+														color="success"
+														onClick={() => updatePropertyHandler({ _id: property._id, propertyStatus: PropertyStatus.ACTIVE })}
+													>
+														Approve
+													</Button>
+													<Button
+														size="small"
+														variant="outlined"
+														color="error"
+														onClick={async () => {
+															if (await sweetConfirmAlert(`Reject "${property.propertyTitle}"?`))
+																updatePropertyHandler({ _id: property._id, propertyStatus: PropertyStatus.DELETE });
+														}}
+													>
+														Reject
+													</Button>
+												</Stack>
+											)}
+
 											{property.propertyStatus === PropertyStatus.INACTIVE && (
 												<Button className={'badge warning'}>{property.propertyStatus}</Button>
 											)}
@@ -213,7 +239,7 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 														sx={{ p: 1 }}
 													>
 														{Object.values(PropertyStatus)
-															.filter((ele) => ele !== property.propertyStatus)
+															.filter((ele) => ele !== property.propertyStatus && ele !== PropertyStatus.PENDING)
 															.map((status: string) => (
 																<MenuItem
 																	onClick={() => updatePropertyHandler({ _id: property._id, propertyStatus: status })}

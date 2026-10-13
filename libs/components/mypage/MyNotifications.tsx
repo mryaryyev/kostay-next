@@ -9,6 +9,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import AddHomeOutlinedIcon from '@mui/icons-material/AddHomeOutlined';
 import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import { GET_NOTIFICATIONS, GET_UNREAD_NOTIFICATION_COUNT } from '../../../apollo/user/query';
@@ -39,6 +40,7 @@ const typeIcons: Record<NotificationType, JSX.Element> = {
 	[NotificationType.FOLLOW]: <PersonAddAltOutlinedIcon />,
 	[NotificationType.BOOKING]: <EventAvailableOutlinedIcon />,
 	[NotificationType.INQUIRY]: <SupportAgentOutlinedIcon />,
+	[NotificationType.LISTING]: <AddHomeOutlinedIcon />,
 };
 
 /** My Page → Notifications: the full inbox (likes, reviews, follows and messages from guests). */
