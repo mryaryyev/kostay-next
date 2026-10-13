@@ -34,6 +34,10 @@ export interface ChatMessage {
 	memberData: { _id: string; memberNick: string; memberImage?: string } | null;
 	/** Set when the message reaches this browser; the server sends no time, so the first history has none. */
 	receivedAt?: number;
+	/** ISO time set by the server (kept in the Redis history), so older messages show their time too. */
+	createdAt?: string;
 }
 export const chatOnlineVar = makeVar<number>(0);
 export const chatMessagesVar = makeVar<ChatMessage[]>([]);
+/** Socket state for the chat header / composer: 'offline' while waiting to reconnect. */
+export const chatStatusVar = makeVar<'connecting' | 'online' | 'offline'>('connecting');
