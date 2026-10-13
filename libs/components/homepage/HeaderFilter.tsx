@@ -376,7 +376,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 						},
 						{
 							id: 'type',
-							label: 'Stay type',
+							label: t('Stay type'),
 							value: searchFilter.search.typeList?.[0] || 'Any stay',
 							filled: Boolean(searchFilter.search.typeList?.[0]),
 							open: openType,
@@ -384,7 +384,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 						},
 						{
 							id: 'dates',
-							label: 'Dates',
+							label: t('Dates'),
 							value: datesLabel,
 							filled: Boolean(checkIn && checkOut),
 							open: openDates,
@@ -392,7 +392,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 						},
 						{
 							id: 'guests',
-							label: 'Guests',
+							label: t('Guests'),
 							value: guestsNumber ? `${guestsNumber} guest${guestsNumber > 1 ? 's' : ''}` : 'Add guests',
 							filled: Boolean(guestsNumber),
 							open: openGuests,
@@ -442,12 +442,12 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 					<motion.button
 						type="button"
 						className="search-btn"
-						aria-label="Search stays"
+						aria-label={t('Search')}
 						onClick={pushSearchHandler}
 						{...feedback}
 					>
 						<img src="/img/icons/search_white.svg" alt="" />
-						<span>Search</span>
+						<span>{t('Search')}</span>
 					</motion.button>
 				</Stack>
 

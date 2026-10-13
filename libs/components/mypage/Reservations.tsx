@@ -35,7 +35,6 @@ const Reservations = () => {
 			<header className="sx-bookings-head">
 				<div>
 					<h2>Reservations</h2>
-					<p>Guests who booked your stays.</p>
 				</div>
 			</header>
 

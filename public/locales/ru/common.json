@@ -1,7 +1,7 @@
 {
 	"Home": "Главная",
-	"Properties": "Жильё",
-	"Agents": "Хозяева",
+	"Stays": "Жильё",
+	"Hosts": "Хозяева",
 	"Community": "Сообщество",
 	"My Page": "Моя страница",
 	"CS": "Обслуживание",
@@ -11,8 +11,8 @@
 	"Register": "регистрация",
 	"Location": "Расположение",
 	"Property type": "Тип жилья",
-	"Rooms": "Комната",
-	"Advanced": "Расширенные",
+	"Rooms": "Комнаты",
+	"Advanced": "Фильтры",
 	"Property Search": "Поиск жилья",
 	"We are glad to see you again!": "Мы рады видеть вас снова!",
 	"Home / For Rent": "Главная / Жильё",
@@ -20,5 +20,9 @@
 	"my page": "моя страница",
 	"Community Detail": "Детали сообщества",
 	"Login/Signup": "Логин/регистрация",
-	"Member Page": "Страница участника"
+	"Member Page": "Страница участника",
+	"Stay type": "Тип жилья",
+	"Dates": "Даты",
+	"Guests": "Гости",
+	"Search": "Найти"
 }

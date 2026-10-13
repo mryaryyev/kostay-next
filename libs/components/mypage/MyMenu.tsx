@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { GET_BOARD_ARTICLES, GET_UNREAD_NOTIFICATION_COUNT } from '../../../apollo/user/query';
+import { GET_BOARD_ARTICLES, GET_HOST_BOOKINGS, GET_UNREAD_NOTIFICATION_COUNT } from '../../../apollo/user/query';
 import { userVar } from '../../../apollo/store';
 import { logOut } from '../../auth';
 import { sweetConfirmAlert } from '../../sweetAlert';
@@ -32,6 +32,14 @@ const MyMenu = () => {
 	const router = useRouter();
 	const category: any = router.query?.category ?? 'myProfile';
 	const user = useReactiveVar(userVar);
+	const isHost = user.memberType === 'AGENT';
+	const { data: reservationsData } = useQuery(GET_HOST_BOOKINGS, {
+		fetchPolicy: 'network-only',
+		skip: !user?._id || !isHost,
+		variables: { input: { page: 1, limit: 1 } },
+		pollInterval: 30000,
+	});
+	const reservationsCount: number = reservationsData?.getHostBookings?.total ?? 0;
 	const { data: unreadData } = useQuery(GET_UNREAD_NOTIFICATION_COUNT, {
 		fetchPolicy: 'cache-and-network',
 		skip: !user?._id,
@@ -51,7 +59,6 @@ const MyMenu = () => {
 	useEffect(() => {
 		if (user?._id) refetchMyArticles().then();
 	}, [category]);
-	const isHost = user.memberType === 'AGENT';
 
 	/** HANDLERS **/
 	const logoutHandler = async () => {
@@ -74,7 +81,13 @@ const MyMenu = () => {
 								category: 'myProperties',
 								badge: user.memberProperties || undefined,
 							},
-							{ label: 'Reservations', icon: <EventAvailableOutlinedIcon />, category: 'reservations' },
+							{
+								label: 'Reservations',
+								icon: <EventAvailableOutlinedIcon />,
+								category: 'reservations',
+								badge: reservationsCount || undefined,
+								badgeClass: 'is-alert',
+							},
 							{ label: 'Add Stay', icon: <AddHomeOutlinedIcon />, category: 'addProperty' },
 						],
 					},

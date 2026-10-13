@@ -1,7 +1,7 @@
 {
   "Home": "홈",
-  "Properties": "숙소",
-  "Agents": "호스트",
+  "Stays": "숙소",
+  "Hosts": "호스트",
   "Community": "커뮤니티",
   "My Page": "마이 페이지",
   "CS": "고객센터",
@@ -11,7 +11,7 @@
   "Register": "가입",
   "Location": "위치",
   "Property type": "숙소 유형",
-  "Rooms": "방",
+  "Rooms": "객실",
   "Advanced": "고급 필터",
   "Property Search": "숙소 찾기",
   "We are glad to see you again!": "다시 만나서 반갑습니다!",
@@ -20,5 +20,9 @@
   "my page": "마이 페이지",
   "Community Detail": "커뮤니티 디테일",
   "Login/Signup": "로그인/가입",
-  "Member Page": "멤버 페이지"
+  "Member Page": "멤버 페이지",
+  "Stay type": "숙소 유형",
+  "Dates": "날짜",
+  "Guests": "인원",
+  "Search": "검색"
 }

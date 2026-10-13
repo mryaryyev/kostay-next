@@ -37,8 +37,8 @@ const Top = () => {
 
 	const navLinks = [
 		{ href: '/', label: t('Home'), path: '/' },
-		{ href: '/stay', label: t('Properties'), path: '/stay' },
-		{ href: '/agent', label: t('Agents'), path: '/agent' },
+		{ href: '/stay', label: t('Stays'), path: '/stay' },
+		{ href: '/agent', label: t('Hosts'), path: '/agent' },
 		{ href: '/community?articleCategory=FREE', label: t('Community'), path: '/community' },
 		...(user?._id ? [{ href: '/mypage', label: t('My Page'), path: '/mypage' }] : []),
 		{ href: '/help', label: t('Help'), path: '/help' },
@@ -124,10 +124,10 @@ const Top = () => {
 							<div>{t('Home')}</div>
 						</Link>
 						<Link href={'/stay'} aria-current={isActive('/stay') ? 'page' : undefined}>
-							<div>{t('Properties')}</div>
+							<div>{t('Stays')}</div>
 						</Link>
 						<Link href={'/agent'} aria-current={isActive('/agent') ? 'page' : undefined}>
-							<div> {t('Agents')} </div>
+							<div> {t('Hosts')} </div>
 						</Link>
 						<Link href={'/community?articleCategory=FREE'} aria-current={isActive('/community') ? 'page' : undefined}>
 							<div> {t('Community')} </div>

@@ -4,7 +4,7 @@ import SendIcon from '@mui/icons-material/Send';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import Badge from '@mui/material/Badge';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
-import MarkChatUnreadIcon from '@mui/icons-material/MarkChatUnread';
+import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import ScrollableFeed from 'react-scrollable-feed';
@@ -142,8 +142,8 @@ const Chat = () => {
 	return (
 		<Stack className="chatting">
 			{openButton ? (
-				<button className="chat-button" onClick={handleOpenChat}>
-					{open ? <CloseFullscreenIcon /> : <MarkChatUnreadIcon />}
+				<button className="chat-button" onClick={handleOpenChat} aria-label={open ? 'Close chat' : 'Open chat'}>
+					{open ? <CloseFullscreenIcon /> : <ChatBubbleOutlineRoundedIcon />}
 				</button>
 			) : null}
 			<Stack className={`chat-frame ${open ? 'open' : ''}`}>
@@ -246,7 +246,7 @@ const Chat = () => {
 							disabled={!canSend || !isOnline}
 							aria-label="Send message"
 						>
-							<SendIcon htmlColor="#fff" />
+							<SendIcon />
 						</button>
 					</Box>
 				)}

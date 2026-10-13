@@ -1,7 +1,7 @@
 {
   "Home": "Home",
-  "Properties": "Stays",
-  "Agents": "Hosts",
+  "Stays": "Stays",
+  "Hosts": "Hosts",
   "Community": "Community",
   "My Page": "My Page",
   "CS": "CS",
@@ -20,5 +20,9 @@
   "my page": "my page",
   "Community Detail": "Community Detail",
   "Login/Signup": "Login/Signup",
-  "Member Page": "Member Page"
+  "Member Page": "Member Page",
+  "Stay type": "Stay type",
+  "Dates": "Dates",
+  "Guests": "Guests",
+  "Search": "Search"
 }
