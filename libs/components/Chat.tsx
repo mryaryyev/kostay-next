@@ -10,7 +10,7 @@ import Link from 'next/link';
 import ScrollableFeed from 'react-scrollable-feed';
 import { RippleBadge } from '../../scss/MaterialTheme/styled';
 import { useReactiveVar } from '@apollo/client';
-import { chatMessagesVar, chatOnlineVar, socketVar, userVar } from '../../apollo/store';
+import { chatMessagesVar, chatOnlineVar, chatStatusVar, socketVar, userVar } from '../../apollo/store';
 import { connectChat } from '../../apollo/chatSocket';
 import { Member } from '../types/member/member';
 import { REACT_APP_API_URL } from '../config';
@@ -46,6 +46,8 @@ interface MessagePayload {
 	memberData: Member;
 	/** Set when the message reaches this browser; the server sends no time, so older messages have none. */
 	receivedAt?: number;
+	/** ISO time from the server. */
+	createdAt?: string;
 }
 
 const Chat = () => {
@@ -59,6 +61,8 @@ const Chat = () => {
 	// Filled by the socket in apollo/client.ts, so the first online count / messages are never missed.
 	const messagesList = useReactiveVar(chatMessagesVar) as MessagePayload[];
 	const onlineUsers = useReactiveVar(chatOnlineVar);
+	const status = useReactiveVar(chatStatusVar);
+	const isOnline = status === 'online';
 	const isGuest = !user?._id;
 	const feedRef = useRef<ScrollableFeed>(null);
 	// The feed only follows new messages while the reader is at the bottom; these track that state.
@@ -128,7 +132,7 @@ const Chat = () => {
 	const canSend = messageInput.trim() !== '';
 
 	const onClickHandler = () => {
-		if (canSend) {
+		if (canSend && isOnline) {
 			awaitingOwnMessage.current = true; // scroll down when the server echoes it back
 			socket.send(JSON.stringify({ event: 'message', data: messageInput }));
 			setMessageInput('');
@@ -145,7 +149,13 @@ const Chat = () => {
 			<Stack className={`chat-frame ${open ? 'open' : ''}`}>
 				<Box className={'chat-top'} component={'div'}>
 					<div>Online Chat</div>
-					<RippleBadge badgeContent={onlineUsers} />
+					{isOnline ? (
+						<RippleBadge badgeContent={onlineUsers} />
+					) : (
+						<span className={'chat-status'} role="status">
+							{status === 'connecting' ? 'Connecting…' : 'Reconnecting…'}
+						</span>
+					)}
 				</Box>
 				<Box className={'chat-content'} id="chat-content" ref={chatContentRef} component={'div'}>
 					{/* @ts-ignore react-scrollable-feed's types predate React 18 and omit `children` */}
@@ -166,7 +176,8 @@ const Chat = () => {
 									? `${REACT_APP_API_URL}/${memberData.memberImage}`
 									: '/img/profile/defaultUser.svg';
 
-								const time = ele.receivedAt ? moment(ele.receivedAt).format('HH:mm') : '';
+								const sentAt = ele.createdAt ?? ele.receivedAt;
+								const time = sentAt ? moment(sentAt).format('HH:mm') : '';
 
 								return memberData?._id === user?._id ? (
 									<Box
@@ -223,12 +234,18 @@ const Chat = () => {
 							type={'text'}
 							name={'message'}
 							className={'msg-input'}
-							placeholder={'Type message'}
+							placeholder={isOnline ? 'Type message' : 'Chat is reconnecting…'}
+							disabled={!isOnline}
 							value={messageInput}
 							onChange={getInputMessageHandler}
 							onKeyDown={getKeyHandler}
 						/>
-						<button className={'send-msg-btn'} onClick={onClickHandler} disabled={!canSend} aria-label="Send message">
+						<button
+							className={'send-msg-btn'}
+							onClick={onClickHandler}
+							disabled={!canSend || !isOnline}
+							aria-label="Send message"
+						>
 							<SendIcon htmlColor="#fff" />
 						</button>
 					</Box>
