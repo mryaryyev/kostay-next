@@ -1,0 +1,343 @@
+// Live chat (libs/components/Chat.tsx): floating button + slide-in panel, Kostay palette.
+$ch-navy: #031636;
+$ch-navy-soft: #1a2b4c;
+$ch-cta: #e05d38;
+$ch-cta-hover: #c2410c;
+$ch-ink: #1c1c18;
+$ch-body: #44474e;
+$ch-outline: #75777f;
+$ch-line: #e6e2dc;
+$ch-low: #f7f3ed;
+$ch-surface: #ffffff;
+$ch-green: #22c55e;
+
+#site-wrap .chatting {
+	&,
+	* {
+		font-family: $font-display;
+	}
+
+	/* ---------- Floating button ---------- */
+	.chat-button {
+		position: fixed;
+		right: 24px;
+		bottom: 90px;
+		z-index: 999;
+		width: 56px;
+		height: 56px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 0;
+		border-radius: 50%;
+		background: $ch-navy;
+		box-shadow: 0 10px 24px rgba(3, 22, 54, 0.28);
+		color: #fff;
+		cursor: pointer;
+		transition: transform 200ms ease, background 200ms ease;
+		svg {
+			width: 24px;
+			height: 24px;
+		}
+		&:hover {
+			background: $ch-navy-soft;
+			transform: scale(1.06);
+		}
+		&:focus-visible {
+			outline: 3px solid rgba(224, 93, 56, 0.6);
+			outline-offset: 3px;
+		}
+		@media (max-width: 767px) {
+			right: 16px;
+		}
+	}
+
+	/* ---------- Panel ---------- */
+	.chat-frame {
+		position: fixed;
+		right: -420px;
+		bottom: 158px;
+		z-index: 998;
+		width: 360px;
+		height: 480px;
+		max-height: calc(100vh - 200px);
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		border: 1px solid $ch-line;
+		border-radius: 24px;
+		background: $ch-surface;
+		box-shadow: 0 24px 48px rgba(3, 22, 54, 0.18);
+		transition: right 400ms ease;
+		&.open {
+			right: 24px;
+		}
+		@media (max-width: 767px) {
+			width: calc(100vw - 32px);
+			&.open {
+				right: 16px;
+			}
+		}
+	}
+
+	.chat-top {
+		position: relative;
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 18px 20px;
+		background: linear-gradient(120deg, $ch-navy, $ch-navy-soft);
+		color: #fff;
+		font-size: 17px;
+		font-weight: 800;
+		letter-spacing: -0.01em;
+		// Online counter (MUI Badge): a green pill next to the title instead of the old floating blue dot.
+		.MuiBadge-root {
+			margin: 0 !important;
+		}
+		.MuiBadge-badge {
+			position: static;
+			min-width: 24px;
+			height: 22px;
+			padding: 0 8px;
+			transform: none;
+			border-radius: 999px;
+			background: rgba(34, 197, 94, 0.18) !important;
+			color: #bbf7d0 !important;
+			font-size: 12px;
+			font-weight: 700;
+			&::after {
+				border-color: $ch-green !important;
+				border-radius: 999px !important;
+			}
+		}
+	}
+
+	/* ---------- Messages ---------- */
+	// react-scrollable-feed scrolls its own div (height: inherit) and keeps it pinned to the newest message,
+	// so that div must be the scroll box, not .chat-content.
+	.chat-content {
+		position: relative;
+		flex: 1;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		background: $ch-low;
+		> div {
+			flex: 1;
+			min-height: 0;
+			height: auto;
+			overflow-y: auto;
+			padding: 16px;
+		}
+	}
+
+	// Shown when someone else writes while the reader is scrolled up.
+	.chat-new-messages {
+		position: absolute;
+		left: 50%;
+		bottom: 12px;
+		z-index: 1;
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 7px 14px;
+		border: 0;
+		border-radius: 999px;
+		background: $ch-navy;
+		box-shadow: 0 6px 16px rgba(3, 22, 54, 0.25);
+		color: #fff;
+		font-size: 12px;
+		font-weight: 700;
+		cursor: pointer;
+		transform: translateX(-50%);
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+		&:hover {
+			background: $ch-navy-soft;
+		}
+		&:focus-visible {
+			outline: 2px solid $ch-cta;
+			outline-offset: 2px;
+		}
+	}
+
+	.chat-main {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		.MuiAvatar-root {
+			width: 32px;
+			height: 32px;
+			flex-shrink: 0;
+			align-self: flex-end;
+		}
+	}
+
+	.welcome,
+	.msg-left,
+	.msg-right {
+		max-width: 75%;
+		padding: 10px 14px;
+		font-size: 14px;
+		line-height: 20px;
+		word-break: break-word;
+	}
+
+	.welcome {
+		align-self: center;
+		max-width: 100%;
+		margin: 0 auto;
+		padding: 6px 12px;
+		border-radius: 999px;
+		background: $ch-surface;
+		color: $ch-outline;
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	// Name above / time below each bubble.
+	.msg-group {
+		max-width: 75%;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 3px;
+		margin-left: 8px;
+		&.is-mine {
+			align-items: flex-end;
+			margin-left: 0;
+		}
+		.msg-left,
+		.msg-right {
+			max-width: 100%;
+		}
+	}
+
+	.msg-name {
+		padding-left: 4px;
+		color: $ch-body;
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	.msg-time {
+		padding: 0 4px;
+		color: $ch-outline;
+		font-size: 11px;
+	}
+
+	.msg-left {
+		border: 1px solid $ch-line;
+		border-radius: 18px 18px 18px 4px;
+		background: $ch-surface;
+		color: $ch-ink;
+	}
+
+	.msg-right {
+		border-radius: 18px 18px 4px 18px;
+		background: $ch-navy;
+		color: #fff;
+	}
+
+	/* ---------- Composer ---------- */
+	.chat-bott {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 14px;
+		border-top: 1px solid $ch-line;
+		background: $ch-surface;
+	}
+
+	// Visitors: read-only footer with a login link.
+	.chat-bott.is-guest {
+		justify-content: space-between;
+		span {
+			color: $ch-body;
+			font-size: 14px;
+			font-weight: 600;
+		}
+	}
+
+	.chat-login {
+		flex-shrink: 0;
+		padding: 10px 18px;
+		border-radius: 999px;
+		background: $ch-cta;
+		color: #fff;
+		font-size: 14px;
+		font-weight: 700;
+		text-decoration: none;
+		transition: background 160ms ease;
+		&:hover {
+			background: $ch-cta-hover;
+		}
+		&:focus-visible {
+			outline: 2px solid $ch-navy;
+			outline-offset: 2px;
+		}
+	}
+
+	.msg-input {
+		flex: 1;
+		min-width: 0;
+		height: 44px;
+		padding: 0 16px;
+		border: 1.5px solid $ch-line;
+		border-radius: 999px;
+		outline: none;
+		background: $ch-low;
+		color: $ch-ink;
+		font-size: 14px;
+		transition: border-color 160ms ease, background 160ms ease;
+		&::placeholder {
+			color: $ch-outline;
+		}
+		&:focus {
+			border-color: $ch-navy;
+			background: $ch-surface;
+		}
+	}
+
+	.send-msg-btn {
+		flex-shrink: 0;
+		width: 44px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 0;
+		border-radius: 50%;
+		background: $ch-cta;
+		cursor: pointer;
+		transition: background 160ms ease;
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+		&:hover:not(:disabled) {
+			background: $ch-cta-hover;
+		}
+		&:disabled {
+			background: $ch-line;
+			cursor: not-allowed;
+		}
+		&:focus-visible {
+			outline: 2px solid $ch-navy;
+			outline-offset: 2px;
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#site-wrap .chatting .chat-frame,
+	#site-wrap .chatting .chat-button {
+		transition: none;
+	}
+}
