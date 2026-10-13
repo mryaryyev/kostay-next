@@ -16,7 +16,11 @@ import { REACT_APP_API_URL } from '../config';
 import KostayLogo from './common/KostayLogo';
 import NotificationBell from './common/NotificationBell';
 
-const languages = ['en', 'kr', 'ru'];
+const languages = [
+	{ code: 'en', name: 'English', lang: 'en' },
+	{ code: 'kr', name: '한국어', lang: 'ko' },
+	{ code: 'ru', name: 'Русский', lang: 'ru' },
+];
 
 const Top = () => {
 	const user = useReactiveVar(userVar);
@@ -30,6 +34,7 @@ const Top = () => {
 	const [logoutAnchor, setLogoutAnchor] = React.useState<null | HTMLElement>(null);
 	const logoutOpen = Boolean(logoutAnchor);
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+	const [languageAnchor, setLanguageAnchor] = useState<HTMLElement | null>(null);
 
 	/** Home matches exactly; other links stay active on their sub-pages (e.g. /property/detail). */
 	const isActive = (path: string) =>
@@ -75,9 +80,11 @@ const Top = () => {
 	/** HANDLERS **/
 	// The URL locale is the source of truth; localStorage only remembers the last choice.
 	const currentLang = router.locale ?? lang ?? 'en';
+	const selectedLanguage = languages.find((language) => language.code === currentLang) ?? languages[0];
 
 	const langChoice = useCallback(
 		async (code: string) => {
+			setLanguageAnchor(null);
 			if (code === currentLang) return;
 			setLang(code);
 			localStorage.setItem('locale', code);
@@ -190,19 +197,44 @@ const Top = () => {
 
 						<div className={'lan-box'}>
 							<NotificationBell />
-							<div className={'lang-switch'} role={'group'} aria-label={'Language'}>
-								{languages.map((code) => (
-									<button
-										type={'button'}
-										key={code}
-										className={currentLang === code ? 'is-active' : ''}
-										aria-pressed={currentLang === code}
-										onClick={() => langChoice(code)}
-									>
-										{code.toUpperCase()}
-									</button>
-								))}
+							<div className="lang-switch">
+								<button
+									type="button"
+									aria-label={`Language: ${selectedLanguage.name}`}
+									aria-haspopup="menu"
+									aria-expanded={Boolean(languageAnchor)}
+									aria-controls={languageAnchor ? 'language-menu' : undefined}
+									onClick={(event) => setLanguageAnchor(event.currentTarget)}
+								>
+									<img src={`/img/flag/lang${selectedLanguage.code}.png`} alt="" />
+									<span>{selectedLanguage.code.toUpperCase()}</span>
+									<span className="language-chevron" aria-hidden="true">
+										⌄
+									</span>
+								</button>
 							</div>
+							<Menu
+								id="language-menu"
+								anchorEl={languageAnchor}
+								open={Boolean(languageAnchor)}
+								onClose={() => setLanguageAnchor(null)}
+								anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+								PaperProps={{ className: 'kostay-language-menu' }}
+								MenuListProps={{ 'aria-label': 'Language' }}
+							>
+								{languages.map(({ code, name, lang: languageTag }) => (
+									<MenuItem key={code} selected={currentLang === code} onClick={() => langChoice(code)} lang={languageTag}>
+										<img src={`/img/flag/lang${code}.png`} alt="" />
+										<span>{name}</span>
+										{currentLang === code && (
+											<span className="language-check" aria-hidden="true">
+												✓
+											</span>
+										)}
+									</MenuItem>
+								))}
+							</Menu>
 						</div>
 						{/* Phones: the links, language and account move into this drawer (CSS shows the button under 768px). */}
 						<button
@@ -249,15 +281,17 @@ const Top = () => {
 					))}
 				</nav>
 				<div className={'nav-drawer-lang'} role={'group'} aria-label={'Language'}>
-					{languages.map((code) => (
+					{languages.map(({ code, name, lang: languageTag }) => (
 						<button
 							type={'button'}
 							key={code}
 							className={currentLang === code ? 'is-active' : ''}
 							aria-pressed={currentLang === code}
+							lang={languageTag}
 							onClick={() => langChoice(code)}
 						>
-							{code.toUpperCase()}
+							<img src={`/img/flag/lang${code}.png`} alt="" />
+							<span>{name}</span>
 						</button>
 					))}
 				</div>
