@@ -1,0 +1,13 @@
+kostay.kr {
+	redir https://www.kostay.kr{uri} permanent
+}
+
+www.kostay.kr {
+	encode zstd gzip
+	reverse_proxy frontend:3000
+}
+
+api.kostay.kr {
+	encode zstd gzip
+	reverse_proxy backend:3007
+}

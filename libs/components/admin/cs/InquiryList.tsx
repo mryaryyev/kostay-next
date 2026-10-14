@@ -1,189 +1,113 @@
 import React from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
 import {
-	TableCell,
-	TableHead,
-	TableBody,
-	TableRow,
-	Table,
-	TableContainer,
 	Button,
-	Menu,
-	Fade,
 	MenuItem,
+	Select,
+	Stack,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TableRow,
+	Typography,
 } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
-import { Stack } from '@mui/material';
+import Moment from 'react-moment';
+import { Inquiry } from '../../../types/inquiry/inquiry';
+import { InquiryStatus, inquiryStatusLabels, inquiryTopicLabels } from '../../../enums/inquiry.enum';
+import { REACT_APP_API_URL } from '../../../config';
 
-interface Data {
-	category: string;
-	qna_case_status: string;
-	title: string;
-	writer: string;
-	date: string;
-	status: string;
-	id?: string;
+interface InquiryListProps {
+	inquiries: Inquiry[];
+	answerHandler: (inquiry: Inquiry) => void;
+	statusChangeHandler: (inquiry: Inquiry, status: InquiryStatus) => void;
 }
 
-type Order = 'asc' | 'desc';
+const columns = ['TOPIC', 'QUESTION', 'MEMBER', 'ASKED', 'STATUS', 'ACTION'];
 
-interface HeadCell {
-	disablePadding: boolean;
-	id: keyof Data;
-	label: string;
-	numeric: boolean;
-}
-
-const headCells: readonly HeadCell[] = [
-	{
-		id: 'category',
-		numeric: true,
-		disablePadding: false,
-		label: 'CATEGORY',
-	},
-	{
-		id: 'title',
-		numeric: true,
-		disablePadding: false,
-		label: 'TITLE',
-	},
-	{
-		id: 'writer',
-		numeric: true,
-		disablePadding: false,
-		label: 'WRITER',
-	},
-	{
-		id: 'date',
-		numeric: true,
-		disablePadding: false,
-		label: 'DATE',
-	},
-	{
-		id: 'qna_case_status',
-		numeric: false,
-		disablePadding: false,
-		label: 'QNA STATUS',
-	},
-];
-
-interface EnhancedTableProps {
-	numSelected: number;
-	onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
-	onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-	order: Order;
-	orderBy: string;
-	rowCount: number;
-}
-
-function EnhancedTableHead(props: EnhancedTableProps) {
-	const { onSelectAllClick } = props;
-
-	return (
-		<TableHead>
-			<TableRow>
-				{headCells.map((headCell) => (
-					<TableCell
-						key={headCell.id}
-						align={headCell.numeric ? 'left' : 'center'}
-						padding={headCell.disablePadding ? 'none' : 'normal'}
-					>
-						{headCell.label}
-					</TableCell>
-				))}
-			</TableRow>
-		</TableHead>
-	);
-}
-
-interface InquiryPanelListType {
-	dense?: boolean;
-	membersData?: any;
-	searchMembers?: any;
-	anchorEl?: any;
-	handleMenuIconClick?: any;
-	handleMenuIconClose?: any;
-	generateMentorTypeHandle?: any;
-}
-
-export const InquiryList = (props: InquiryPanelListType) => {
-	const {
-		dense,
-		membersData,
-		searchMembers,
-		anchorEl,
-		handleMenuIconClick,
-		handleMenuIconClose,
-		generateMentorTypeHandle,
-	} = props;
-	const router = useRouter();
-
-	/** APOLLO REQUESTS **/
-	/** LIFECYCLES **/
-	/** HANDLERS **/
-
+/** Table for the 1:1 Inquiry admin page. */
+export const InquiryList = ({ inquiries, answerHandler, statusChangeHandler }: InquiryListProps) => {
 	return (
 		<Stack>
 			<TableContainer>
-				<Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
-					{/*@ts-ignore*/}
-					<EnhancedTableHead />
+				<Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+					<TableHead>
+						<TableRow>
+							{columns.map((column) => (
+								<TableCell key={column} align={column === 'ACTION' ? 'right' : 'left'}>
+									{column}
+								</TableCell>
+							))}
+						</TableRow>
+					</TableHead>
 					<TableBody>
-						{[1, 2, 3, 4, 5].map((ele: any, index: number) => {
-							const member_image = '/img/profile/defaultUser.svg';
+						{inquiries.length === 0 && (
+							<TableRow>
+								<TableCell align="center" colSpan={columns.length}>
+									<span className={'no-data'}>No inquiries here.</span>
+								</TableCell>
+							</TableRow>
+						)}
 
-							let status_class_name = '';
-
-							return (
-								<TableRow hover key={'member._id'} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-									<TableCell align="left">mb id</TableCell>
-									<TableCell align="left">member.mb_full_name</TableCell>
-									<TableCell align="left" className={'name'}>
-										<Stack direction={'row'}>
-											<Link href={`/_admin/users/detail?mb_id=$'{member._id'}`}>
-												<div>
-													<Avatar alt="Remy Sharp" src={member_image} sx={{ ml: '2px', mr: '10px' }} />
-												</div>
-											</Link>
-											<Link href={`/_admin/users/detail?mb_id=${'member._id'}`}>
-												<div>member.mb_nick</div>
-											</Link>
-										</Stack>
-									</TableCell>
-									<TableCell align="left">member.mb_phone</TableCell>
-									<TableCell align="center">
-										<Button onClick={(e: any) => handleMenuIconClick(e, index)} className={'badge success'}>
-											member.mb_type
-										</Button>
-
-										<Menu
-											className={'menu-modal'}
-											MenuListProps={{
-												'aria-labelledby': 'fade-button',
-											}}
-											anchorEl={anchorEl[index]}
-											open={Boolean(anchorEl[index])}
-											onClose={handleMenuIconClose}
-											TransitionComponent={Fade}
-											sx={{ p: 1 }}
-										>
-											<MenuItem onClick={(e) => generateMentorTypeHandle('member._id', 'mentor', 'originate')}>
-												<Typography variant={'subtitle1'} component={'span'}>
-													MENTOR
-												</Typography>
+						{inquiries.map((inquiry) => (
+							<TableRow hover key={inquiry._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+								<TableCell align="left">{inquiryTopicLabels[inquiry.inquiryTopic]}</TableCell>
+								<TableCell align="left" sx={{ maxWidth: 380 }}>
+									<Typography variant={'body2'} sx={{ fontWeight: 600 }}>
+										{inquiry.inquiryTitle}
+									</Typography>
+									<Typography variant={'caption'} color={'text.secondary'} noWrap component={'p'}>
+										{inquiry.inquiryContent}
+									</Typography>
+								</TableCell>
+								<TableCell align="left">
+									<Stack direction={'row'} alignItems={'center'} gap={1}>
+										<Avatar
+											alt={inquiry.memberData?.memberNick}
+											src={
+												inquiry.memberData?.memberImage
+													? `${REACT_APP_API_URL}/${inquiry.memberData.memberImage}`
+													: '/img/profile/defaultUser.svg'
+											}
+											sx={{ width: 28, height: 28 }}
+										/>
+										<span>
+											{inquiry.memberData?.memberNick ?? '—'}
+											<Typography variant={'caption'} color={'text.secondary'} component={'p'}>
+												{inquiry.memberData?.memberType}
+											</Typography>
+										</span>
+									</Stack>
+								</TableCell>
+								<TableCell align="left">
+									<Moment format={'YYYY.MM.DD HH:mm'}>{inquiry.createdAt}</Moment>
+								</TableCell>
+								<TableCell align="left">
+									<Select
+										size={'small'}
+										value={inquiry.inquiryStatus}
+										onChange={(e) => statusChangeHandler(inquiry, e.target.value as InquiryStatus)}
+									>
+										{Object.values(InquiryStatus).map((status) => (
+											<MenuItem key={status} value={status}>
+												{inquiryStatusLabels[status]}
 											</MenuItem>
-											<MenuItem onClick={(e) => generateMentorTypeHandle('member._id', 'user', 'remove')}>
-												<Typography variant={'subtitle1'} component={'span'}>
-													USER
-												</Typography>
-											</MenuItem>
-										</Menu>
-									</TableCell>
-								</TableRow>
-							);
-						})}
+										))}
+									</Select>
+								</TableCell>
+								<TableCell align="right">
+									<Button
+										size={'small'}
+										variant={inquiry.inquiryStatus === InquiryStatus.WAITING ? 'contained' : 'outlined'}
+										disabled={inquiry.inquiryStatus === InquiryStatus.CLOSED}
+										onClick={() => answerHandler(inquiry)}
+									>
+										{inquiry.answerContent ? 'Edit answer' : 'Answer'}
+									</Button>
+								</TableCell>
+							</TableRow>
+						))}
 					</TableBody>
 				</Table>
 			</TableContainer>

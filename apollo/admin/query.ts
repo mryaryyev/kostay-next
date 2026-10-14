@@ -52,7 +52,8 @@ export const GET_ALL_PROPERTIES_BY_ADMIN = gql`
 				propertyLocation
 				propertyAddress
 				propertyTitle
-				propertyPrice
+				pricePerNight
+				maxGuests
 				propertySquare
 				propertyBeds
 				propertyRooms
@@ -60,10 +61,7 @@ export const GET_ALL_PROPERTIES_BY_ADMIN = gql`
 				propertyLikes
 				propertyImages
 				propertyDesc
-				propertyBarter
-				propertyRent
 				memberId
-				soldAt
 				deletedAt
 				constructedAt
 				createdAt
@@ -192,6 +190,161 @@ export const GET_COMMENTS = gql`
 			metaCounter {
 				total
 			}
+		}
+	}
+`;
+
+/**************************
+ *         NOTICE         *
+ *************************/
+
+export const GET_ALL_NOTICES_BY_ADMIN = gql`
+	query GetAllNoticesByAdmin($input: AllNoticesInquiry!) {
+		getAllNoticesByAdmin(input: $input) {
+			list {
+				_id
+				noticeCategory
+				noticeStatus
+				faqGroup
+				noticeEvent
+				noticeTitle
+				noticeContent
+				noticeViews
+				memberId
+				createdAt
+				updatedAt
+				memberData {
+					_id
+					memberNick
+					memberImage
+				}
+			}
+			metaCounter {
+				total
+			}
+			statusCounter {
+				_id
+				count
+			}
+		}
+	}
+`;
+
+/**************************
+ *        INQUIRY         *
+ *************************/
+
+export const GET_ALL_INQUIRIES_BY_ADMIN = gql`
+	query GetAllInquiriesByAdmin($input: AllInquiriesInquiry!) {
+		getAllInquiriesByAdmin(input: $input) {
+			list {
+				_id
+				inquiryTopic
+				inquiryStatus
+				inquiryTitle
+				inquiryContent
+				memberId
+				answerContent
+				answeredAt
+				createdAt
+				updatedAt
+				memberData {
+					_id
+					memberNick
+					memberFullName
+					memberImage
+					memberType
+				}
+			}
+			metaCounter {
+				total
+			}
+			statusCounter {
+				_id
+				count
+			}
+		}
+	}
+`;
+
+/** Admin sidebar badge: how many inquiries wait for an answer. */
+export const GET_WAITING_INQUIRY_COUNT = gql`
+	query GetWaitingInquiryCount($input: AllInquiriesInquiry!) {
+		getAllInquiriesByAdmin(input: $input) {
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+
+/**************************
+ *        BOOKING         *
+ *************************/
+
+export const GET_ALL_BOOKINGS_BY_ADMIN = gql`
+	query GetAllBookingsByAdmin($input: AllBookingsInquiry!) {
+		getAllBookingsByAdmin(input: $input) {
+			list {
+				id
+				propertyId
+				memberId
+				checkIn
+				checkOut
+				guestsCount
+				totalPrice
+				status
+				paymentStatus
+				paymentMethod
+				createdAt
+				updatedAt
+				propertyData {
+					_id
+					propertyTitle
+					propertyImage
+					propertyLocation
+				}
+				guestData {
+					_id
+					memberNick
+					memberFullName
+					memberImage
+					memberPhone
+				}
+			}
+			total
+			statusCounter {
+				status
+				count
+			}
+			paymentSummary {
+				paidTotal
+				refundedTotal
+			}
+		}
+	}
+`;
+
+/**************************
+ *       DASHBOARD        *
+ *************************/
+
+export const GET_ADMIN_DASHBOARD = gql`
+	query GetAdminDashboard {
+		getAdminDashboard {
+			guests
+			hosts
+			activeStays
+			pausedStays
+			pendingStays
+			activeArticles
+			waitingInquiries
+			confirmedBookings
+			completedBookings
+			cancelledBookings
+			upcomingCheckIns
+			totalRevenue
+			monthRevenue
 		}
 	}
 `;

@@ -5,7 +5,10 @@ import MenuList from '../admin/AdminMenuList';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { Menu, MenuItem } from '@mui/material';
+import { Menu, MenuItem, useMediaQuery } from '@mui/material';
+import Head from 'next/head';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
@@ -18,11 +21,13 @@ import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import { REACT_APP_API_URL } from '../../config';
 import { MemberType } from '../../enums/member.enum';
+import KostayLogo from '../common/KostayLogo';
 const drawerWidth = 280;
 
 const withAdminLayout = (Component: ComponentType) => {
 	return (props: object) => {
 		const router = useRouter();
+		const compact = useMediaQuery('(max-width:1199px)');
 		const user = useReactiveVar(userVar);
 		const [settingsState, setSettingsStateState] = useState(false);
 		const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -30,6 +35,8 @@ const withAdminLayout = (Component: ComponentType) => {
 		const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 		const [title, setTitle] = useState('admin');
 		const [loading, setLoading] = useState(true);
+
+		useEffect(() => setOpenMenu(false), [router.asPath, compact]);
 
 		/** LIFECYCLES **/
 		useEffect(() => {
@@ -61,24 +68,37 @@ const withAdminLayout = (Component: ComponentType) => {
 		if (!user || user?.memberType !== MemberType.ADMIN) return null;
 
 		return (
-			<main id="pc-wrap" className="admin">
+			<main id="site-wrap" className="admin">
+				<Head>
+					<meta name="viewport" content="width=device-width, initial-scale=1" />
+				</Head>
 				<Box component={'div'} sx={{ display: 'flex' }}>
 					<AppBar
 						position="fixed"
 						sx={{
-							width: `calc(100% - ${drawerWidth}px)`,
-							ml: `${drawerWidth}px`,
+							width: compact ? '100%' : `calc(100% - ${drawerWidth}px)`,
+							ml: compact ? 0 : `${drawerWidth}px`,
 							boxShadow: 'rgb(100 116 139 / 12%) 0px 1px 4px',
 							background: 'none',
 						}}
 					>
-						<Toolbar>
+						<Toolbar sx={{ width: '100%', justifyContent: 'space-between' }}>
+							{compact && (
+								<IconButton
+									aria-label="Open admin menu"
+									aria-expanded={openMenu}
+									aria-controls={openMenu ? 'admin-navigation' : undefined}
+									onClick={() => setOpenMenu(true)}
+									sx={{ width: 44, height: 44 }}
+								>
+									<MenuRoundedIcon />
+								</IconButton>
+							)}
+							<div style={{ flexGrow: 1 }} />
 							<Tooltip title="Open settings">
 								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
 									<Avatar
-										src={
-											user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'
-										}
+										src={user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'}
 									/>
 								</IconButton>
 							</Tooltip>
@@ -129,20 +149,38 @@ const withAdminLayout = (Component: ComponentType) => {
 
 					<Drawer
 						sx={{
-							width: drawerWidth,
+							width: compact ? 0 : drawerWidth,
 							flexShrink: 0,
 							'& .MuiDrawer-paper': {
 								width: drawerWidth,
 								boxSizing: 'border-box',
 							},
 						}}
-						variant="permanent"
+						variant={compact ? 'temporary' : 'permanent'}
+						open={compact ? openMenu : true}
+						onClose={() => setOpenMenu(false)}
+						ModalProps={{ keepMounted: true, disablePortal: true }}
+						PaperProps={{
+							id: 'admin-navigation',
+							component: 'nav',
+							'aria-label': 'Admin navigation',
+							sx: { maxWidth: 'calc(100vw - 32px)' },
+						}}
 						anchor="left"
 						className="aside"
 					>
+						{compact && (
+							<IconButton
+								aria-label="Close admin menu"
+								onClick={() => setOpenMenu(false)}
+								sx={{ alignSelf: 'flex-end', width: 44, height: 44, m: 1 }}
+							>
+								<CloseRoundedIcon />
+							</IconButton>
+						)}
 						<Toolbar sx={{ flexDirection: 'column', alignItems: 'flexStart' }}>
 							<Stack className={'logo-box'}>
-								<img src={'/img/logo/logoText.svg'} alt={'logo'} />
+								<KostayLogo />
 							</Stack>
 
 							<Stack

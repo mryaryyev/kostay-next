@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
 import Head from 'next/head';
 import Top from '../Top';
-import Footer from '../Footer';
+import HomeFooter from '../homepage/HomeFooter';
 import { Stack } from '@mui/material';
-import FiberContainer from '../common/FiberContainer';
 import HeaderFilter from '../homepage/HeaderFilter';
+import HomeHero from '../homepage/HomeHero';
 import { userVar } from '../../../apollo/store';
 import { useReactiveVar } from '@apollo/client';
 import { getJwtToken, updateUserInfo } from '../../auth';
@@ -16,7 +15,6 @@ import 'swiper/css/navigation';
 
 const withLayoutMain = (Component: any) => {
 	return (props: any) => {
-		const device = useDeviceDetect();
 		const user = useReactiveVar(userVar);
 
 		/** LIFECYCLES **/
@@ -27,60 +25,37 @@ const withLayoutMain = (Component: any) => {
 
 		/** HANDLERS **/
 
-		if (device == 'mobile') {
-			return (
-				<>
-					<Head>
-						<title>Nestar</title>
-						<meta name={'title'} content={`Nestar`} />
-					</Head>
-					<Stack id="mobile-wrap">
-						<Stack id={'top'}>
-							<Top />
-						</Stack>
+		return (
+			<>
+				<Head>
+					<title>Kostay</title>
+					<meta name="viewport" content="width=device-width, initial-scale=1" />
+					<meta name={'title'} content={`Kostay`} />
+				</Head>
+				<Stack id="site-wrap" className={'is-home'}>
+					<Stack id={'top'}>
+						<Top />
+					</Stack>
 
-						<Stack id={'main'}>
-							<Component {...props} />
-						</Stack>
-
-						<Stack id={'footer'}>
-							<Footer />
+					<Stack className={'header-main home-hero'}>
+						<Stack className={'container'}>
+							<HomeHero />
+							<HeaderFilter />
 						</Stack>
 					</Stack>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<Head>
-						<title>Nestar</title>
-						<meta name={'title'} content={`Nestar`} />
-					</Head>
-					<Stack id="pc-wrap">
-						<Stack id={'top'}>
-							<Top />
-						</Stack>
 
-						<Stack className={'header-main'}>
-							<FiberContainer />
-							<Stack className={'container'}>
-								<HeaderFilter />
-							</Stack>
-						</Stack>
-
-						<Stack id={'main'}>
-							<Component {...props} />
-						</Stack>
-
-						{user?._id && <Chat />}
-
-						<Stack id={'footer'}>
-							<Footer />
-						</Stack>
+					<Stack id={'main'}>
+						<Component {...props} />
 					</Stack>
-				</>
-			);
-		}
+
+					<Chat />
+
+					<Stack id={'footer'}>
+						<HomeFooter />
+					</Stack>
+				</Stack>
+			</>
+		);
 	};
 };
 

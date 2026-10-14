@@ -6,7 +6,7 @@ import { gql } from '@apollo/client';
 
 export const UPDATE_MEMBER_BY_ADMIN = gql`
 	mutation UpdateMemberByAdmin($input: MemberUpdate!) {
-		updateMemberByAdmin(input: $input) {
+		updateMembersByAdmin(input: $input) {
 			_id
 			memberType
 			memberStatus
@@ -46,7 +46,8 @@ export const UPDATE_PROPERTY_BY_ADMIN = gql`
 			propertyLocation
 			propertyAddress
 			propertyTitle
-			propertyPrice
+			pricePerNight
+			maxGuests
 			propertySquare
 			propertyBeds
 			propertyRooms
@@ -54,10 +55,7 @@ export const UPDATE_PROPERTY_BY_ADMIN = gql`
 			propertyLikes
 			propertyImages
 			propertyDesc
-			propertyBarter
-			propertyRent
 			memberId
-			soldAt
 			deletedAt
 			constructedAt
 			createdAt
@@ -75,7 +73,8 @@ export const REMOVE_PROPERTY_BY_ADMIN = gql`
 			propertyLocation
 			propertyAddress
 			propertyTitle
-			propertyPrice
+			pricePerNight
+			maxGuests
 			propertySquare
 			propertyBeds
 			propertyRooms
@@ -83,10 +82,7 @@ export const REMOVE_PROPERTY_BY_ADMIN = gql`
 			propertyLikes
 			propertyImages
 			propertyDesc
-			propertyBarter
-			propertyRent
 			memberId
-			soldAt
 			deletedAt
 			constructedAt
 			createdAt
@@ -150,6 +146,105 @@ export const REMOVE_COMMENT_BY_ADMIN = gql`
 			memberId
 			createdAt
 			updatedAt
+		}
+	}
+`;
+
+/**************************
+ *         NOTICE         *
+ *************************/
+
+export const CREATE_NOTICE = gql`
+	mutation CreateNotice($input: NoticeInput!) {
+		createNotice(input: $input) {
+			_id
+			noticeCategory
+			noticeStatus
+			faqGroup
+			noticeEvent
+			noticeTitle
+			noticeContent
+			noticeViews
+			memberId
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+export const UPDATE_NOTICE = gql`
+	mutation UpdateNotice($input: NoticeUpdate!) {
+		updateNotice(input: $input) {
+			_id
+			noticeCategory
+			noticeStatus
+			faqGroup
+			noticeEvent
+			noticeTitle
+			noticeContent
+			noticeViews
+			memberId
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+export const REMOVE_NOTICE = gql`
+	mutation RemoveNotice($input: String!) {
+		removeNotice(noticeId: $input) {
+			_id
+		}
+	}
+`;
+
+/**************************
+ *        INQUIRY         *
+ *************************/
+
+export const ANSWER_INQUIRY = gql`
+	mutation AnswerInquiry($input: AnswerInquiryInput!) {
+		answerInquiry(input: $input) {
+			_id
+			inquiryTopic
+			inquiryStatus
+			inquiryTitle
+			inquiryContent
+			memberId
+			answerContent
+			answeredAt
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+export const UPDATE_INQUIRY_BY_ADMIN = gql`
+	mutation UpdateInquiryByAdmin($input: InquiryUpdate!) {
+		updateInquiryByAdmin(input: $input) {
+			_id
+			inquiryTopic
+			inquiryStatus
+			inquiryTitle
+			inquiryContent
+			memberId
+			answerContent
+			answeredAt
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+/**************************
+ *        BOOKING         *
+ *************************/
+
+export const CANCEL_BOOKING_BY_ADMIN = gql`
+	mutation CancelBookingByAdmin($bookingId: String!) {
+		cancelBookingByAdmin(bookingId: $bookingId) {
+			id
+			status
 		}
 	}
 `;

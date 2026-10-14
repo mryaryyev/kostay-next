@@ -3,37 +3,56 @@ import { useState } from 'react';
 import { useRouter, withRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { getJwtToken, logOut, updateUserInfo } from '../auth';
-import { Stack, Box } from '@mui/material';
+import { Stack, Box, Drawer } from '@mui/material';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
-import { alpha, styled } from '@mui/material/styles';
-import Menu, { MenuProps } from '@mui/material/Menu';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import { CaretDown } from 'phosphor-react';
-import useDeviceDetect from '../hooks/useDeviceDetect';
+import Menu from '@mui/material/Menu';
 import Link from 'next/link';
-import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../apollo/store';
 import { Logout } from '@mui/icons-material';
 import { REACT_APP_API_URL } from '../config';
+import KostayLogo from './common/KostayLogo';
+import NotificationBell from './common/NotificationBell';
+
+const languages = [
+	{ code: 'en', name: 'English', lang: 'en' },
+	{ code: 'kr', name: '한국어', lang: 'ko' },
+	{ code: 'ru', name: 'Русский', lang: 'ru' },
+];
 
 const Top = () => {
-	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
 	const { t, i18n } = useTranslation('common');
 	const router = useRouter();
-	const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
 	const [lang, setLang] = useState<string | null>('en');
-	const drop = Boolean(anchorEl2);
 	const [colorChange, setColorChange] = useState(false);
 	const [anchorEl, setAnchorEl] = React.useState<any | HTMLElement>(null);
 	let open = Boolean(anchorEl);
 	const [bgColor, setBgColor] = useState<boolean>(false);
 	const [logoutAnchor, setLogoutAnchor] = React.useState<null | HTMLElement>(null);
 	const logoutOpen = Boolean(logoutAnchor);
+	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+	const [languageAnchor, setLanguageAnchor] = useState<HTMLElement | null>(null);
+
+	/** Home matches exactly; other links stay active on their sub-pages (e.g. /property/detail). */
+	const isActive = (path: string) =>
+		path === '/' ? router.pathname === '/' : router.pathname === path || router.pathname.startsWith(`${path}/`);
+
+	const navLinks = [
+		{ href: '/', label: t('Home'), path: '/' },
+		{ href: '/stay', label: t('Stays'), path: '/stay' },
+		{ href: '/agent', label: t('Hosts'), path: '/agent' },
+		{ href: '/community?articleCategory=FREE', label: t('Community'), path: '/community' },
+		...(user?._id ? [{ href: '/mypage', label: t('My Page'), path: '/mypage' }] : []),
+		{ href: '/help', label: t('Help'), path: '/help' },
+	];
 
 	/** LIFECYCLES **/
+	// Close the mobile menu after navigating.
+	useEffect(() => setDrawerOpen(false), [router.asPath]);
+
 	useEffect(() => {
 		if (localStorage.getItem('locale') === null) {
 			localStorage.setItem('locale', 'en');
@@ -45,7 +64,7 @@ const Top = () => {
 
 	useEffect(() => {
 		switch (router.pathname) {
-			case '/property/detail':
+			case '/stay/detail':
 				setBgColor(true);
 				break;
 			default:
@@ -59,22 +78,19 @@ const Top = () => {
 	}, []);
 
 	/** HANDLERS **/
-	const langClick = (e: any) => {
-		setAnchorEl2(e.currentTarget);
-	};
-
-	const langClose = () => {
-		setAnchorEl2(null);
-	};
+	// The URL locale is the source of truth; localStorage only remembers the last choice.
+	const currentLang = router.locale ?? lang ?? 'en';
+	const selectedLanguage = languages.find((language) => language.code === currentLang) ?? languages[0];
 
 	const langChoice = useCallback(
-		async (e: any) => {
-			setLang(e.target.id);
-			localStorage.setItem('locale', e.target.id);
-			setAnchorEl2(null);
-			await router.push(router.asPath, router.asPath, { locale: e.target.id });
+		async (code: string) => {
+			setLanguageAnchor(null);
+			if (code === currentLang) return;
+			setLang(code);
+			localStorage.setItem('locale', code);
+			await router.push(router.asPath, router.asPath, { locale: code });
 		},
-		[router],
+		[router, currentLang],
 	);
 
 	const changeNavbarColor = () => {
@@ -97,194 +113,203 @@ const Top = () => {
 		}
 	};
 
-	const StyledMenu = styled((props: MenuProps) => (
-		<Menu
-			elevation={0}
-			anchorOrigin={{
-				vertical: 'bottom',
-				horizontal: 'right',
-			}}
-			transformOrigin={{
-				vertical: 'top',
-				horizontal: 'right',
-			}}
-			{...props}
-		/>
-	))(({ theme }) => ({
-		'& .MuiPaper-root': {
-			top: '109px',
-			borderRadius: 6,
-			marginTop: theme.spacing(1),
-			minWidth: 160,
-			color: theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
-			boxShadow:
-				'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-			'& .MuiMenu-list': {
-				padding: '4px 0',
-			},
-			'& .MuiMenuItem-root': {
-				'& .MuiSvgIcon-root': {
-					fontSize: 18,
-					color: theme.palette.text.secondary,
-					marginRight: theme.spacing(1.5),
-				},
-				'&:active': {
-					backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
-				},
-			},
-		},
-	}));
-
 	if (typeof window !== 'undefined') {
 		window.addEventListener('scroll', changeNavbarColor);
 	}
 
-	if (device == 'mobile') {
-		return (
-			<Stack className={'top'}>
-				<Link href={'/'}>
-					<div>{t('Home')}</div>
-				</Link>
-				<Link href={'/property'}>
-					<div>{t('Properties')}</div>
-				</Link>
-				<Link href={'/agent'}>
-					<div> {t('Agents')} </div>
-				</Link>
-				<Link href={'/community?articleCategory=FREE'}>
-					<div> {t('Community')} </div>
-				</Link>
-				<Link href={'/cs'}>
-					<div> {t('CS')} </div>
-				</Link>
-			</Stack>
-		);
-	} else {
-		return (
-			<Stack className={'navbar'}>
-				<Stack className={`navbar-main ${colorChange ? 'transparent' : ''} ${bgColor ? 'transparent' : ''}`}>
-					<Stack className={'container'}>
-						<Box component={'div'} className={'logo-box'}>
-							<Link href={'/'}>
-								<img src="/img/logo/logoWhite.svg" alt="" />
+	return (
+		<Stack className={'navbar'}>
+			<Stack className={`navbar-main ${colorChange ? 'transparent' : ''} ${bgColor ? 'transparent' : ''}`}>
+				<Stack className={'container'}>
+					<Box component={'div'} className={'logo-box'}>
+						<Link href={'/'}>
+							<KostayLogo width={150} height={60} />
+						</Link>
+					</Box>
+					<Box component={'div'} className={'router-box'}>
+						<Link href={'/'} aria-current={isActive('/') ? 'page' : undefined}>
+							<div>{t('Home')}</div>
+						</Link>
+						<Link href={'/stay'} aria-current={isActive('/stay') ? 'page' : undefined}>
+							<div>{t('Stays')}</div>
+						</Link>
+						<Link href={'/agent'} aria-current={isActive('/agent') ? 'page' : undefined}>
+							<div> {t('Hosts')} </div>
+						</Link>
+						<Link href={'/community?articleCategory=FREE'} aria-current={isActive('/community') ? 'page' : undefined}>
+							<div> {t('Community')} </div>
+						</Link>
+						{user?._id && (
+							<Link href={'/mypage'} aria-current={isActive('/mypage') ? 'page' : undefined}>
+								<div> {t('My Page')} </div>
 							</Link>
-						</Box>
-						<Box component={'div'} className={'router-box'}>
-							<Link href={'/'}>
-								<div>{t('Home')}</div>
-							</Link>
-							<Link href={'/property'}>
-								<div>{t('Properties')}</div>
-							</Link>
-							<Link href={'/agent'}>
-								<div> {t('Agents')} </div>
-							</Link>
-							<Link href={'/community?articleCategory=FREE'}>
-								<div> {t('Community')} </div>
-							</Link>
-							{user?._id && (
-								<Link href={'/mypage'}>
-									<div> {t('My Page')} </div>
-								</Link>
-							)}
-							<Link href={'/cs'}>
-								<div> {t('CS')} </div>
-							</Link>
-						</Box>
-						<Box component={'div'} className={'user-box'}>
-							{user?._id ? (
-								<>
-									<div className={'login-user'} onClick={(event: any) => setLogoutAnchor(event.currentTarget)}>
+						)}
+						<Link href={'/help'} aria-current={isActive('/help') ? 'page' : undefined}>
+							<div> {t('Help')} </div>
+						</Link>
+					</Box>
+					<Box component={'div'} className={'user-box'}>
+						{user?._id ? (
+							<>
+								<div className={'login-user'} onClick={(event: any) => setLogoutAnchor(event.currentTarget)}>
+									<img
+										src={user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'}
+										alt=""
+									/>
+								</div>
+
+								<Menu
+									id="basic-menu"
+									anchorEl={logoutAnchor}
+									open={logoutOpen}
+									onClose={() => {
+										setLogoutAnchor(null);
+									}}
+									anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+									transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+									PaperProps={{ className: 'sx-user-menu' }}
+								>
+									<div className={'sx-user-menu-head'}>
 										<img
-											src={
-												user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'
-											}
+											src={user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'}
 											alt=""
 										/>
+										<div>
+											<strong>{user.memberFullName || user.memberNick}</strong>
+											<span>@{user.memberNick}</span>
+										</div>
 									</div>
+									<MenuItem className={'sx-user-menu-item is-logout'} onClick={() => logOut()}>
+										<Logout fontSize="small" />
+										Logout
+									</MenuItem>
+								</Menu>
+							</>
+						) : (
+							<Link href={'/account/join'}>
+								<div className={'join-box'}>
+									<span>
+										{t('Login')} / {t('Register')}
+									</span>
+								</div>
+							</Link>
+						)}
 
-									<Menu
-										id="basic-menu"
-										anchorEl={logoutAnchor}
-										open={logoutOpen}
-										onClose={() => {
-											setLogoutAnchor(null);
-										}}
-										sx={{ mt: '5px' }}
-									>
-										<MenuItem onClick={() => logOut()}>
-											<Logout fontSize="small" style={{ color: 'blue', marginRight: '10px' }} />
-											Logout
-										</MenuItem>
-									</Menu>
-								</>
-							) : (
-								<Link href={'/account/join'}>
-									<div className={'join-box'}>
-										<AccountCircleOutlinedIcon />
-										<span>
-											{t('Login')} / {t('Register')}
-										</span>
-									</div>
-								</Link>
-							)}
-
-							<div className={'lan-box'}>
-								{user?._id && <NotificationsOutlinedIcon className={'notification-icon'} />}
-								<Button
-									disableRipple
-									className="btn-lang"
-									onClick={langClick}
-									endIcon={<CaretDown size={14} color="#616161" weight="fill" />}
+						<div className={'lan-box'}>
+							<NotificationBell />
+							<div className="lang-switch">
+								<button
+									type="button"
+									aria-label={`Language: ${selectedLanguage.name}`}
+									aria-haspopup="menu"
+									aria-expanded={Boolean(languageAnchor)}
+									aria-controls={languageAnchor ? 'language-menu' : undefined}
+									onClick={(event) => setLanguageAnchor(event.currentTarget)}
 								>
-									<Box component={'div'} className={'flag'}>
-										{lang !== null ? (
-											<img src={`/img/flag/lang${lang}.png`} alt={'usaFlag'} />
-										) : (
-											<img src={`/img/flag/langen.png`} alt={'usaFlag'} />
-										)}
-									</Box>
-								</Button>
-
-								<StyledMenu anchorEl={anchorEl2} open={drop} onClose={langClose} sx={{ position: 'absolute' }}>
-									<MenuItem disableRipple onClick={langChoice} id="en">
-										<img
-											className="img-flag"
-											src={'/img/flag/langen.png'}
-											onClick={langChoice}
-											id="en"
-											alt={'usaFlag'}
-										/>
-										{t('English')}
-									</MenuItem>
-									<MenuItem disableRipple onClick={langChoice} id="kr">
-										<img
-											className="img-flag"
-											src={'/img/flag/langkr.png'}
-											onClick={langChoice}
-											id="uz"
-											alt={'koreanFlag'}
-										/>
-										{t('Korean')}
-									</MenuItem>
-									<MenuItem disableRipple onClick={langChoice} id="ru">
-										<img
-											className="img-flag"
-											src={'/img/flag/langru.png'}
-											onClick={langChoice}
-											id="ru"
-											alt={'russiaFlag'}
-										/>
-										{t('Russian')}
-									</MenuItem>
-								</StyledMenu>
+									<img src={`/img/flag/lang${selectedLanguage.code}.png`} alt="" />
+									<span>{selectedLanguage.code.toUpperCase()}</span>
+									<span className="language-chevron" aria-hidden="true">
+										⌄
+									</span>
+								</button>
 							</div>
-						</Box>
-					</Stack>
+							<Menu
+								id="language-menu"
+								anchorEl={languageAnchor}
+								open={Boolean(languageAnchor)}
+								onClose={() => setLanguageAnchor(null)}
+								anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+								PaperProps={{ className: 'kostay-language-menu' }}
+								MenuListProps={{ 'aria-label': 'Language' }}
+							>
+								{languages.map(({ code, name, lang: languageTag }) => (
+									<MenuItem key={code} selected={currentLang === code} onClick={() => langChoice(code)} lang={languageTag}>
+										<img src={`/img/flag/lang${code}.png`} alt="" />
+										<span>{name}</span>
+										{currentLang === code && (
+											<span className="language-check" aria-hidden="true">
+												✓
+											</span>
+										)}
+									</MenuItem>
+								))}
+							</Menu>
+						</div>
+						{/* Phones: the links, language and account move into this drawer (CSS shows the button under 768px). */}
+						<button
+							type={'button'}
+							className={'nav-burger'}
+							aria-label={'Open menu'}
+							aria-expanded={drawerOpen}
+							onClick={() => setDrawerOpen(true)}
+						>
+							<MenuRoundedIcon />
+						</button>
+					</Box>
 				</Stack>
 			</Stack>
-		);
-	}
+			<Drawer
+				anchor={'right'}
+				open={drawerOpen}
+				onClose={() => setDrawerOpen(false)}
+				PaperProps={{ className: 'nav-drawer' }}
+			>
+				<div className={'nav-drawer-head'}>
+					<KostayLogo width={110} height={44} />
+					<button type={'button'} aria-label={'Close menu'} onClick={() => setDrawerOpen(false)}>
+						<CloseRoundedIcon />
+					</button>
+				</div>
+				{user?._id && (
+					<div className={'nav-drawer-user'}>
+						<img
+							src={user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'}
+							alt=""
+						/>
+						<div>
+							<strong>{user.memberFullName || user.memberNick}</strong>
+							<span>@{user.memberNick}</span>
+						</div>
+					</div>
+				)}
+				<nav className={'nav-drawer-links'}>
+					{navLinks.map((link) => (
+						<Link key={link.href} href={link.href} aria-current={isActive(link.path) ? 'page' : undefined}>
+							{link.label}
+						</Link>
+					))}
+				</nav>
+				<div className={'nav-drawer-lang'} role={'group'} aria-label={'Language'}>
+					{languages.map(({ code, name, lang: languageTag }) => (
+						<button
+							type={'button'}
+							key={code}
+							className={currentLang === code ? 'is-active' : ''}
+							aria-pressed={currentLang === code}
+							lang={languageTag}
+							onClick={() => langChoice(code)}
+						>
+							<img src={`/img/flag/lang${code}.png`} alt="" />
+							<span>{name}</span>
+						</button>
+					))}
+				</div>
+				<div className={'nav-drawer-foot'}>
+					{user?._id ? (
+						<button type={'button'} onClick={() => logOut()}>
+							<Logout fontSize="small" />
+							Logout
+						</button>
+					) : (
+						<Link href={'/account/join'} className={'nav-drawer-login'}>
+							{t('Login')} / {t('Register')}
+						</Link>
+					)}
+				</div>
+			</Drawer>
+		</Stack>
+	);
 };
 
 export default withRouter(Top);

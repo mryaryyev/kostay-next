@@ -131,7 +131,8 @@ export const CREATE_PROPERTY = gql`
 			propertyLocation
 			propertyAddress
 			propertyTitle
-			propertyPrice
+			pricePerNight
+			maxGuests
 			propertySquare
 			propertyBeds
 			propertyRooms
@@ -139,10 +140,7 @@ export const CREATE_PROPERTY = gql`
 			propertyLikes
 			propertyImages
 			propertyDesc
-			propertyBarter
-			propertyRent
 			memberId
-			soldAt
 			deletedAt
 			constructedAt
 			createdAt
@@ -160,7 +158,8 @@ export const UPDATE_PROPERTY = gql`
 			propertyLocation
 			propertyAddress
 			propertyTitle
-			propertyPrice
+			pricePerNight
+			maxGuests
 			propertySquare
 			propertyBeds
 			propertyRooms
@@ -168,10 +167,7 @@ export const UPDATE_PROPERTY = gql`
 			propertyLikes
 			propertyImages
 			propertyDesc
-			propertyBarter
-			propertyRent
 			memberId
-			soldAt
 			deletedAt
 			constructedAt
 			createdAt
@@ -189,7 +185,8 @@ export const LIKE_TARGET_PROPERTY = gql`
 			propertyLocation
 			propertyAddress
 			propertyTitle
-			propertyPrice
+			pricePerNight
+			maxGuests
 			propertySquare
 			propertyBeds
 			propertyRooms
@@ -197,10 +194,7 @@ export const LIKE_TARGET_PROPERTY = gql`
 			propertyLikes
 			propertyImages
 			propertyDesc
-			propertyBarter
-			propertyRent
 			memberId
-			soldAt
 			deletedAt
 			constructedAt
 			createdAt
@@ -325,6 +319,94 @@ export const UNSUBSCRIBE = gql`
 			followerId
 			createdAt
 			updatedAt
+		}
+	}
+`;
+
+/**************************
+ *      NOTIFICATION      *
+ *************************/
+
+export const MARK_NOTIFICATION_READ = gql`
+	mutation MarkNotificationRead($input: String!) {
+		markNotificationRead(input: $input) {
+			_id
+			notificationStatus
+		}
+	}
+`;
+
+export const MARK_ALL_NOTIFICATIONS_READ = gql`
+	mutation MarkAllNotificationsRead {
+		markAllNotificationsRead
+	}
+`;
+
+export const SEND_MESSAGE_TO_HOST = gql`
+	mutation SendMessageToHost($input: MessageInput!) {
+		sendMessageToHost(input: $input) {
+			_id
+			notificationType
+			notificationTitle
+			createdAt
+		}
+	}
+`;
+
+/**************************
+ *         BOOKING        *
+ *************************/
+
+/** Instant Book from the checkout page: saves a CONFIRMED booking and its payment together. */
+export const BOOK_AND_PAY = gql`
+	mutation BookAndPay($input: BookAndPayInput!) {
+		bookAndPay(input: $input) {
+			id
+			propertyId
+			checkIn
+			checkOut
+			guestsCount
+			totalPrice
+			status
+			paymentStatus
+		}
+	}
+`;
+
+export const CANCEL_BOOKING = gql`
+	mutation CancelBooking($bookingId: String!) {
+		cancelBooking(bookingId: $bookingId) {
+			id
+			status
+		}
+	}
+`;
+
+/**************************
+ *        INQUIRY         *
+ *************************/
+
+export const CREATE_INQUIRY = gql`
+	mutation CreateInquiry($input: InquiryInput!) {
+		createInquiry(input: $input) {
+			_id
+			inquiryTopic
+			inquiryStatus
+			inquiryTitle
+			inquiryContent
+			memberId
+			answerContent
+			answeredAt
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+export const REMOVE_MY_INQUIRY = gql`
+	mutation RemoveMyInquiry($input: String!) {
+		removeMyInquiry(inquiryId: $input) {
+			_id
 		}
 	}
 `;

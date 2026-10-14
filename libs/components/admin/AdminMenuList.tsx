@@ -6,9 +6,12 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { ChatsCircle, Headset, User, UserCircleGear } from 'phosphor-react';
+import { CalendarCheck, ChartBar, ChatsCircle, Headset, User, UserCircleGear } from 'phosphor-react';
 import cookies from 'js-cookie';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
+import { useQuery } from '@apollo/client';
+import { GET_WAITING_INQUIRY_COUNT } from '../../../apollo/admin/query';
+import { InquiryStatus } from '../../enums/inquiry.enum';
 
 const AdminMenuList = (props: any) => {
 	const router = useRouter();
@@ -25,13 +28,34 @@ const AdminMenuList = (props: any) => {
 
 	const pathnames = pathname.split('/').filter((x: any) => x);
 
+	/** APOLLO REQUESTS **/
+	// Questions still waiting for an answer; shown next to Cs and 1:1 Inquiry.
+	const { data: waitingData } = useQuery(GET_WAITING_INQUIRY_COUNT, {
+		fetchPolicy: 'cache-and-network',
+		variables: { input: { page: 1, limit: 1, search: { inquiryStatus: InquiryStatus.WAITING } } },
+		pollInterval: 30000,
+	});
+	const waitingCount: number = waitingData?.getAllInquiriesByAdmin?.metaCounter?.[0]?.total ?? 0;
+	const badge = (count: number) =>
+		count > 0 ? (
+			<span className={'admin-menu-badge'} aria-label={`${count} waiting`}>
+				{count > 99 ? '99+' : count}
+			</span>
+		) : null;
+
 	/** LIFECYCLES **/
 	useEffect(() => {
 		if (device === 'mobile') setMobileLayout(true);
 
 		switch (pathnames[1]) {
-			case 'properties':
-				setClickMenu(['Properties']);
+			case undefined:
+				setClickMenu(['Dashboard']);
+				break;
+			case 'stays':
+				setClickMenu(['Stays']);
+				break;
+			case 'bookings':
+				setClickMenu(['Bookings']);
 				break;
 			case 'community':
 				setClickMenu(['Community']);
@@ -44,7 +68,10 @@ const AdminMenuList = (props: any) => {
 				break;
 		}
 
-		switch (pathnames[2]) {
+		switch (pathnames[1] === undefined ? 'overview' : pathnames[2]) {
+			case 'overview':
+				setClickSubMenu('Overview');
+				break;
 			case 'logs':
 				setClickSubMenu('Logs');
 				break;
@@ -79,14 +106,24 @@ const AdminMenuList = (props: any) => {
 
 	const menu_set = [
 		{
+			title: 'Dashboard',
+			icon: <ChartBar size={20} color="#bdbdbd" weight="fill" />,
+			on_click: () => subMenuChangeHandler('Dashboard'),
+		},
+		{
 			title: 'Users',
 			icon: <User size={20} color="#bdbdbd" weight="fill" />,
 			on_click: () => subMenuChangeHandler('Users'),
 		},
 		{
-			title: 'Properties',
+			title: 'Stays',
 			icon: <UserCircleGear size={20} color="#bdbdbd" weight="fill" />,
-			on_click: () => subMenuChangeHandler('Properties'),
+			on_click: () => subMenuChangeHandler('Stays'),
+		},
+		{
+			title: 'Bookings',
+			icon: <CalendarCheck size={20} color="#bdbdbd" weight="fill" />,
+			on_click: () => subMenuChangeHandler('Bookings'),
 		},
 		{
 			title: 'Community',
@@ -101,12 +138,15 @@ const AdminMenuList = (props: any) => {
 	];
 
 	const sub_menu_set: any = {
+		Dashboard: [{ title: 'Overview', url: '/_admin' }],
 		Users: [{ title: 'List', url: '/_admin/users' }],
-		Properties: [{ title: 'List', url: '/_admin/properties' }],
+		Stays: [{ title: 'List', url: '/_admin/stays' }],
+		Bookings: [{ title: 'List', url: '/_admin/bookings' }],
 		Community: [{ title: 'List', url: '/_admin/community' }],
 		Cs: [
 			{ title: 'FAQ', url: '/_admin/cs/faq' },
 			{ title: 'Notice', url: '/_admin/cs/notice' },
+			{ title: '1:1 Inquiry', url: '/_admin/cs/inquiry' },
 		],
 	};
 
@@ -134,6 +174,7 @@ const AdminMenuList = (props: any) => {
 							{item.icon}
 						</ListItemIcon>
 						<ListItemText>{item.title}</ListItemText>
+						{item.title === 'Cs' && badge(waitingCount)}
 						{clickMenu.find((menu: string) => item.title === menu) ? <ExpandLess /> : <ExpandMore />}
 					</ListItemButton>
 					<Collapse
@@ -154,6 +195,7 @@ const AdminMenuList = (props: any) => {
 											<Typography variant={sub.title} component={'span'}>
 												{sub.title}
 											</Typography>
+											{sub.url === '/_admin/cs/inquiry' && badge(waitingCount)}
 										</ListItemButton>
 									</Link>
 								))}

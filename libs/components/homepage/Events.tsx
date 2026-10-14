@@ -1,6 +1,7 @@
+import SectionHeader from './SectionHeader';
 import React from 'react';
-import { Stack, Box } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 interface EventData {
 	eventTitle: string;
@@ -10,85 +11,72 @@ interface EventData {
 }
 const eventsData: EventData[] = [
 	{
-		eventTitle: 'Paradise City Theme Park',
-		city: 'Incheon',
-		description:
-			'Experience magic and wonder in Incheon with a visit to the night-themed indoor theme park Wonderbox at Paradise City!',
-		imageSrc: '/img/events/INCHEON.webp',
-	},
-	{
-		eventTitle: 'Taebaeksan Snow Festival',
-		city: 'Seoul',
-		description: 'If you have the opportunity to travel to South Korea, do not miss the Taebaeksan Snow Festival!',
-		imageSrc: '/img/events/SEOUL.webp',
-	},
-	{
-		eventTitle: 'Suseong Lake Event',
-		city: 'Daegu',
-		description: 'The Suseong Lake Festival is a culture and arts festival held alongside Suseongmot Lake!',
-		imageSrc: '/img/events/DAEGU.webp',
-	},
-	{
-		eventTitle: 'Sand Festival',
+		eventTitle: 'Busan Fireworks Festival',
 		city: 'Busan',
-		description:
-			'Haeundae Sand Festival, the nation’s largest eco-friendly exhibition on sand, is held at Haeundae Beach!',
-		imageSrc: '/img/events/BUSAN.webp',
+		description: 'Watch fireworks light up Gwangan Bridge over the sea, Korea’s biggest fireworks show every autumn.',
+		imageSrc: '/img/events/BUSAN_FIREWORKS.webp',
+	},
+	{
+		eventTitle: 'Seoul Lantern Festival',
+		city: 'Seoul',
+		description: 'Walk along Cheonggyecheon Stream as thousands of glowing lanterns tell stories of Korea after dark.',
+		imageSrc: '/img/events/SEOUL_LANTERN.webp',
+	},
+	{
+		eventTitle: 'Jeju Canola Flower Festival',
+		city: 'Jeju',
+		description: 'Golden canola fields bloom beside the ocean, making spring the perfect time for a coastal Jeju stay.',
+		imageSrc: '/img/events/JEJU_CANOLA.webp',
+	},
+	{
+		eventTitle: 'Jeonju Hanok Village',
+		city: 'Jeonju',
+		description: 'Explore 700+ traditional hanok houses, local food streets and Korea’s classic culture in one village.',
+		imageSrc: '/img/events/JEONJU_HANOK.webp',
 	},
 ];
 
 const EventCard = ({ event }: { event: EventData }) => {
-	const device = useDeviceDetect();
-
-	if (device === 'mobile') {
-		return <div>EVENT CARD</div>;
-	} else {
-		return (
-			<Stack
-				className="event-card"
-				style={{
-					backgroundImage: `url(${event?.imageSrc})`,
-					backgroundSize: 'cover',
-					backgroundPosition: 'center',
-					backgroundRepeat: 'no-repeat',
-				}}
-			>
-				<Box component={'div'} className={'info'}>
-					<strong>{event?.city}</strong>
-					<span>{event?.eventTitle}</span>
-				</Box>
-				<Box component={'div'} className={'more'}>
-					<span>{event?.description}</span>
-				</Box>
-			</Stack>
-		);
-	}
+	return (
+		<article className="home-event-card">
+			<img src={event?.imageSrc} alt={event?.eventTitle} loading="lazy" />
+			<div className={'event-copy'}>
+				<span className={'event-city'}>{event?.city}</span>
+				<strong>{event?.eventTitle}</strong>
+				<p>{event?.description}</p>
+			</div>
+		</article>
+	);
 };
 
 const Events = () => {
-	const device = useDeviceDetect();
 
-	if (device === 'mobile') {
-		return <div>EVENT CARD</div>;
-	} else {
-		return (
-			<Stack className={'events'}>
-				<Stack className={'container'}>
-					<Stack className={'info-box'}>
-						<Box component={'div'} className={'left'}>
-							<span className={'white'}>Events</span>
-							<p className={'white'}>Events waiting your attention!</p>
-						</Box>
-					</Stack>
-					<Stack className={'card-wrapper'}>
-						{eventsData.map((event: EventData) => {
-							return <EventCard event={event} key={event?.eventTitle} />;
-						})}
-					</Stack>
-				</Stack>
-			</Stack>
-		);
-	}
+	return (
+		<section className={'events'}>
+			<div className={'container'}>
+				<SectionHeader
+					eyebrow={'Happening now'}
+					title={'Events & Festivals'}
+					subtitle={'Festivals worth planning an authentic seasonal stay around'}
+					action={
+						<div className={'home-pager'}>
+							<button type={'button'} aria-label={'Previous festival'} disabled>
+								<ChevronLeftIcon />
+							</button>
+							<button type={'button'} aria-label={'Next festival'} disabled>
+								<ChevronRightIcon />
+							</button>
+						</div>
+					}
+				/>
+				<div className={'events-grid'}>
+					{eventsData.map((event: EventData) => {
+						return <EventCard event={event} key={event?.eventTitle} />;
+					})}
+				</div>
+			</div>
+		</section>
+	);
 };
 
 export default Events;

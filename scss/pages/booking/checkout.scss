@@ -1,0 +1,443 @@
+// Checkout page (Instant Book step 2). Same palette as the stay detail page.
+$ck-navy: #031636;
+$ck-cta: #aa3614;
+$ck-cta-bright: #e05d38;
+$ck-cta-hover: #c2410c;
+$ck-ink: #1c1c18;
+$ck-body: #44474e;
+$ck-outline: #75777f;
+$ck-line: #e6e2dc;
+$ck-canvas: #fdf9f3;
+$ck-surface: #ffffff;
+$ck-low: #f7f3ed;
+$ck-shadow-md: 0 4px 20px rgba(26, 43, 76, 0.06);
+$ck-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
+
+#site-wrap #checkout-page {
+	min-height: 70vh;
+	padding: 112px 0 96px;
+	background: $ck-canvas;
+	&,
+	* {
+		font-family: $font-display;
+	}
+	a {
+		text-decoration: none;
+	}
+	button {
+		font-family: inherit;
+		cursor: pointer;
+	}
+	> .container {
+		flex-direction: column;
+	}
+
+	.sx-checkout-loading {
+		height: 60vh;
+		align-items: center;
+		justify-content: center;
+		color: $ck-cta;
+	}
+
+	.sx-checkout-back {
+		display: inline-flex;
+		align-items: center;
+		gap: 2px;
+		width: fit-content;
+		color: $ck-body;
+		font-size: 13px;
+		font-weight: 600;
+		svg {
+			width: 18px;
+			height: 18px;
+		}
+		&:hover {
+			color: $ck-navy;
+		}
+	}
+
+	.sx-checkout-title {
+		margin: 12px 0 28px;
+		color: $ck-navy;
+		font-size: 36px;
+		line-height: 44px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+	}
+
+	.sx-checkout-body {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 440px;
+		align-items: start;
+		gap: 56px;
+	}
+
+	.sx-checkout-main {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.sx-checkout-problem {
+		margin: 0 0 20px;
+		padding: 14px 16px;
+		border-radius: 14px;
+		background: #fef2f2;
+		color: #b91c1c;
+		font-size: 14px;
+		font-weight: 600;
+		a {
+			color: inherit;
+			text-decoration: underline;
+		}
+	}
+
+	.sx-checkout-section {
+		padding: 24px 0;
+		border-bottom: 1px solid $ck-line;
+		&:first-of-type {
+			padding-top: 0;
+		}
+		h2 {
+			margin: 0;
+			color: $ck-navy;
+			font-size: 20px;
+			font-weight: 800;
+		}
+	}
+
+	.sx-checkout-section-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 14px;
+		a {
+			color: $ck-cta;
+			font-size: 13px;
+			font-weight: 700;
+			text-decoration: underline;
+		}
+	}
+
+	.sx-checkout-trip {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 20px 28px;
+		margin: 0;
+		padding: 22px 24px;
+		border: 1px solid $ck-line;
+		border-radius: 18px;
+		background: $ck-surface;
+		> div {
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+			min-width: 0;
+		}
+		> div:nth-child(2) {
+			padding-left: 28px;
+			border-left: 1px solid $ck-line;
+		}
+		> div:not(.sx-checkout-trip-summary) > dt {
+			color: $ck-cta;
+		}
+		dt {
+			color: $ck-body;
+			font-size: 12px;
+			font-weight: 700;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+		}
+		dd {
+			margin: 0;
+			color: $ck-navy;
+			font-size: 18px;
+			font-weight: 600;
+			font-variant-numeric: tabular-nums;
+			overflow-wrap: anywhere;
+			small {
+				display: block;
+				margin-top: 10px;
+				color: $ck-body;
+				font-size: 13px;
+				font-weight: 400;
+			}
+		}
+		.sx-checkout-trip-summary {
+			grid-column: 1 / -1;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			padding-top: 16px;
+			border-top: 1px solid $ck-line;
+			dd {
+				font-size: 14px;
+			}
+		}
+	}
+
+	.sx-checkout-guest dd {
+		font-size: 16px;
+	}
+
+	@media (max-width: 600px) {
+		.sx-checkout-trip {
+			padding: 18px;
+			gap: 18px 16px;
+			> div:nth-child(2) {
+				padding-left: 16px;
+			}
+			dd {
+				font-size: 15px;
+			}
+		}
+	}
+
+	.sx-checkout-test {
+		padding: 3px 10px;
+		border-radius: 999px;
+		background: #fff4d6;
+		color: #92600a;
+		font-size: 11px;
+		font-weight: 700;
+	}
+
+	.sx-checkout-methods {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		button {
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			padding: 16px 18px;
+			border: 1px solid #d6d2cb;
+			border-radius: 14px;
+			background: $ck-surface;
+			color: $ck-ink;
+			font-size: 15px;
+			font-weight: 600;
+			text-align: left;
+			transition: border-color 160ms ease, box-shadow 160ms ease;
+			svg {
+				width: 24px;
+				height: 24px;
+				color: $ck-outline;
+			}
+			span {
+				flex: 1;
+			}
+			i {
+				width: 20px;
+				height: 20px;
+				border: 2px solid #c5c6cf;
+				border-radius: 50%;
+			}
+			&:hover {
+				border-color: $ck-navy;
+			}
+			&.active {
+				border-color: $ck-cta-bright;
+				box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.15);
+				svg {
+					color: $ck-cta;
+				}
+				i {
+					border: 6px solid $ck-cta-bright;
+				}
+			}
+		}
+	}
+
+	.sx-checkout-muted {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin: 12px 0 0;
+		color: $ck-body;
+		font-size: 14px;
+		svg {
+			width: 20px;
+			height: 20px;
+			color: #15803d;
+		}
+	}
+
+	.sx-checkout-pay {
+		margin-top: 28px;
+		height: 58px;
+		border: 0;
+		border-radius: 14px;
+		background: $ck-cta-bright;
+		color: #fff;
+		font-size: 17px;
+		font-weight: 800;
+		box-shadow: 0 10px 24px rgba(224, 93, 56, 0.28);
+		transition: background 160ms ease, transform 160ms ease;
+		&:hover:not(:disabled) {
+			background: $ck-cta-hover;
+			transform: translateY(-1px);
+		}
+		&:disabled {
+			background: #1a2b4c;
+			box-shadow: none;
+			cursor: not-allowed;
+			opacity: 0.6;
+		}
+	}
+
+	/* Summary (right) */
+	.sx-checkout-summary {
+		position: sticky;
+		top: 100px;
+		padding: 30px;
+		border: 1px solid $ck-line;
+		border-radius: 24px;
+		background: $ck-surface;
+		box-shadow: $ck-shadow-lg;
+		h3 {
+			margin: 26px 0 18px;
+			color: $ck-navy;
+			font-size: 17px;
+			font-weight: 800;
+		}
+	}
+
+	.sx-checkout-stay {
+		display: flex;
+		gap: 14px;
+		padding-bottom: 26px;
+		border-bottom: 1px solid $ck-line;
+		img {
+			width: 120px;
+			height: 108px;
+			flex-shrink: 0;
+			border-radius: 14px;
+			object-fit: cover;
+		}
+		div {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			min-width: 0;
+		}
+		small {
+			color: $ck-cta;
+			font-size: 12px;
+			font-weight: 700;
+		}
+		strong {
+			color: $ck-navy;
+			font-size: 16px;
+			font-weight: 800;
+		}
+		span {
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+			color: $ck-body;
+			font-size: 13px;
+			svg {
+				width: 16px;
+				height: 16px;
+				color: $ck-outline;
+			}
+		}
+	}
+
+	.sx-checkout-price {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		margin: 0;
+		div {
+			display: flex;
+			justify-content: space-between;
+			color: $ck-body;
+			font-size: 15px;
+			font-variant-numeric: tabular-nums;
+		}
+		dt,
+		dd {
+			margin: 0;
+		}
+		.is-total {
+			padding-top: 18px;
+			border-top: 1px solid $ck-line;
+			color: $ck-navy;
+			font-size: 17px;
+			font-weight: 800;
+		}
+	}
+
+	/* Success */
+	.sx-checkout-success {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		max-width: 560px;
+		margin: 24px auto 0;
+		padding: 48px 40px;
+		border: 1px solid $ck-line;
+		border-radius: 28px;
+		background: $ck-surface;
+		box-shadow: $ck-shadow-lg;
+		text-align: center;
+		> svg {
+			width: 64px;
+			height: 64px;
+			color: #15803d;
+		}
+		h1 {
+			margin: 8px 0 0;
+			color: $ck-navy;
+			font-size: 32px;
+			font-weight: 800;
+		}
+		p {
+			margin: 0;
+			color: $ck-body;
+			font-size: 15px;
+			font-variant-numeric: tabular-nums;
+		}
+		strong {
+			color: $ck-navy;
+			font-size: 22px;
+			font-weight: 800;
+		}
+		.sx-checkout-muted {
+			justify-content: center;
+		}
+	}
+
+	.sx-checkout-success-actions {
+		display: flex;
+		gap: 12px;
+		margin-top: 16px;
+	}
+
+	.sx-checkout-primary,
+	.sx-checkout-secondary {
+		padding: 12px 22px;
+		border-radius: 12px;
+		font-size: 14px;
+		font-weight: 700;
+	}
+
+	.sx-checkout-primary {
+		background: $ck-cta-bright;
+		color: #fff;
+		&:hover {
+			background: $ck-cta-hover;
+		}
+	}
+
+	.sx-checkout-secondary {
+		border: 1px solid #d6d2cb;
+		color: $ck-navy;
+		&:hover {
+			border-color: $ck-navy;
+		}
+	}
+}

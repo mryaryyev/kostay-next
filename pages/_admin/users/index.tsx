@@ -16,6 +16,10 @@ import { Member } from '../../../libs/types/member/member';
 import { MemberStatus, MemberType } from '../../../libs/enums/member.enum';
 import { sweetErrorHandling } from '../../../libs/sweetAlert';
 import { MemberUpdate } from '../../../libs/types/member/member.update';
+import { useMutation, useQuery } from '@apollo/client';
+import { GET_ALL_MEMBERS_BY_ADMIN } from '../../../apollo/admin/query';
+import { UPDATE_MEMBER_BY_ADMIN } from '../../../apollo/admin/mutation';
+import { T } from '../../../libs/types/common';
 
 const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 	const [anchorEl, setAnchorEl] = useState<[] | HTMLElement[]>([]);
@@ -29,19 +33,39 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 	const [searchType, setSearchType] = useState('ALL');
 
 	/** APOLLO REQUESTS **/
+	const [updateMemberByAdmin] = useMutation(UPDATE_MEMBER_BY_ADMIN);
+
+	const {
+		loading: getAllMembersByAdminLoading,
+		data: getAllMembersByAdminData,
+		error: getAllMembersByAdminError,
+		refetch: getAllMembersRefetch,
+	} = useQuery(GET_ALL_MEMBERS_BY_ADMIN, {
+		fetchPolicy: 'network-only',
+		variables: { input: membersInquiry },
+		notifyOnNetworkStatusChange: true,
+		onCompleted: (data: T) => {
+			setMembers(data?.getAllMembersByAdmin?.list);
+			setMembersTotal(data?.getAllMembersByAdmin?.metaCounter[0]?.total ?? 0);
+		},
+	});
 
 	/** LIFECYCLES **/
-	useEffect(() => {}, [membersInquiry]);
+	useEffect(() => {
+		getAllMembersRefetch({ input: membersInquiry }).then();
+	}, [membersInquiry]);
 
 	/** HANDLERS **/
 	const changePageHandler = async (event: unknown, newPage: number) => {
 		membersInquiry.page = newPage + 1;
+		await getAllMembersRefetch({ input: membersInquiry });
 		setMembersInquiry({ ...membersInquiry });
 	};
 
 	const changeRowsPerPageHandler = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		membersInquiry.limit = parseInt(event.target.value, 10);
 		membersInquiry.page = 1;
+		await getAllMembersRefetch({ input: membersInquiry });
 		setMembersInquiry({ ...membersInquiry });
 	};
 
@@ -59,28 +83,49 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 		setValue(newValue);
 		setSearchText('');
 
-		setMembersInquiry({ ...membersInquiry, page: 1, sort: 'createdAt' });
-
 		switch (newValue) {
 			case 'ACTIVE':
-				setMembersInquiry({ ...membersInquiry, search: { memberStatus: MemberStatus.ACTIVE } });
+				setMembersInquiry({
+					...membersInquiry,
+					page: 1,
+					search: { ...membersInquiry.search, text: '', memberStatus: MemberStatus.ACTIVE },
+				});
 				break;
 			case 'BLOCK':
-				setMembersInquiry({ ...membersInquiry, search: { memberStatus: MemberStatus.BLOCK } });
+				setMembersInquiry({
+					...membersInquiry,
+					page: 1,
+					search: { ...membersInquiry.search, text: '', memberStatus: MemberStatus.BLOCK },
+				});
 				break;
 			case 'DELETE':
-				setMembersInquiry({ ...membersInquiry, search: { memberStatus: MemberStatus.DELETE } });
+				setMembersInquiry({
+					...membersInquiry,
+					page: 1,
+					search: { ...membersInquiry.search, text: '', memberStatus: MemberStatus.DELETE },
+				});
 				break;
 			default:
 				delete membersInquiry?.search?.memberStatus;
-				setMembersInquiry({ ...membersInquiry });
+				setMembersInquiry({
+					...membersInquiry,
+					page: 1,
+					search: { ...membersInquiry.search, text: '' },
+				});
 				break;
 		}
 	};
 
 	const updateMemberHandler = async (updateData: MemberUpdate) => {
 		try {
+			await updateMemberByAdmin({
+				variables: {
+					input: updateData,
+				},
+			});
+
 			menuIconCloseHandler();
+			await getAllMembersRefetch({ input: membersInquiry });
 		} catch (err: any) {
 			sweetErrorHandling(err).then();
 		}
@@ -98,6 +143,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 		try {
 			setMembersInquiry({
 				...membersInquiry,
+				page: 1,
 				search: {
 					...membersInquiry.search,
 					text: searchText,
@@ -124,7 +170,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 				});
 			} else {
 				delete membersInquiry?.search?.memberType;
-				setMembersInquiry({ ...membersInquiry });
+				setMembersInquiry({ ...membersInquiry, page: 1 });
 			}
 		} catch (err: any) {
 			console.log('searchTypeHandler: ', err.message);
@@ -141,11 +187,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 					<TabContext value={value}>
 						<Box component={'div'}>
 							<List className={'tab-menu'}>
-								<ListItem
-									onClick={(e) => tabChangeHandler(e, 'ALL')}
-									value="ALL"
-									className={value === 'ALL' ? 'li on' : 'li'}
-								>
+								<ListItem onClick={(e) => tabChangeHandler(e, 'ALL')} value="ALL" className={value === 'ALL' ? 'li on' : 'li'}>
 									All
 								</ListItem>
 								<ListItem
@@ -190,11 +232,13 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 														setSearchText('');
 														setMembersInquiry({
 															...membersInquiry,
+															page: 1,
 															search: {
 																...membersInquiry.search,
 																text: '',
 															},
 														});
+														await getAllMembersRefetch({ input: membersInquiry });
 													}}
 												/>
 											)}
@@ -212,7 +256,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 										User
 									</MenuItem>
 									<MenuItem value={'AGENT'} onClick={() => searchTypeHandler('AGENT')}>
-										Agent
+										Host
 									</MenuItem>
 									<MenuItem value={'ADMIN'} onClick={() => searchTypeHandler('ADMIN')}>
 										Admin
@@ -248,7 +292,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 AdminUsers.defaultProps = {
 	initialInquiry: {
 		page: 1,
-		limit: 10,
+		limit: 5,
 		sort: 'createdAt',
 		search: {},
 	},

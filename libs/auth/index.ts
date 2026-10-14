@@ -15,18 +15,19 @@ export function setJwtToken(token: string) {
 	localStorage.setItem('accessToken', token);
 }
 
+// DEFINE
 export const logIn = async (nick: string, password: string): Promise<void> => {
 	try {
 		const { jwtToken } = await requestJwtToken({ nick, password });
 
 		if (jwtToken) {
-			updateStorage({ jwtToken });
-			updateUserInfo(jwtToken);
+			updateStorage({ jwtToken }); // LocalStorage.accessToken > BACKEND
+			updateUserInfo(jwtToken); // ReactiveVariable > FRONTEND
 		}
 	} catch (err) {
 		console.warn('login err', err);
 		logOut();
-		throw new Error('Login Err');
+		// throw new Error('Login Err');
 	}
 };
 
@@ -75,7 +76,7 @@ export const signUp = async (nick: string, password: string, phone: string, type
 	} catch (err) {
 		console.warn('login err', err);
 		logOut();
-		throw new Error('Login Err');
+		// throw new Error('Login Err');
 	}
 };
 
@@ -154,8 +155,12 @@ export const updateUserInfo = (jwtToken: any) => {
 };
 
 export const logOut = () => {
-	deleteStorage();
-	deleteUserInfo();
+	deleteStorage(); // LocalStorage.accessToken > BACKEND
+	deleteUserInfo(); // ReactiveVariable > FRONTEND
+	// Public pages reload in place as a guest; member-only pages would be empty, so send those home.
+	const privatePaths = ['/mypage', '/_admin', '/booking'];
+	if (privatePaths.some((path) => window.location.pathname.startsWith(path))) window.location.href = '/';
+	else window.location.reload();
 };
 
 const deleteStorage = () => {

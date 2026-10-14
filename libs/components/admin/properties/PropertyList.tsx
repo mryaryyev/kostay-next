@@ -1,3 +1,4 @@
+import { formatKRW } from '../../../utils';
 import React from 'react';
 import Link from 'next/link';
 import {
@@ -19,6 +20,7 @@ import { REACT_APP_API_URL } from '../../../config';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Typography from '@mui/material/Typography';
 import { PropertyStatus } from '../../../enums/property.enum';
+import { sweetConfirmAlert } from '../../../sweetAlert';
 
 interface Data {
 	id: string;
@@ -56,13 +58,13 @@ const headCells: readonly HeadCell[] = [
 		id: 'price',
 		numeric: false,
 		disablePadding: false,
-		label: 'PRICE',
+		label: 'PRICE / NIGHT (KRW)',
 	},
 	{
 		id: 'agent',
 		numeric: false,
 		disablePadding: false,
-		label: 'AGENT',
+		label: 'HOST',
 	},
 	{
 		id: 'location',
@@ -155,18 +157,27 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 									<TableRow hover key={property?._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
 										<TableCell align="left">{property._id}</TableCell>
 										<TableCell align="left" className={'name'}>
-											<Stack direction={'row'}>
-												<Link href={`/property/detail?id=${property?._id}`}>
+											{property.propertyStatus === PropertyStatus.ACTIVE ? (
+												<Stack direction={'row'}>
+													<Link href={`/stay/detail?id=${property?._id}`}>
+														<div>
+															<Avatar alt="Remy Sharp" src={propertyImage} sx={{ ml: '2px', mr: '10px' }} />
+														</div>
+													</Link>
+													<Link href={`/stay/detail?id=${property?._id}`}>
+														<div>{property.propertyTitle}</div>
+													</Link>
+												</Stack>
+											) : (
+												<Stack direction={'row'}>
 													<div>
 														<Avatar alt="Remy Sharp" src={propertyImage} sx={{ ml: '2px', mr: '10px' }} />
 													</div>
-												</Link>
-												<Link href={`/property/detail?id=${property?._id}`}>
-													<div>{property.propertyTitle}</div>
-												</Link>
-											</Stack>
+													<div style={{ marginTop: '10px' }}>{property.propertyTitle}</div>
+												</Stack>
+											)}
 										</TableCell>
-										<TableCell align="center">{property.propertyPrice}</TableCell>
+										<TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>{formatKRW(property.pricePerNight)} / night</TableCell>
 										<TableCell align="center">{property.memberData?.memberNick}</TableCell>
 										<TableCell align="center">{property.propertyLocation}</TableCell>
 										<TableCell align="center">{property.propertyType}</TableCell>
@@ -181,7 +192,32 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 												</Button>
 											)}
 
-											{property.propertyStatus === PropertyStatus.SOLD && (
+											{/* New stay waiting for review: approve publishes it, reject removes it (the host is notified). */}
+											{property.propertyStatus === PropertyStatus.PENDING && (
+												<Stack direction={'row'} spacing={1} justifyContent={'center'}>
+													<Button
+														size="small"
+														variant="contained"
+														color="success"
+														onClick={() => updatePropertyHandler({ _id: property._id, propertyStatus: PropertyStatus.ACTIVE })}
+													>
+														Approve
+													</Button>
+													<Button
+														size="small"
+														variant="outlined"
+														color="error"
+														onClick={async () => {
+															if (await sweetConfirmAlert(`Reject "${property.propertyTitle}"?`))
+																updatePropertyHandler({ _id: property._id, propertyStatus: PropertyStatus.DELETE });
+														}}
+													>
+														Reject
+													</Button>
+												</Stack>
+											)}
+
+											{property.propertyStatus === PropertyStatus.INACTIVE && (
 												<Button className={'badge warning'}>{property.propertyStatus}</Button>
 											)}
 
@@ -203,7 +239,7 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 														sx={{ p: 1 }}
 													>
 														{Object.values(PropertyStatus)
-															.filter((ele) => ele !== property.propertyStatus)
+															.filter((ele) => ele !== property.propertyStatus && ele !== PropertyStatus.PENDING)
 															.map((status: string) => (
 																<MenuItem
 																	onClick={() => updatePropertyHandler({ _id: property._id, propertyStatus: status })}

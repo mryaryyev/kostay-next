@@ -1,12 +1,15 @@
+import SectionHeader from './SectionHeader';
+import EastIcon from '@mui/icons-material/East';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
-import { Stack, Typography } from '@mui/material';
 import CommunityCard from './CommunityCard';
 import { BoardArticle } from '../../types/board-article/board-article';
+import { useQuery } from '@apollo/client';
+import { GET_BOARD_ARTICLES } from '../../../apollo/user/query';
+import { BoardArticleCategory } from '../../enums/board-article.enum';
+import { T } from '../../types/common';
 
 const CommunityBoards = () => {
-	const device = useDeviceDetect();
 	const [searchCommunity, setSearchCommunity] = useState({
 		page: 1,
 		sort: 'articleViews',
@@ -16,48 +19,67 @@ const CommunityBoards = () => {
 	const [freeArticles, setFreeArticles] = useState<BoardArticle[]>([]);
 
 	/** APOLLO REQUESTS **/
+	const {
+		loading: getNewsArticlesLoading,
+		data: getNewsArticlesData,
+		error: getNewsArticlesError,
+		refetch: getPropertiesRefetch,
+	} = useQuery(GET_BOARD_ARTICLES, {
+		fetchPolicy: 'network-only',
+		variables: { input: { ...searchCommunity, limit: 6, search: { articleCategory: BoardArticleCategory.NEWS } } },
+		notifyOnNetworkStatusChange: true,
+		onCompleted: (data: T) => {
+			setNewsArticles(data?.getBoardArticles?.list);
+		},
+	});
 
-	if (device === 'mobile') {
-		return <div>COMMUNITY BOARDS (MOBILE)</div>;
-	} else {
-		return (
-			<Stack className={'community-board'}>
-				<Stack className={'container'}>
-					<Stack>
-						<Typography variant={'h1'}>COMMUNITY BOARD HIGHLIGHTS</Typography>
-					</Stack>
-					<Stack className="community-main">
-						<Stack className={'community-left'}>
-							<Stack className={'content-top'}>
-								<Link href={'/community?articleCategory=NEWS'}>
-									<span>News</span>
-								</Link>
-								<img src="/img/icons/arrowBig.svg" alt="" />
-							</Stack>
-							<Stack className={'card-wrap'}>
-								{newsArticles.map((article, index) => {
-									return <CommunityCard vertical={true} article={article} index={index} key={article?._id} />;
-								})}
-							</Stack>
-						</Stack>
-						<Stack className={'community-right'}>
-							<Stack className={'content-top'}>
-								<Link href={'/community?articleCategory=FREE'}>
-									<span>Free</span>
-								</Link>
-								<img src="/img/icons/arrowBig.svg" alt="" />
-							</Stack>
-							<Stack className={'card-wrap vertical'}>
-								{freeArticles.map((article, index) => {
-									return <CommunityCard vertical={false} article={article} index={index} key={article?._id} />;
-								})}
-							</Stack>
-						</Stack>
-					</Stack>
-				</Stack>
-			</Stack>
-		);
-	}
+	const {
+		loading: getFreeArticlesLoading,
+		data: getFreeArticlesData,
+		error: getFreeArticlesError,
+		refetch: getFreeArticlesRefetch,
+	} = useQuery(GET_BOARD_ARTICLES, {
+		fetchPolicy: 'network-only',
+		variables: { input: { ...searchCommunity, limit: 3, search: { articleCategory: BoardArticleCategory.FREE } } },
+		notifyOnNetworkStatusChange: true,
+		onCompleted: (data: T) => {
+			setFreeArticles(data?.getBoardArticles?.list);
+		},
+	});
+
+	const [featured, ...others] = [...newsArticles, ...freeArticles].sort(
+		(a, b) => (b?.articleViews ?? 0) - (a?.articleViews ?? 0),
+	);
+
+	return (
+		<section className={'community-board'}>
+			<div className={'container'}>
+				<SectionHeader
+					eyebrow={'From guests'}
+					title={'Community Travel Notes'}
+					subtitle={'Travel notes and news from the Kostay community'}
+					action={
+						<Link href={'/community'} className={'home-link'}>
+							All articles
+							<EastIcon aria-hidden="true" />
+						</Link>
+					}
+				/>
+				{!featured ? (
+					<p className={'empty-list'}>No articles yet</p>
+				) : (
+					<div className={'sx-community'}>
+						<CommunityCard vertical={true} article={featured} index={0} />
+						<div className={'sx-community-list'}>
+							{others.slice(0, 3).map((article, index) => (
+								<CommunityCard vertical={false} article={article} index={index + 1} key={article?._id} />
+							))}
+						</div>
+					</div>
+				)}
+			</div>
+		</section>
+	);
 };
 
 export default CommunityBoards;

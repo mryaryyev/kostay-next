@@ -43,39 +43,39 @@ export const GET_AGENTS = gql`
 `;
 
 export const GET_MEMBER = gql(`
-query GetMember($input: String!) {
-    getMember(memberId: $input) {
-        _id
-        memberType
-        memberStatus
-        memberAuthType
-        memberPhone
-        memberNick
-        memberFullName
-        memberImage
-        memberAddress
-        memberDesc
-        memberProperties
-        memberArticles
-        memberPoints
-        memberLikes
-        memberViews
-        memberFollowings
-				memberFollowers
-        memberRank
-        memberWarnings
-        memberBlocks
-        deletedAt
-        createdAt
-        updatedAt
-        accessToken
-        meFollowed {
-					followingId
-					followerId
-					myFollowing
-				}
-    }
-}
+	query GetMember($input: String!) {
+		getMember(memberId: $input) {
+			_id
+			memberType
+			memberStatus
+			memberAuthType
+			memberPhone
+			memberNick
+			memberFullName
+			memberImage
+			memberAddress
+			memberDesc
+			memberProperties
+			memberArticles
+			memberPoints
+			memberLikes
+			memberViews
+			memberFollowings
+					memberFollowers
+			memberRank
+			memberWarnings
+			memberBlocks
+			deletedAt
+			createdAt
+			updatedAt
+			accessToken
+			meFollowed {
+						followingId
+						followerId
+						myFollowing
+					}
+		}
+	}
 `);
 
 /**************************
@@ -91,7 +91,8 @@ export const GET_PROPERTY = gql`
 			propertyLocation
 			propertyAddress
 			propertyTitle
-			propertyPrice
+			pricePerNight
+			maxGuests
 			propertySquare
 			propertyBeds
 			propertyRooms
@@ -99,10 +100,7 @@ export const GET_PROPERTY = gql`
 			propertyLikes
 			propertyImages
 			propertyDesc
-			propertyBarter
-			propertyRent
 			memberId
-			soldAt
 			deletedAt
 			constructedAt
 			createdAt
@@ -147,7 +145,8 @@ export const GET_PROPERTIES = gql`
 				propertyLocation
 				propertyAddress
 				propertyTitle
-				propertyPrice
+				pricePerNight
+				maxGuests
 				propertySquare
 				propertyBeds
 				propertyRooms
@@ -156,10 +155,7 @@ export const GET_PROPERTIES = gql`
 				propertyRank
 				propertyImages
 				propertyDesc
-				propertyBarter
-				propertyRent
 				memberId
-				soldAt
 				deletedAt
 				constructedAt
 				createdAt
@@ -209,7 +205,8 @@ export const GET_AGENT_PROPERTIES = gql`
 				propertyLocation
 				propertyAddress
 				propertyTitle
-				propertyPrice
+				pricePerNight
+				maxGuests
 				propertySquare
 				propertyBeds
 				propertyRooms
@@ -217,10 +214,7 @@ export const GET_AGENT_PROPERTIES = gql`
 				propertyLikes
 				propertyImages
 				propertyDesc
-				propertyBarter
-				propertyRent
 				memberId
-				soldAt
 				deletedAt
 				constructedAt
 				createdAt
@@ -243,7 +237,8 @@ export const GET_FAVORITES = gql`
 				propertyLocation
 				propertyAddress
 				propertyTitle
-				propertyPrice
+				pricePerNight
+				maxGuests
 				propertySquare
 				propertyBeds
 				propertyRooms
@@ -253,10 +248,7 @@ export const GET_FAVORITES = gql`
 				propertyRank
 				propertyImages
 				propertyDesc
-				propertyBarter
-				propertyRent
 				memberId
-				soldAt
 				deletedAt
 				constructedAt
 				createdAt
@@ -306,7 +298,8 @@ export const GET_VISITED = gql`
 				propertyLocation
 				propertyAddress
 				propertyTitle
-				propertyPrice
+				pricePerNight
+				maxGuests
 				propertySquare
 				propertyBeds
 				propertyRooms
@@ -316,10 +309,7 @@ export const GET_VISITED = gql`
 				propertyRank
 				propertyImages
 				propertyDesc
-				propertyBarter
-				propertyRent
 				memberId
-				soldAt
 				deletedAt
 				constructedAt
 				createdAt
@@ -609,6 +599,175 @@ export const GET_MEMBER_FOLLOWINGS = gql`
 					followerId
 					myFollowing
 				}
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+
+/**************************
+ *      NOTIFICATION      *
+ *************************/
+
+export const GET_NOTIFICATIONS = gql`
+	query GetNotifications($input: NotificationInquiry!) {
+		getNotifications(input: $input) {
+			list {
+				_id
+				notificationType
+				notificationStatus
+				notificationGroup
+				notificationTitle
+				notificationDesc
+				authorId
+				receiverId
+				propertyId
+				articleId
+				createdAt
+				updatedAt
+				authorData {
+					_id
+					memberNick
+					memberFullName
+					memberImage
+					memberType
+				}
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+
+export const GET_UNREAD_NOTIFICATION_COUNT = gql`
+	query GetUnreadNotificationCount {
+		getUnreadNotificationCount
+	}
+`;
+
+/**************************
+ *         BOOKING        *
+ *************************/
+
+const BOOKING_FIELDS = `
+	id
+	propertyId
+	memberId
+	checkIn
+	checkOut
+	guestsCount
+	totalPrice
+	status
+	paymentStatus
+	createdAt
+	updatedAt
+	propertyData {
+		_id
+		propertyTitle
+		propertyImage
+		propertyLocation
+		propertyAddress
+	}
+	guestData {
+		_id
+		memberNick
+		memberFullName
+		memberImage
+		memberPhone
+	}
+`;
+
+export const GET_MY_BOOKINGS = gql`
+	query GetMyBookings($input: BookingsInquiry!) {
+		getMyBookings(input: $input) {
+			list {
+				${BOOKING_FIELDS}
+			}
+			total
+		}
+	}
+`;
+
+export const GET_HOST_EARNINGS = gql`
+	query GetHostEarnings {
+		getHostEarnings {
+			monthRevenue
+			totalRevenue
+			activeBookings
+			upcomingCheckIns
+			nightsBooked
+		}
+	}
+`;
+
+export const GET_HOST_BOOKINGS = gql`
+	query GetHostBookings($input: BookingsInquiry!) {
+		getHostBookings(input: $input) {
+			list {
+				${BOOKING_FIELDS}
+			}
+			total
+		}
+	}
+`;
+
+export const GET_BOOKED_DATES = gql`
+	query GetBookedDates($propertyId: String!) {
+		getBookedDates(propertyId: $propertyId) {
+			checkIn
+			checkOut
+		}
+	}
+`;
+
+/**************************
+ *         NOTICE         *
+ *************************/
+
+export const GET_NOTICES = gql`
+	query GetNotices($input: NoticesInquiry!) {
+		getNotices(input: $input) {
+			list {
+				_id
+				noticeCategory
+				noticeStatus
+				faqGroup
+				noticeEvent
+				noticeTitle
+				noticeContent
+				noticeViews
+				memberId
+				createdAt
+				updatedAt
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+
+/**************************
+ *        INQUIRY         *
+ *************************/
+
+export const GET_MY_INQUIRIES = gql`
+	query GetMyInquiries($input: MyInquiriesInquiry!) {
+		getMyInquiries(input: $input) {
+			list {
+				_id
+				inquiryTopic
+				inquiryStatus
+				inquiryTitle
+				inquiryContent
+				memberId
+				answerContent
+				answeredAt
+				createdAt
+				updatedAt
 			}
 			metaCounter {
 				total

@@ -1,0 +1,364 @@
+// My Page → My Stays (host listings). Tokens from mypage.scss; the status menu reuses .sx-sort-menu (agent.scss).
+
+#site-wrap #my-page #my-property-page {
+	width: 100%;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	padding: 28px;
+	border: 1px solid $mp-line;
+	border-radius: 20px;
+	background: $mp-surface;
+	box-shadow: $mp-shadow-md;
+	@include mobile {
+		padding: 16px;
+	}
+	button {
+		font-family: inherit;
+		cursor: pointer;
+	}
+	a {
+		text-decoration: none;
+	}
+
+	/* ---------- Head ---------- */
+	.sx-stays-head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 16px;
+		h3 {
+			margin: 0;
+			color: $mp-navy;
+			font-size: 26px;
+			line-height: 34px;
+			font-weight: 800;
+			letter-spacing: -0.02em;
+		}
+		p {
+			margin: 4px 0 0;
+			color: $mp-body;
+			font-size: 14px;
+		}
+		@include mobile {
+			flex-direction: column;
+			align-items: stretch;
+		}
+	}
+
+	.sx-stays-add,
+	.sx-stays-empty a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		padding: 10px 18px;
+		border-radius: 12px;
+		background: $mp-cta-bright;
+		color: #fff;
+		font-size: 14px;
+		font-weight: 700;
+		white-space: nowrap;
+		transition: background 160ms ease;
+		svg {
+			width: 18px;
+			height: 18px;
+		}
+		&:hover {
+			background: $mp-cta-hover;
+		}
+		&:focus-visible {
+			outline: 2px solid $mp-navy;
+			outline-offset: 2px;
+		}
+	}
+
+	/* ---------- Tabs ---------- */
+	.sx-stays-tabs {
+		align-self: flex-start;
+		display: inline-flex;
+		gap: 4px;
+		padding: 4px;
+		border-radius: 14px;
+		background: $mp-low;
+		@include mobile {
+			align-self: stretch;
+			button {
+				flex: 1;
+			}
+		}
+		button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 9px 18px;
+			border: 0;
+			border-radius: 10px;
+			background: transparent;
+			color: $mp-body;
+			font-size: 14px;
+			font-weight: 600;
+			white-space: nowrap;
+			transition: background 160ms ease, color 160ms ease;
+			&:hover {
+				color: $mp-navy;
+			}
+			&.is-active {
+				background: $mp-navy;
+				color: #fff;
+				box-shadow: 0 4px 12px rgba(3, 22, 54, 0.18);
+			}
+			&:focus-visible {
+				outline: 2px solid $mp-navy;
+				outline-offset: 2px;
+			}
+			em {
+				min-width: 20px;
+				padding: 1px 7px;
+				border-radius: 999px;
+				background: rgba(255, 255, 255, 0.18);
+				font-size: 12px;
+				font-style: normal;
+				font-weight: 700;
+			}
+			@include mobile {
+				padding: 9px 8px;
+			}
+		}
+	}
+
+	/* ---------- Rows ---------- */
+	.sx-stays-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.sx-stay-row {
+		display: grid;
+		grid-template-columns: 96px minmax(0, 1fr) auto auto;
+		align-items: center;
+		gap: 20px;
+		padding: 16px 0;
+		border-top: 1px solid $mp-line;
+		// Tablets / phones: photo + info on top, a full-width line with date, views and actions below.
+		@include tablet {
+			grid-template-columns: 96px minmax(0, 1fr) auto;
+			grid-template-areas:
+				'photo info info'
+				'meta meta actions';
+			gap: 12px 16px;
+		}
+		@include mobile {
+			grid-template-columns: 72px minmax(0, 1fr) auto;
+		}
+	}
+
+	.sx-stay-row-photo {
+		width: 96px;
+		height: 72px;
+		overflow: hidden;
+		border-radius: 12px;
+		background: $mp-container-high;
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: transform 300ms ease;
+		}
+		&:hover img {
+			transform: scale(1.05);
+		}
+		@include mobile {
+			width: 72px;
+			height: 56px;
+		}
+		@include tablet {
+			grid-area: photo;
+		}
+	}
+
+	.sx-stay-row-info {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		@include tablet {
+			grid-area: info;
+		}
+	}
+
+	.sx-stay-row-title {
+		overflow: hidden;
+		color: $mp-ink;
+		font-size: 16px;
+		line-height: 22px;
+		font-weight: 700;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		&:hover {
+			color: $mp-cta;
+		}
+	}
+
+	.sx-stay-row-address {
+		overflow: hidden;
+		color: $mp-outline;
+		font-size: 12px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	.sx-stay-row-price {
+		margin-top: 4px;
+		color: $mp-body;
+		font-size: 13px;
+		strong {
+			color: $mp-navy;
+			font-weight: 700;
+		}
+	}
+
+	.sx-stay-row-meta {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		color: $mp-outline;
+		font-size: 13px;
+		white-space: nowrap;
+		@include tablet {
+			grid-area: meta;
+			gap: 12px;
+		}
+	}
+
+	.sx-stay-row-views {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+	}
+
+	.sx-stay-row-actions {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 6px;
+		@include tablet {
+			grid-area: actions;
+		}
+	}
+
+	.sx-stay-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 2px;
+		padding: 6px 10px 6px 12px;
+		border: 0;
+		border-radius: 999px;
+		font-size: 12px;
+		font-weight: 700;
+		white-space: nowrap;
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+		&.is-active {
+			background: #e8f6ee;
+			color: $mp-green;
+		}
+		&.is-paused {
+			background: $mp-container;
+			color: $mp-body;
+		}
+		&.is-pending {
+			padding: 6px 12px;
+			background: #fff4d6;
+			color: #92600a;
+			cursor: default;
+		}
+		&:focus-visible {
+			outline: 2px solid $mp-navy;
+			outline-offset: 2px;
+		}
+	}
+
+	.sx-stay-icon {
+		width: 36px;
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid $mp-line;
+		border-radius: 10px;
+		background: $mp-surface;
+		color: $mp-body;
+		transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+		svg {
+			width: 18px;
+			height: 18px;
+		}
+		&:hover {
+			background: $mp-low;
+			color: $mp-navy;
+		}
+		&.is-danger:hover {
+			border-color: #fecdd3;
+			background: #fff1f2;
+			color: #e11d48;
+		}
+		&:focus-visible {
+			outline: 2px solid $mp-navy;
+			outline-offset: 2px;
+		}
+	}
+
+	/* ---------- Empty / pagination ---------- */
+	.sx-stays-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+		padding: 44px 16px;
+		border: 1px dashed $mp-line;
+		border-radius: 16px;
+		color: $mp-outline;
+		text-align: center;
+		svg {
+			width: 38px;
+			height: 38px;
+		}
+		p {
+			margin: 0;
+			color: $mp-body;
+			font-size: 15px;
+		}
+		a {
+			margin-top: 4px;
+		}
+	}
+
+	.sx-stays-pagination {
+		align-self: center;
+		.Mui-selected {
+			background: $mp-navy !important;
+			color: #fff;
+		}
+	}
+
+	// The tablet fallback in responsive.scss sets img { height: auto } inside My Page lists; keep thumbnails cropped.
+	.sx-stay-row-photo img {
+		height: 100%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#site-wrap #my-page #my-property-page .sx-stay-row-photo img {
+		transition: none;
+	}
+}

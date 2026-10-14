@@ -44,3 +44,8 @@ next-env.d.ts
 .env.development
 .env.local
 .env
+
+# Deployment credentials and image archives
+/deploy/backend.env
+/deploy/*.tar
+/deploy/*.tar.gz

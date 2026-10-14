@@ -6,14 +6,13 @@ export interface PropertyInput {
 	propertyLocation: PropertyLocation;
 	propertyAddress: string;
 	propertyTitle: string;
-	propertyPrice: number;
+	pricePerNight: number;
+	maxGuests: number;
 	propertySquare: number;
 	propertyBeds: number;
 	propertyRooms: number;
 	propertyImages: string[];
 	propertyDesc?: string;
-	propertyBarter?: boolean;
-	propertyRent?: boolean;
 	memberId?: string;
 	constructedAt?: Date;
 }
@@ -23,12 +22,13 @@ interface PISearch {
 	locationList?: PropertyLocation[];
 	typeList?: PropertyType[];
 	roomsList?: Number[];
-	options?: string[];
 	bedsList?: Number[];
+	guestsCount?: number;
 	pricesRange?: Range;
-	periodsRange?: PeriodsRange;
 	squaresRange?: Range;
 	text?: string;
+	checkIn?: string;
+	checkOut?: string;
 }
 
 export interface PropertiesInquiry {
@@ -67,9 +67,4 @@ export interface AllPropertiesInquiry {
 interface Range {
 	start: number;
 	end: number;
-}
-
-interface PeriodsRange {
-	start: Date | number;
-	end: Date | number;
 }

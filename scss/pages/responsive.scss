@@ -1,0 +1,1662 @@
+// Shared responsive rules (tablet ≤1023px, mobile ≤767px). Page-specific rules live in each page's SCSS.
+// Imported last in main.scss so these win over the desktop defaults.
+
+// Only on body (never html): body's overflow then still applies to the window, so the window stays the scroller
+// and Next.js can scroll it to the top on page changes. Setting it on html made body its own scroll box.
+body {
+	@include tablet {
+		overflow-x: clip;
+	}
+}
+
+// Every width: the 1300px desktop container shrinks with the window instead of overflowing
+// (small laptops and tablets between 1200 and 1348px).
+#site-wrap .container {
+	width: min(1300px, calc(100% - 48px)) !important;
+	max-width: 100% !important;
+	box-sizing: border-box;
+}
+#site-wrap .home-footer-inner {
+	width: min(1300px, calc(100% - 48px));
+}
+#site-wrap .header-main .container .search-box.home-glass-search {
+	max-width: 100%;
+}
+
+#site-wrap {
+	// Tablet and below: full width with side gutters
+	// Several page files pin .container to 1300px with more specific selectors, so this one must win.
+	.container {
+		@include tablet {
+			width: 100% !important;
+			max-width: 100% !important;
+			padding-left: 24px;
+			padding-right: 24px;
+			box-sizing: border-box;
+		}
+		@include mobile {
+			padding-left: 16px;
+			padding-right: 16px;
+		}
+	}
+
+	/* Navbar: links, login and language move into the drawer (Top.tsx) */
+	#top .navbar .navbar-main {
+		.nav-burger {
+			display: none;
+		}
+		@include tablet {
+			height: 64px;
+			.container {
+				grid-template-columns: minmax(0, 1fr) auto;
+				gap: 12px;
+			}
+			.container .logo-box .kostay-logo {
+				width: 110px;
+				height: 44px;
+			}
+			.router-box,
+			.join-box,
+			.lang-switch {
+				display: none !important;
+			}
+			.container .user-box {
+				justify-content: flex-end;
+				gap: 8px;
+			}
+			.nav-burger {
+				width: 42px;
+				height: 42px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0;
+				border: 1px solid #d6d2cb;
+				border-radius: 12px;
+				background: #fff;
+				color: #031636;
+				cursor: pointer;
+			}
+		}
+		@include mobile {
+			.container {
+				gap: 8px;
+				.user-box {
+					gap: 6px;
+					.login-user img {
+						width: 32px;
+						height: 32px;
+					}
+				}
+				.lan-box {
+					gap: 0;
+					.sx-bell {
+						width: 36px;
+						height: 40px;
+					}
+				}
+			}
+		}
+	}
+
+	/* Page heroes: 340px desktop → shorter with smaller titles */
+	.sx-stays-hero,
+	.sx-cs-hero,
+	.sx-hosts-hero,
+	.sx-mypage-hero,
+	.sx-community-hero,
+	#host-detail-page .sx-host-hero {
+		// The fixed navbar is 64px on phones: let the hero grow instead of hiding the title under it.
+		@include mobile {
+			height: auto;
+			min-height: 260px;
+			padding-top: 88px;
+			box-sizing: border-box;
+			.container {
+				padding-bottom: 28px;
+			}
+			h1 {
+				font-size: 34px;
+			}
+			p {
+				font-size: 14px;
+				line-height: 21px;
+			}
+		}
+	}
+
+	/* Footer */
+	.home-footer-inner {
+		@include tablet {
+			width: 100%;
+			padding: 48px 24px 28px;
+			box-sizing: border-box;
+		}
+		// Extra bottom space so the fixed chat button doesn't cover the last row.
+		@include mobile {
+			padding: 36px 16px 96px;
+		}
+	}
+	// Brand and newsletter span the full width; the three link columns stay side by side between them.
+	.home-footer-grid {
+		@include tablet {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 28px 16px;
+			margin-bottom: 32px;
+			.home-footer-brand,
+			.home-footer-news {
+				grid-column: 1 / -1;
+				padding: 0;
+			}
+			.home-footer-news {
+				order: 2;
+				max-width: 480px;
+			}
+		}
+		// Phones: Stay types and Company side by side, Destinations (two columns of cities) on its own row below.
+		@include mobile {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 24px 12px;
+			margin-bottom: 28px;
+			.home-footer-col.is-split {
+				grid-column: 1 / -1;
+				order: 1;
+				ul {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					column-gap: 12px;
+				}
+			}
+			h4 {
+				margin-bottom: 12px;
+				font-size: 14px;
+			}
+		}
+	}
+	.home-footer-brand .logo {
+		@include tablet {
+			margin-bottom: 20px;
+		}
+	}
+	// Stacked and left-aligned so the fixed chat button (bottom right) covers neither item.
+	.home-footer-bottom {
+		@include mobile {
+			flex-direction: column-reverse;
+			align-items: flex-start;
+			gap: 12px;
+			padding-top: 20px;
+			font-size: 12px;
+		}
+	}
+}
+
+/* Mobile menu drawer (MUI portal, outside #site-wrap) */
+.nav-drawer {
+	width: min(320px, 86vw);
+	padding: 16px 20px 24px;
+	box-sizing: border-box;
+	background: #fdf9f3 !important;
+	font-family: $font-display;
+	* {
+		font-family: $font-display;
+	}
+	a {
+		text-decoration: none;
+	}
+}
+.nav-drawer-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+	button {
+		display: flex;
+		padding: 6px;
+		border: 0;
+		border-radius: 50%;
+		background: none;
+		color: #031636;
+		cursor: pointer;
+	}
+}
+.nav-drawer-user {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 12px;
+	padding: 12px;
+	border-radius: 16px;
+	background: #031636;
+	color: #fff;
+	img {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		object-fit: cover;
+		background: #fff;
+	}
+	div {
+		display: flex;
+		flex-direction: column;
+	}
+	strong {
+		font-size: 15px;
+	}
+	span {
+		color: #cbd5e1;
+		font-size: 12px;
+	}
+}
+.nav-drawer-links {
+	display: flex;
+	flex-direction: column;
+	a {
+		padding: 14px 4px;
+		border-bottom: 1px solid #e6e2dc;
+		color: #1c1c18;
+		font-size: 16px;
+		font-weight: 600;
+		&[aria-current='page'] {
+			color: #aa3614;
+			font-weight: 800;
+		}
+	}
+}
+.nav-drawer-lang {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin: 20px 0;
+	button {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		flex: 1;
+		padding: 10px 14px;
+		border: 1px solid #d6d2cb;
+		border-radius: 999px;
+		background: #fff;
+		color: #44474e;
+		font-weight: 700;
+		cursor: pointer;
+		&.is-active {
+			border-color: #e8c6b7;
+			background: #fff0e9;
+			color: #aa3614;
+		}
+	}
+	img {
+		width: 26px;
+		height: 26px;
+		border-radius: 50%;
+		object-fit: cover;
+	}
+}
+.nav-drawer-foot {
+	button,
+	.nav-drawer-login {
+		width: 100%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 13px 0;
+		border: 0;
+		border-radius: 999px;
+		background: #aa3614;
+		color: #fff;
+		font-size: 15px;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	button {
+		background: #fff;
+		border: 1px solid #d6d2cb;
+		color: #1c1c18;
+	}
+}
+
+/* ================= Step 2: booking flow ================= */
+
+/* ---------- Home ---------- */
+#site-wrap.is-home {
+	.header-main.home-hero {
+		@include tablet {
+			padding: 88px 0 40px;
+		}
+	}
+	.home-hero-grid {
+		@include tablet {
+			grid-template-columns: 1fr;
+			gap: 24px;
+		}
+	}
+	.home-hero-copy {
+		@include mobile {
+			padding-right: 0;
+			h1 {
+				font-size: 38px;
+				line-height: 1.05;
+			}
+			p {
+				font-size: 16px;
+				line-height: 24px;
+				margin-bottom: 20px;
+			}
+		}
+	}
+	.home-hero-collage {
+		@include tablet {
+			height: 320px;
+		}
+		@include mobile {
+			height: 220px;
+			gap: 8px;
+		}
+	}
+	.home-section-header h2 {
+		@include mobile {
+			font-size: 28px;
+			line-height: 1.15;
+		}
+	}
+	.home-page > section,
+	.home-page > div {
+		@include mobile {
+			padding-top: 32px;
+			padding-bottom: 32px;
+		}
+	}
+	.popular-properties .sx-grid-3 {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	.top-properties .trend-property-slide,
+	.top-properties .top-property-slide,
+	.top-agents .top-agents-slide {
+		@include tablet {
+			width: 46%;
+		}
+		@include mobile {
+			width: 82%;
+		}
+	}
+	.top-agents .sx-host-nav {
+		@include mobile {
+			display: none;
+		}
+	}
+	// Events: a swipeable row on tablets and phones instead of a tall stack.
+	.events .events-grid {
+		@include tablet {
+			display: flex;
+			gap: 16px;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			padding-bottom: 8px;
+			-webkit-overflow-scrolling: touch;
+			scrollbar-width: none;
+			&::-webkit-scrollbar {
+				display: none;
+			}
+			> * {
+				flex: 0 0 42%;
+				scroll-snap-align: start;
+			}
+		}
+		@include mobile {
+			> * {
+				flex-basis: 78%;
+			}
+		}
+	}
+	.sx-community {
+		@include tablet {
+			grid-template-columns: 1fr;
+		}
+	}
+	.home-film .film-frame {
+		@include mobile {
+			min-height: 340px;
+			.film-copy {
+				padding: 32px 20px;
+				h2 {
+					font-size: 32px;
+				}
+			}
+		}
+	}
+	h2 {
+		@include mobile {
+			max-width: 100%;
+		}
+	}
+	// "Have a room, a hanok or a villa to share?": copy above the button on small screens.
+	.home-page > .home-host-cta {
+		@include mobile {
+			padding-bottom: 48px;
+		}
+	}
+	.home-host-cta .cta-panel {
+		@include tablet {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+			padding: 36px 32px;
+			.cta-copy {
+				max-width: 100%;
+			}
+		}
+		@include mobile {
+			padding: 28px 20px;
+			border-radius: 20px;
+			h2 {
+				font-size: 26px;
+				line-height: 32px;
+				letter-spacing: -0.02em;
+			}
+			p {
+				font-size: 15px;
+				line-height: 22px;
+			}
+			.home-btn {
+				width: 100%;
+				justify-content: center;
+				box-sizing: border-box;
+			}
+		}
+	}
+}
+
+// Home search: stacked fields on phones.
+#site-wrap .header-main .container .search-box.home-glass-search {
+	@include tablet {
+		width: 100%;
+		flex-direction: column;
+		align-items: stretch;
+		border-radius: 24px;
+		.select-box {
+			flex-direction: column;
+			width: 100%;
+			.box {
+				width: 100%;
+				height: auto !important;
+				min-height: 52px;
+				box-sizing: border-box;
+			}
+		}
+		.search-box-other {
+			width: 100%;
+			justify-content: space-between;
+			.search-btn {
+				flex: 1;
+				width: auto;
+			}
+		}
+		.filter-location,
+		.filter-type,
+		.filter-rooms,
+		.filter-dates,
+		.filter-guests {
+			// In the page flow under the buttons (a fixed bottom sheet breaks inside the animated search box).
+			scroll-margin-top: 80px;
+			position: static !important;
+			width: 100% !important;
+			max-height: none !important;
+			overflow: visible !important;
+			margin-top: 4px;
+			border-radius: 20px;
+			box-sizing: border-box;
+			box-shadow: none !important;
+		}
+	}
+}
+
+/* ---------- Stays ---------- */
+#site-wrap .sx-stays-hero .sx-stays-hero-metrics {
+	@include mobile {
+		gap: 10px;
+		margin-top: 16px;
+		li + li {
+			padding-left: 0;
+			border-left: 0;
+		}
+	}
+}
+
+#site-wrap #property-list-page {
+	// Desktop: the wrapper is invisible so the filter stays a sticky grid column.
+	.sx-filter-wrap,
+	.sx-filter-sheet {
+		display: contents;
+	}
+	.sx-filter-backdrop,
+	.sx-filter-close,
+	.sx-filter-done,
+	.sx-filters-btn {
+		display: none;
+	}
+
+	.sx-stays-layout {
+		@include tablet {
+			grid-template-columns: 1fr;
+			padding: 24px 24px !important;
+		}
+		@include mobile {
+			padding: 16px 16px !important;
+		}
+	}
+	.sx-stays-grid {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	.sx-results-head {
+		@include tablet {
+			flex-wrap: wrap;
+		}
+	}
+	.sx-filters-btn {
+		@include tablet {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			order: -1;
+			padding: 10px 16px;
+			border: 1.5px solid #031636;
+			border-radius: 999px;
+			background: #fff;
+			color: #031636;
+			font-size: 14px;
+			font-weight: 800;
+			svg {
+				width: 18px;
+				height: 18px;
+			}
+		}
+	}
+
+	// Tablet and phones: the filter is a bottom sheet.
+	@include tablet {
+		.sx-filter-wrap {
+			display: block;
+			position: fixed;
+			inset: 0;
+			z-index: 1200;
+			pointer-events: none;
+		}
+		.sx-filter-backdrop {
+			display: block;
+			position: absolute;
+			inset: 0;
+			border: 0;
+			background: rgba(3, 22, 54, 0.45);
+			opacity: 0;
+			transition: opacity 200ms ease;
+		}
+		.sx-filter-sheet {
+			display: flex;
+			flex-direction: column;
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			max-height: 88vh;
+			overflow-y: auto;
+			border-radius: 24px 24px 0 0;
+			background: #fff;
+			transform: translateY(100%);
+			transition: transform 260ms ease;
+		}
+		.sx-filter {
+			position: static;
+			max-height: none;
+			overflow: visible;
+			box-shadow: none;
+			border-radius: 0;
+		}
+		.sx-filter-close {
+			display: flex;
+			align-self: flex-end;
+			margin: 12px 12px -36px 0;
+			padding: 6px;
+			border: 0;
+			border-radius: 50%;
+			background: #f1ede7;
+			color: #031636;
+			z-index: 1;
+		}
+		.sx-filter-done {
+			display: block;
+			position: sticky;
+			bottom: 0;
+			margin: 0 16px 16px;
+			padding: 14px 0;
+			border: 0;
+			border-radius: 999px;
+			background: #aa3614;
+			color: #fff;
+			font-size: 15px;
+			font-weight: 700;
+		}
+		.sx-filter-wrap.is-open {
+			pointer-events: auto;
+			.sx-filter-backdrop {
+				opacity: 1;
+			}
+			.sx-filter-sheet {
+				transform: translateY(0);
+			}
+		}
+	}
+}
+
+/* ---------- Stay detail ---------- */
+#site-wrap #property-detail-page {
+	.sx-mobile-bookbar {
+		display: none;
+	}
+	@include tablet {
+		padding: 84px 0 110px;
+		.sx-detail-body {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+		.sx-detail-side {
+			position: static;
+		}
+		.sx-facts {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		.sx-mobile-bookbar {
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 1100;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+			border-top: 1px solid #e6e2dc;
+			background: #fff;
+			box-shadow: 0 -8px 24px rgba(26, 43, 76, 0.08);
+			div {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: baseline;
+				gap: 4px;
+			}
+			strong {
+				color: #031636;
+				font-size: 18px;
+				font-weight: 800;
+			}
+			span {
+				color: #75777f;
+				font-size: 13px;
+			}
+			small {
+				width: 100%;
+				color: #44474e;
+				font-size: 12px;
+			}
+			button {
+				padding: 12px 22px;
+				border: 0;
+				border-radius: 999px;
+				background: #aa3614;
+				color: #fff;
+				font-size: 15px;
+				font-weight: 700;
+				white-space: nowrap;
+			}
+		}
+	}
+	@include mobile {
+		.sx-detail-title-row {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 12px;
+			h1 {
+				font-size: 28px;
+				line-height: 34px;
+			}
+		}
+		.sx-gallery-main {
+			height: 260px;
+			border-radius: 18px;
+		}
+		.sx-gallery-thumbs button {
+			flex-basis: 96px;
+			height: 68px;
+		}
+		.sx-facts {
+			grid-template-columns: 1fr 1fr;
+		}
+		.sx-calendar {
+			width: calc(100vw - 32px);
+			max-width: 340px;
+		}
+	}
+}
+
+/* ---------- Checkout ---------- */
+#site-wrap #checkout-page {
+	.sx-checkout-success {
+		width: 100%;
+		min-width: 0;
+		box-sizing: border-box;
+		overflow-wrap: anywhere;
+	}
+	@include tablet {
+		padding: 84px 0 64px;
+		.sx-checkout-body {
+			grid-template-columns: 1fr;
+			gap: 24px;
+		}
+		.sx-checkout-summary {
+			order: -1;
+			position: static;
+		}
+	}
+	@include mobile {
+		.sx-checkout-success {
+			padding: 28px 20px;
+			border-radius: 20px;
+			h1 {
+				font-size: 28px;
+			}
+			p {
+				line-height: 1.5;
+			}
+		}
+		.sx-checkout-success-actions {
+			width: 100%;
+			flex-direction: column;
+			a {
+				box-sizing: border-box;
+				width: 100%;
+				white-space: normal;
+			}
+		}
+		.sx-checkout-title {
+			font-size: 28px;
+			line-height: 34px;
+		}
+		.sx-checkout-methods {
+			grid-template-columns: 1fr;
+		}
+	}
+}
+
+/* ================= Step 3: other redesigned pages ================= */
+
+/* ---------- Hosts list ---------- */
+#site-wrap .agent-list-page {
+	.container.sx-hosts {
+		@include tablet {
+			padding: 24px 24px !important;
+		}
+		@include mobile {
+			padding: 16px 16px !important;
+		}
+	}
+	.sx-hosts-controls-row {
+		@include mobile {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 12px;
+		}
+	}
+	.sx-hosts-search {
+		@include mobile {
+			width: 100%;
+			max-width: 100%;
+		}
+	}
+	.sx-hosts-grid,
+	.sx-hosts-trust {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+			gap: 20px;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	.sx-hosts-trust {
+		@include mobile {
+			padding: 20px;
+		}
+	}
+}
+
+/* ---------- Host detail ---------- */
+#site-wrap #host-detail-page {
+	.sx-host-section .sx-stays-grid {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	@include mobile {
+		.sx-host-hero {
+			height: auto;
+			min-height: 300px;
+			padding-top: 72px;
+		}
+		.sx-host-head {
+			flex-wrap: wrap;
+			gap: 16px;
+		}
+		.sx-host-avatar {
+			width: 72px;
+			height: 72px;
+		}
+		.sx-host-title h1 {
+			font-size: 28px;
+		}
+		.sx-host-profile-btn {
+			width: 100%;
+			justify-content: center;
+			padding: 13px 0;
+			font-size: 15px;
+		}
+		.sx-host-section {
+			padding: 18px;
+			border-radius: 18px;
+		}
+	}
+}
+
+/* ---------- Community list + detail ---------- */
+#site-wrap #community-list-page,
+#site-wrap #community-detail-page {
+	.container.sx-community-layout {
+		@include tablet {
+			grid-template-columns: 1fr;
+			padding: 24px 16px 48px;
+		}
+	}
+	.sx-community-side {
+		@include tablet {
+			position: static;
+		}
+	}
+	// Phones: boards become a swipeable chip row; the etiquette box is hidden to reach posts faster.
+	@include mobile {
+		.container.sx-community-layout {
+			gap: 16px;
+		}
+		.sx-community-side,
+		.sx-community-main {
+			min-width: 0;
+		}
+		.sx-board-menu {
+			min-width: 0;
+			max-width: 100%;
+			overflow: hidden;
+			padding: 12px;
+			.sx-board-brand {
+				display: none;
+			}
+			nav {
+				display: flex;
+				flex-direction: row;
+				gap: 8px;
+				overflow-x: auto;
+			}
+			button {
+				flex-shrink: 0;
+				width: auto;
+				gap: 8px;
+				white-space: nowrap;
+			}
+		}
+		.sx-etiquette {
+			display: none;
+		}
+	}
+	.sx-post-grid {
+		@include tablet {
+			grid-template-columns: 1fr 1fr;
+		}
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+	.sx-board-head {
+		@include tablet {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 16px;
+			h2 {
+				font-size: 26px;
+				line-height: 1.2;
+			}
+		}
+	}
+	.sx-board-actions {
+		@include mobile {
+			width: 100%;
+			flex-wrap: wrap;
+			.sx-board-search {
+				flex: 1;
+				min-width: 0;
+			}
+		}
+	}
+	input {
+		@include mobile {
+			width: 100%;
+		}
+	}
+	.sx-share {
+		@include tablet {
+			flex-direction: column;
+			align-items: stretch;
+			padding: 24px;
+			button {
+				width: 100%;
+			}
+		}
+		@include mobile {
+			.sx-share-copy {
+				align-items: flex-start;
+			}
+			h3 {
+				font-size: 20px;
+				line-height: 26px;
+			}
+		}
+	}
+}
+
+/* ---------- Help ---------- */
+#site-wrap #cs-page {
+	@include tablet {
+		.sx-cs-layout {
+			grid-template-columns: 1fr;
+		}
+		.sx-cs-aside {
+			position: static;
+		}
+	}
+	@include mobile {
+		padding: 24px 0 64px;
+		.sx-cs-toolbar {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.sx-cs-tabs {
+			overflow-x: auto;
+			button {
+				padding: 10px 12px;
+				white-space: nowrap;
+			}
+		}
+		.sx-cs-search {
+			flex-basis: auto;
+		}
+		.sx-cs-panel {
+			padding: 18px;
+			border-radius: 18px;
+		}
+		.sx-notice-list li > button,
+		.sx-faq-list li > button {
+			flex-wrap: wrap;
+			gap: 8px 12px;
+			padding: 14px;
+		}
+		.sx-notice-list time,
+		.sx-inquiry-list small {
+			display: none;
+		}
+		.sx-notice-list .sx-notice-body {
+			padding: 0 14px 16px;
+		}
+		.sx-faq-groups {
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			padding-bottom: 4px;
+			button {
+				white-space: nowrap;
+			}
+		}
+	}
+}
+
+/* ---------- My Page ---------- */
+#site-wrap .sx-identity {
+	@include mobile {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+		padding: 20px;
+		.sx-identity-avatar {
+			width: 80px;
+			height: 80px;
+		}
+	}
+}
+#site-wrap #my-page .container .my-page {
+	@include tablet {
+		margin: 24px 0 64px;
+		gap: 20px;
+		.back-frame {
+			flex-direction: column;
+			gap: 20px;
+			.left-config {
+				position: static;
+				width: 100%;
+				max-height: none;
+				overflow: hidden;
+			}
+			.main-config .list-config {
+				justify-content: center;
+			}
+		}
+	}
+}
+// Menu becomes a horizontal chip bar: groups side by side, items scroll sideways.
+#site-wrap #my-page,
+#site-wrap #member-page {
+	@include tablet {
+		.sx-menu {
+			flex-direction: row;
+			align-items: center;
+			gap: 8px;
+			padding: 12px;
+			overflow-x: auto;
+			ul {
+				flex-direction: row;
+				gap: 6px;
+			}
+		}
+		.sx-menu-head,
+		.sx-menu-group h6 {
+			display: none;
+		}
+		.sx-menu-group + .sx-menu-group {
+			margin-top: 0;
+		}
+		.sx-menu-item {
+			white-space: nowrap;
+			border-radius: 999px;
+		}
+		.sx-earnings {
+			grid-template-columns: 1fr 1fr;
+		}
+		.sx-booking-card {
+			grid-template-columns: 1fr;
+		}
+	}
+}
+
+/* ---------- Login / Register ---------- */
+#site-wrap #join-page {
+	@include tablet {
+		padding: 88px 0 48px;
+		.sx-join {
+			grid-template-columns: 1fr;
+			width: calc(100% - 32px);
+			min-height: 0;
+		}
+		.sx-join-side {
+			display: none;
+		}
+	}
+	@include mobile {
+		.sx-join-card {
+			padding: 28px 20px;
+		}
+	}
+}
+
+/* ---------- Notification bell menu ---------- */
+.sx-bell-menu {
+	@include mobile {
+		width: calc(100vw - 24px) !important;
+		max-width: 380px;
+	}
+}
+
+// The homepage search is a 9999px pill on desktop; on small screens the stacked box needs normal corners.
+#site-wrap.is-home .header-main.home-hero .container .search-box.home-glass-search {
+	@include tablet {
+		border-radius: 24px;
+		padding: 12px;
+	}
+}
+
+/* ================= My Page sections ================= */
+#site-wrap #my-page {
+	@include tablet {
+		// Flex children may not grow wider than the screen.
+		.main-config,
+		.list-config,
+		.list-config > * {
+			min-width: 0;
+			max-width: 100%;
+		}
+		.list-config > * {
+			width: 100%;
+		}
+	}
+
+	// Profile information
+	@include mobile {
+		.sx-profile-head,
+		.sx-profile-body {
+			padding-left: 18px;
+			padding-right: 18px;
+		}
+		.sx-profile-head h2,
+		.sx-profile-head h3 {
+			font-size: 22px;
+		}
+		.sx-profile-photo {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 14px;
+		}
+		.sx-profile-grid {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+		.sx-profile-footer {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 12px;
+		}
+		.sx-profile-footer-actions {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+			button {
+				width: 100%;
+			}
+		}
+	}
+
+	// Notifications
+	@include mobile {
+		.sx-notifications-head {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 12px;
+		}
+		.sx-notifications-list li,
+		.sx-notification-main,
+		.sx-notification-body {
+			min-width: 0;
+		}
+		.sx-notification-message,
+		.sx-notification-subject {
+			overflow-wrap: anywhere;
+		}
+	}
+
+	// Bookings and reservations
+	.sx-notifications-filters {
+		@include mobile {
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			padding-bottom: 4px;
+			button {
+				flex-shrink: 0;
+				white-space: nowrap;
+			}
+		}
+	}
+	@include mobile {
+		.sx-bookings-head h2 {
+			font-size: 24px;
+		}
+		.sx-booking-card {
+			gap: 12px;
+			padding: 14px;
+		}
+		.sx-booking-photo {
+			height: 160px;
+		}
+		.sx-booking-info,
+		.sx-booking-side {
+			min-width: 0;
+		}
+		.sx-booking-side {
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			text-align: left;
+		}
+		.sx-booking-facts {
+			flex-wrap: wrap;
+		}
+		.sx-booking-actions {
+			flex-basis: 100%;
+			width: 100%;
+			button {
+				flex: 1;
+				width: 100%;
+			}
+		}
+	}
+
+	// Write article (toast editor)
+	@include tablet {
+		.teditor-fields {
+			flex-direction: column !important;
+			gap: 12px;
+			margin: 16px 0 20px !important;
+		}
+		.teditor-field {
+			width: 100% !important;
+		}
+		.toastui-editor-defaultUI {
+			max-width: 100%;
+		}
+	}
+}
+
+/* ================= Older (Nestar-style) pages: readable on phones until they are redesigned ================= */
+
+// Old banner used by Member, Community detail and About.
+#site-wrap .header-basic {
+	@include tablet {
+		height: 220px !important;
+		padding-top: 64px;
+		box-sizing: border-box;
+		.container {
+			margin-top: 0 !important;
+			flex-direction: column;
+			justify-content: center;
+			strong {
+				font-size: 32px !important;
+				line-height: 1.15 !important;
+			}
+			span {
+				font-size: 15px !important;
+			}
+		}
+	}
+}
+
+// Shared fallback: no element wider than the screen, images scale down.
+#site-wrap {
+	#my-page .list-config {
+		@include tablet {
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				max-width: 100%;
+			}
+			img,
+			video {
+				height: auto;
+			}
+		}
+	}
+}
+
+// Tablets and phones: accordion. Each search panel opens right under its own field button.
+// The field row is flattened (display: contents) so buttons and panels become siblings and can be ordered.
+#site-wrap .header-main .container .search-box.home-glass-search {
+	@include tablet {
+		.select-box {
+			display: contents !important;
+		}
+		$fields: location, type, dates, guests, rooms;
+		@each $field in $fields {
+			$i: index($fields, $field);
+			#home-search-#{$field} {
+				order: $i * 2 - 1;
+			}
+			#home-panel-#{$field} {
+				order: $i * 2;
+				margin-top: 0;
+			}
+		}
+		.search-box-other {
+			order: 20;
+		}
+	}
+}
+// Tablets (768–1199px): photo cards in 4 columns so the open panel stays short.
+#site-wrap .header-main .container .search-box.home-glass-search {
+	@media (min-width: 768px) and (max-width: 1199px) {
+		.filter-location,
+		.filter-type {
+			grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+		}
+	}
+}
+
+/* My Page: keep every account tab within the available touch viewport. */
+#site-wrap #my-page {
+	@include tablet {
+		.container .my-page .back-frame .main-config {
+			width: 100%;
+			min-width: 0;
+			gap: 24px;
+		}
+		.sx-menu-group,
+		.sx-menu-logout {
+			flex-shrink: 0;
+		}
+		.sx-bookings,
+		.sx-notifications {
+			padding: 24px;
+		}
+		.list-config .sx-booking-photo img,
+		.list-config .sx-profile-avatar img,
+		.list-config .sx-cover-preview img {
+			height: 100%;
+			object-fit: cover;
+		}
+		.list-config .sx-notification-avatar img {
+			height: 46px;
+			object-fit: cover;
+		}
+		.sx-booking-title,
+		.sx-booking-guest,
+		.sx-booking-meta,
+		.sx-earnings-card strong {
+			overflow-wrap: anywhere;
+			white-space: normal;
+		}
+		.sx-profile-photo,
+		.sx-profile-photo-actions {
+			flex-wrap: wrap;
+		}
+		#my-property-page .sx-stays-tabs {
+			max-width: 100%;
+			overflow-x: auto;
+			button {
+				flex: 0 0 auto;
+				min-height: 44px;
+			}
+		}
+		.toastui-editor-defaultUI-toolbar {
+			overflow-x: auto;
+		}
+	}
+	@include mobile {
+		.sx-bookings,
+		.sx-notifications {
+			padding: 20px 16px;
+		}
+		.sx-earnings {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.sx-earnings-card {
+			padding: 16px;
+		}
+		.sx-booking-facts > *,
+		.sx-booking-guest > * {
+			min-width: 0;
+			white-space: normal;
+			overflow-wrap: anywhere;
+		}
+		.sx-booking-guest {
+			flex-wrap: wrap;
+		}
+		.sx-notification-main {
+			padding: 14px 12px;
+			gap: 10px;
+		}
+		.sx-profile-photo-actions,
+		.sx-profile-footer-actions {
+			width: 100%;
+			button,
+			label {
+				min-height: 44px;
+				white-space: normal;
+			}
+		}
+		input,
+		textarea,
+		select {
+			font-size: 16px;
+		}
+		#my-favorites-page .sx-saved-head,
+		#my-visited-page .sx-saved-head,
+		#member-follows-page .sx-follows-head {
+			flex-wrap: wrap;
+		}
+		#write-article-page .sx-cover-actions,
+		#write-article-page .sx-editor-actions {
+			flex-wrap: wrap;
+		}
+		.sx-menu-item {
+			min-height: 44px;
+		}
+		.sx-notifications-pagination .MuiPagination-ul,
+		.sx-stays-pagination .MuiPagination-ul,
+		.sx-saved-pagination .MuiPagination-ul {
+			justify-content: center;
+		}
+	}
+	@media (max-width: 380px) {
+		.sx-profile-footer-actions {
+			grid-template-columns: 1fr;
+		}
+		#member-follows-page .sx-follow-row {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		#member-follows-page .sx-follow-action,
+		#member-follows-page .sx-follow-btn {
+			width: 100%;
+		}
+		#my-property-page .sx-stay-row {
+			grid-template-columns: 72px minmax(0, 1fr);
+			grid-template-areas: 'photo info' 'meta meta' 'actions actions';
+		}
+	}
+}
+#site-wrap .sx-identity {
+	@include tablet {
+		.sx-identity-copy h2,
+		.sx-identity-copy p,
+		.sx-identity-meta span {
+			overflow-wrap: anywhere;
+			min-width: 0;
+		}
+	}
+}
+
+/* Compact admin navigation retains the same routes and table actions. */
+#site-wrap.admin {
+	@include tablet {
+		#bunker {
+			width: 100%;
+			min-width: 0;
+			padding: 88px 24px 40px;
+			box-sizing: border-box;
+			.content,
+			.table-wrap,
+			.MuiTabPanel-root {
+				min-width: 0;
+				max-width: 100%;
+			}
+			.table-wrap .tab-menu {
+				overflow-x: auto;
+				padding: 0 12px;
+			}
+			.table-wrap .tab-menu li {
+				flex-shrink: 0;
+				white-space: nowrap;
+			}
+			.MuiTableContainer-root {
+				max-width: 100%;
+				overflow-x: auto;
+			}
+			.search-area {
+				flex-wrap: wrap;
+				gap: 12px;
+			}
+			.search-area > * {
+				margin: 0;
+				min-width: 0;
+				max-width: 100%;
+			}
+			.search-area .search {
+				flex: 1 1 240px;
+			}
+			.detail {
+				min-width: 0;
+				width: 100%;
+			}
+			.MuiTablePagination-toolbar {
+				flex-wrap: wrap;
+				justify-content: flex-end;
+				padding: 8px;
+			}
+			.MuiTablePagination-spacer {
+				display: none;
+			}
+		}
+		.admin-dash-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@include mobile {
+		.MuiAppBar-root {
+			padding: 0 8px;
+		}
+		#bunker {
+			padding: 80px 16px 32px;
+			.tit {
+				font-size: 24px;
+				overflow-wrap: anywhere;
+			}
+			.flex-space,
+			.detail .info-area {
+				flex-direction: column;
+				align-items: stretch;
+				gap: 12px;
+			}
+			.search-area {
+				margin: 16px;
+			}
+			.search-area > * {
+				width: 100%;
+			}
+			button,
+			.MuiSelect-select {
+				min-height: 44px;
+				box-sizing: border-box;
+			}
+		}
+		.admin-dash-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.admin-dash-panel {
+			padding: 16px;
+			min-width: 0;
+		}
+		.admin-dash-panel-head {
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+		.admin-summary-card {
+			min-width: 0;
+			flex-basis: 100%;
+		}
+	}
+}
+
+@include mobile {
+	#site-wrap {
+		input,
+		textarea,
+		select,
+		.MuiInputBase-input {
+			font-size: 16px;
+		}
+		#top .navbar .navbar-main .nav-burger,
+		#top .navbar .navbar-main .container .lan-box .sx-bell {
+			width: 44px;
+			height: 44px;
+		}
+		#property-detail-page {
+			.sx-nearby .similar-homes-slide {
+				width: min(411px, calc(100vw - 32px));
+			}
+			.sx-nearby-head {
+				flex-wrap: wrap;
+				gap: 16px;
+			}
+			.sx-calendar {
+				max-width: 100%;
+				width: 100%;
+				box-sizing: border-box;
+			}
+			.sx-calendar-head button {
+				width: 44px;
+				height: 44px;
+			}
+			.sx-calendar-grid button {
+				min-height: 44px;
+			}
+		}
+		.chatting .chat-frame {
+			max-height: calc(100dvh - 180px);
+			bottom: 158px;
+		}
+	}
+	.nav-drawer {
+		max-width: calc(100vw - 24px);
+	}
+	.nav-drawer button,
+	.nav-drawer a {
+		min-height: 44px;
+	}
+	.MuiDialog-paper {
+		margin: 16px;
+		max-width: calc(100% - 32px);
+	}
+	.MuiDialog-paper input,
+	.MuiDialog-paper textarea {
+		font-size: 16px;
+	}
+}
+
+@include mobile {
+	#site-wrap #property-list-page .sx-filter-trip .sx-calendar,
+	#site-wrap #property-list-page .sx-calendar,
+	#site-wrap.is-home .home-glass-search .sx-calendar {
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+		box-sizing: border-box;
+		.sx-calendar-head button {
+			width: 44px;
+			height: 44px;
+		}
+		.sx-calendar-grid {
+			grid-template-columns: repeat(7, minmax(0, 1fr));
+		}
+		.sx-calendar-grid button {
+			min-height: 44px;
+		}
+	}
+	#site-wrap #property-list-page .sx-filter-sheet {
+		max-height: 88dvh;
+		overscroll-behavior-y: contain;
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+}

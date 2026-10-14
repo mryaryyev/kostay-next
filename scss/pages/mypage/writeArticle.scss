@@ -1,0 +1,267 @@
+// My Page → Write / Edit article. Tokens from mypage.scss; the editor itself is Toast UI.
+
+#site-wrap #write-article-page {
+	width: 100%;
+	gap: 20px;
+
+	.sx-article-head {
+		margin-bottom: 20px;
+		h3 {
+			margin: 0;
+			color: $mp-navy;
+			font-size: 26px;
+			line-height: 34px;
+			font-weight: 800;
+			letter-spacing: -0.02em;
+		}
+		p {
+			margin: 4px 0 0;
+			color: $mp-body;
+			font-size: 14px;
+		}
+	}
+
+	// The whole editor sits in one white card, like the Add Stay sections.
+	.sx-teditor {
+		padding: 24px;
+		border: 1px solid $mp-line;
+		border-radius: 20px;
+		background: $mp-surface;
+		box-shadow: $mp-shadow-md;
+		@include mobile {
+			padding: 16px;
+		}
+	}
+
+	.sx-article-fields {
+		display: grid;
+		grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+		gap: 16px;
+		margin-bottom: 20px;
+		@include mobile {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.sx-article-field {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		> span {
+			color: $mp-body;
+			font-size: 13px;
+			font-weight: 700;
+		}
+		input {
+			width: 100%;
+			height: 48px;
+			box-sizing: border-box;
+			padding: 0 14px;
+			border: 1.5px solid $mp-line;
+			border-radius: 12px;
+			outline: none;
+			background: $mp-surface;
+			color: $mp-ink;
+			font-family: inherit;
+			font-size: 15px;
+			transition: border-color 160ms ease, box-shadow 160ms ease;
+			&:focus {
+				border-color: $mp-navy;
+				box-shadow: 0 0 0 3px rgba(3, 22, 54, 0.08);
+			}
+		}
+		small {
+			align-self: flex-end;
+			color: $mp-outline;
+			font-size: 12px;
+		}
+	}
+
+	// Toast UI tweaks kept from the old page: roomier popups and toolbar buttons.
+	.toastui-editor-popup-body {
+		padding: 20px;
+	}
+	.toastui-editor-defaultUI button {
+		padding: 4px;
+	}
+}
+
+/* Cover image field (create + edit article) */
+#site-wrap #write-article-page .sx-cover-field {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0 0 24px;
+	font-family: $font-display;
+	.sx-cover-label {
+		color: $mp-body;
+		font-family: $font-display;
+		font-size: 13px;
+		font-weight: 700;
+	}
+	.sx-cover-empty {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		height: 120px;
+		border: 1.5px dashed #d9d4cc;
+		border-radius: 16px;
+		background: #fdf9f3;
+		color: #44474e;
+		font-family: $font-display;
+		font-size: 14px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: border-color 200ms ease, color 200ms ease;
+		&:hover:not(:disabled) {
+			border-color: #aa3614;
+			color: #aa3614;
+		}
+		&:disabled {
+			cursor: wait;
+			opacity: 0.7;
+		}
+	}
+	.sx-cover-preview {
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 16 / 6;
+		border-radius: 16px;
+		background: #f1ede7;
+		img {
+			width: 100%;
+			height: 100%;
+			display: block;
+			object-fit: cover;
+		}
+	}
+	.sx-cover-actions {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		display: flex;
+		gap: 8px;
+		button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 34px;
+			min-width: 34px;
+			padding: 0 14px;
+			border: 0;
+			border-radius: 9999px;
+			background: rgba(3, 22, 54, 0.75);
+			color: #fff;
+			font-family: $font-display;
+			font-size: 13px;
+			font-weight: 600;
+			cursor: pointer;
+			backdrop-filter: blur(8px);
+			svg {
+				width: 18px;
+				height: 18px;
+			}
+			&:hover {
+				background: rgba(3, 22, 54, 0.9);
+			}
+		}
+		button[aria-label] {
+			padding: 0;
+		}
+	}
+	@include tablet {
+		margin: 0 0 20px;
+	}
+	@include mobile {
+		.sx-cover-preview {
+			aspect-ratio: 16 / 9;
+		}
+	}
+}
+
+/* Editor frame + actions */
+#site-wrap #write-article-page {
+	.toastui-editor-defaultUI {
+		border-color: #e5e0d8;
+		border-radius: 16px;
+		overflow: hidden;
+		background: #fff;
+	}
+	.sx-editor-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 12px;
+		margin: 24px 0 8px;
+		button {
+			height: 46px;
+			padding: 0 24px;
+			border: 0;
+			border-radius: 12px;
+			background: $mp-cta-bright;
+			color: #fff;
+			font-family: $font-display;
+			font-size: 14px;
+			font-weight: 700;
+			cursor: pointer;
+			transition: background 200ms ease, transform 150ms ease;
+			&:hover:not(:disabled) {
+				background: $mp-cta-hover;
+			}
+			&:active:not(:disabled) {
+				transform: scale(0.97);
+			}
+			&:disabled {
+				opacity: 0.55;
+				cursor: not-allowed;
+			}
+			&.is-ghost {
+				border: 1px solid $mp-line;
+				background: #fff;
+				color: $mp-navy;
+				&:hover {
+					background: #f7f3ed;
+				}
+			}
+		}
+	}
+	@include mobile {
+		.sx-editor-actions button {
+			flex: 1;
+			padding: 0 16px;
+		}
+	}
+}
+
+/* Write/Edit article: the editor fills the leftover height so the right column ends level with the left menu. */
+#site-wrap #my-page .back-frame:has(#write-article-page) {
+	align-items: stretch;
+	.main-config {
+		display: flex;
+		flex-direction: column;
+	}
+	.list-config {
+		flex: 1;
+		flex-direction: column;
+		flex-wrap: nowrap;
+	}
+	#write-article-page,
+	.sx-teditor {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+	}
+	.sx-editor-wrap {
+		position: relative;
+		flex: 1;
+		min-height: 280px;
+		> div {
+			position: absolute;
+			inset: 0;
+		}
+	}
+	.sx-editor-actions {
+		margin-bottom: 0;
+	}
+}

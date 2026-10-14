@@ -1,0 +1,838 @@
+#site-wrap {
+	.agent-list-page {
+		position: relative;
+		padding: 147px 0 75px;
+		width: 100%;
+		height: auto;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		.container {
+			display: flex;
+			flex-direction: column;
+			.filter {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+				.left {
+					display: flex;
+					flex-direction: row;
+					input {
+						padding: 22px 10px;
+						width: 333px;
+						height: 50px;
+						border-radius: 40px;
+						border: 1px solid #ddd;
+						background: #fff;
+						color: #181a20;
+						font-family: $font;
+						font-size: 14px;
+						font-style: normal;
+						font-weight: 400;
+						line-height: 26px;
+						box-sizing: border-box;
+					}
+				}
+				.right {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					button {
+						margin-left: 10px;
+						color: #181a20;
+						font-family: $font;
+						font-size: 14px;
+						font-style: normal;
+						font-weight: bold;
+						line-height: 26px;
+						&:hover {
+							background: none;
+						}
+					}
+				}
+			}
+			.card-wrap {
+				position: relative;
+				margin-top: 35px;
+				width: 100%;
+				min-height: 500px;
+				height: auto;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+			}
+			.pagination {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				span {
+					margin-top: 20px;
+					color: #181a20;
+					font-family: $font;
+					font-size: 14px;
+					font-style: normal;
+					font-weight: 400;
+					line-height: 26px; /* 185.714% */
+				}
+			}
+		}
+	}
+}
+
+/** HOSTS PAGE (PC) — Stitch "Kostay - Hosts Directory" **/
+
+$ht-navy: #031636;
+$ht-cta: #aa3614;
+$ht-cta-hover: #591000;
+$ht-ink: #1c1c18;
+$ht-body: #44474e;
+$ht-outline: #75777f;
+$ht-canvas: #fdf9f3;
+$ht-surface: #ffffff;
+$ht-low: #f7f3ed;
+$ht-container: #f1ede7;
+$ht-container-high: #ebe8e2;
+$ht-line: rgba(197, 198, 207, 0.3);
+$ht-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$ht-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+#site-wrap .sx-hosts-hero {
+	position: relative;
+	height: 340px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	overflow: hidden;
+	background: $ht-navy;
+	&,
+	* {
+		font-family: $font-display;
+	}
+	.sx-hosts-hero-bg {
+		position: absolute;
+		inset: 80px 0 0; // start under the fixed navbar so the skyline top stays visible
+		@include mobile {
+			top: 64px;
+		}
+		background: url('/img/banner/hero/hosts.jpg') center / cover no-repeat;
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(to top, rgba(3, 22, 54, 0.78), rgba(3, 22, 54, 0.35) 55%, rgba(3, 22, 54, 0.1));
+		}
+	}
+	.container {
+		position: relative;
+		z-index: 1;
+		flex-direction: column;
+		padding-bottom: 48px;
+	}
+	h1 {
+		margin: 0;
+		color: #fff;
+		font-size: 56px;
+		line-height: 1;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+	}
+	p {
+		margin: 12px 0 0;
+		max-width: 672px;
+		color: #e2e8f0;
+		font-size: 16px;
+		line-height: 24px;
+	}
+	// Same look as the Find a Stay hero metrics.
+	.sx-hosts-hero-metrics {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 24px;
+		margin: 24px 0 0;
+		padding: 0;
+		list-style: none;
+		li {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			color: rgba(255, 255, 255, 0.9);
+			font-size: 17px;
+			line-height: 24px;
+			font-weight: 600;
+			letter-spacing: 0.02em;
+			svg {
+				width: 24px;
+				height: 24px;
+				color: #ff734c;
+			}
+		}
+	}
+}
+
+#site-wrap .agent-list-page {
+	padding: 0;
+	background: $ht-canvas;
+	&,
+	* {
+		font-family: $font-display;
+	}
+	a {
+		text-decoration: none;
+	}
+	button {
+		font-family: $font-display;
+		cursor: pointer;
+	}
+
+	.sx-hosts {
+		flex-direction: column;
+		gap: 32px;
+		padding: 40px 0;
+	}
+
+	/* ---------- Controls ---------- */
+	.sx-hosts-controls {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		padding: 20px;
+		border: 1px solid $ht-line;
+		border-radius: 16px;
+		background: $ht-surface;
+		box-shadow: $ht-shadow-sm;
+	}
+
+	.sx-hosts-controls-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+	}
+
+	.sx-hosts-search {
+		position: relative;
+		flex: 1;
+		max-width: 448px;
+		display: flex;
+		align-items: center;
+		svg {
+			position: absolute;
+			left: 14px;
+			width: 20px;
+			height: 20px;
+			color: $ht-outline;
+		}
+		input {
+			width: 100%;
+			padding: 10px 40px 10px 40px;
+			border: 1px solid $ht-line;
+			border-radius: 12px;
+			outline: none;
+			background: $ht-low;
+			color: $ht-ink;
+			font-size: 14px;
+			line-height: 22px;
+			transition: box-shadow 200ms ease;
+			&::placeholder {
+				color: $ht-outline;
+			}
+			&:focus {
+				box-shadow: 0 0 0 2px rgba(170, 54, 20, 0.2);
+			}
+		}
+		.sx-search-clear {
+			position: absolute;
+			right: 10px;
+			width: 24px;
+			height: 24px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0;
+			border: 0;
+			border-radius: 50%;
+			background: $ht-line;
+			color: $ht-ink;
+			cursor: pointer;
+			svg {
+				position: static;
+				width: 14px;
+				height: 14px;
+				color: inherit;
+			}
+			&:hover {
+				background: #d9d4cc;
+			}
+		}
+	}
+
+	.sx-hosts-sort {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		> span:first-child {
+			color: $ht-body;
+			font-size: 12px;
+			font-weight: 600;
+		}
+	}
+
+	.sx-hosts-select {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		button {
+			min-width: 150px;
+			padding: 10px 40px 10px 16px;
+			text-align: left;
+			border: 1px solid $ht-line;
+			border-radius: 12px;
+			outline: none;
+			background: $ht-low;
+			color: $ht-ink;
+			font-size: 14px;
+			line-height: 20px;
+			font-weight: 600;
+			appearance: none;
+			cursor: pointer;
+			&:hover {
+				background: $ht-container;
+			}
+			&:focus-visible {
+				outline: 2px solid $ht-navy;
+				outline-offset: 2px;
+			}
+		}
+		svg {
+			position: absolute;
+			right: 12px;
+			width: 18px;
+			height: 18px;
+			color: $ht-outline;
+			pointer-events: none;
+		}
+	}
+
+	.sx-hosts-chips {
+		display: flex;
+		gap: 8px;
+		button {
+			padding: 10px 20px;
+			border: 1px solid rgba(197, 198, 207, 0.4);
+			border-radius: 9999px;
+			background: $ht-low;
+			color: $ht-body;
+			font-size: 14px;
+			font-weight: 600;
+			&.is-active {
+				border-color: transparent;
+				background: $ht-navy;
+				box-shadow: $ht-shadow-sm;
+				color: #fff;
+			}
+		}
+	}
+
+	.no-data {
+		padding: 48px 16px;
+		border-radius: 16px;
+		background: $ht-surface;
+		color: $ht-body;
+		text-align: center;
+		// Empty state: icon + headline + hint (loading / error states reuse the same box).
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 6px;
+		> svg {
+			width: 40px;
+			height: 40px;
+			margin-bottom: 4px;
+			color: $ht-outline;
+		}
+		strong {
+			color: $ht-navy;
+			font-size: 17px;
+		}
+		p {
+			margin: 0;
+			font-size: 14px;
+		}
+	}
+
+	/* ---------- Cards ---------- */
+	.sx-hosts-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 32px;
+	}
+
+	.sx-host {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 24px;
+		border: 1px solid $ht-line;
+		border-radius: 16px;
+		background: $ht-surface;
+		box-shadow: $ht-shadow-sm;
+		transition: box-shadow 300ms ease;
+		&:hover {
+			box-shadow: $ht-shadow-md;
+		}
+	}
+
+	.sx-host-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 20px;
+	}
+
+	.sx-host-tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 4px 12px;
+		border-radius: 9999px;
+		background: $ht-container;
+		color: $ht-body;
+		font-size: 11px;
+		line-height: 14px;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		svg {
+			width: 14px;
+			height: 14px;
+		}
+		&.is-super {
+			background: #ffdbd1;
+			color: #872000;
+		}
+	}
+
+	.sx-host-count {
+		padding: 4px 10px;
+		border-radius: 9999px;
+		background: $ht-container;
+		color: $ht-body;
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+	}
+
+	.sx-host-who {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		margin-bottom: 16px;
+		> div {
+			flex: 1;
+			min-width: 0;
+		}
+		// Name on the left, stay count on the right of the same line.
+		.sx-host-name-row {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			h3 {
+				min-width: 0;
+			}
+			.sx-host-count {
+				flex-shrink: 0;
+			}
+		}
+		h3 {
+			margin: 0;
+			overflow: hidden;
+			font-size: 20px;
+			line-height: 28px;
+			font-weight: 600;
+			letter-spacing: -0.01em;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			a {
+				color: $ht-navy;
+				&:hover {
+					color: $ht-cta;
+				}
+			}
+		}
+	}
+
+	.sx-host-avatar {
+		position: relative;
+		width: 56px;
+		height: 56px;
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 2px solid $ht-container;
+		border-radius: 50%;
+		background: $ht-container-high;
+		color: $ht-outline;
+		img {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			object-fit: cover;
+		}
+		> svg {
+			width: 30px;
+			height: 30px;
+		}
+	}
+
+	.sx-host-verified {
+		position: absolute;
+		right: -2px;
+		bottom: -2px;
+		width: 20px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 2px solid $ht-surface;
+		border-radius: 50%;
+		background: $ht-cta;
+		color: #fff;
+		svg {
+			width: 12px;
+			height: 12px;
+		}
+	}
+
+	.sx-host-place {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		overflow: hidden;
+		color: $ht-body;
+		font-size: 12px;
+		line-height: 18px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		svg {
+			width: 16px;
+			height: 16px;
+			color: $ht-outline;
+		}
+	}
+
+	.sx-host-desc {
+		margin: 0 0 20px;
+		overflow-wrap: anywhere;
+		color: $ht-body;
+		font-size: 14px;
+		line-height: 22px;
+	}
+
+	.sx-host-stats {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		margin-bottom: 16px;
+		padding-top: 16px;
+		border-top: 1px solid $ht-container;
+		color: $ht-outline;
+		font-size: 12px;
+		font-weight: 600;
+		span,
+		button {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+		button {
+			padding: 0;
+			border: 0;
+			background: transparent;
+			color: inherit;
+			font-size: 12px;
+			font-weight: 600;
+			transition: color 200ms ease;
+			&:hover,
+			&.is-on {
+				color: $ht-cta;
+			}
+		}
+		svg {
+			width: 18px;
+			height: 18px;
+		}
+	}
+
+	.sx-host-cta {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 12px;
+		border-radius: 12px;
+		background: #f7dcd1; // peach, a step stronger than the home search fields
+		box-shadow: none;
+		color: $ht-ink;
+		font-size: 14px;
+		line-height: 20px;
+		font-weight: 700;
+		transition: background 200ms ease, color 200ms ease;
+		svg {
+			width: 16px;
+			height: 16px;
+			transition: transform 200ms ease;
+		}
+		&:hover {
+			background: #efc3b1;
+			svg {
+				transform: translateX(3px);
+			}
+		}
+	}
+
+	/* ---------- Pagination ---------- */
+	.sx-hosts-pagination {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		button {
+			width: 40px;
+			height: 40px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0;
+			border: 0;
+			border-radius: 50%;
+			background: $ht-surface;
+			box-shadow: $ht-shadow-sm;
+			color: $ht-ink;
+			font-size: 14px;
+			font-weight: 600;
+			svg {
+				width: 20px;
+				height: 20px;
+				color: $ht-outline;
+			}
+			&.is-active {
+				background: $ht-cta;
+				color: #fff;
+			}
+			&:disabled {
+				opacity: 0.4;
+				cursor: not-allowed;
+			}
+		}
+	}
+
+	/* ---------- Trust strip ---------- */
+	.sx-hosts-trust {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 32px;
+		margin-top: 16px;
+		padding: 32px;
+		border: 1px solid rgba(197, 198, 207, 0.2);
+		border-radius: 16px;
+		background: $ht-container;
+	}
+
+	.sx-hosts-trust-item {
+		display: flex;
+		align-items: flex-start;
+		gap: 16px;
+		> span {
+			width: 48px;
+			height: 48px;
+			flex-shrink: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 12px;
+			background: $ht-surface;
+			box-shadow: $ht-shadow-sm;
+			color: $ht-cta;
+			svg {
+				width: 24px;
+				height: 24px;
+			}
+		}
+		h3 {
+			margin: 0;
+			color: $ht-ink;
+			font-size: 17px;
+			font-weight: 700;
+		}
+		p {
+			margin: 4px 0 0;
+			color: $ht-body;
+			font-size: 14px;
+			line-height: 1.6;
+		}
+	}
+
+	/* ---------- CTA ---------- */
+	.sx-hosts-cta {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 40px;
+		overflow: hidden;
+		margin: 8px 0 32px;
+		padding: 64px;
+		border-radius: 24px;
+		background: $ht-navy;
+		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+		color: #fff;
+	}
+
+	.sx-hosts-cta-glow {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(64px);
+		pointer-events: none;
+		&.is-a {
+			top: -96px;
+			right: -96px;
+			width: 384px;
+			height: 384px;
+			background: rgba(255, 115, 76, 0.2);
+		}
+		&.is-b {
+			bottom: -96px;
+			left: 33%;
+			width: 288px;
+			height: 288px;
+			background: rgba(78, 94, 130, 0.25);
+		}
+	}
+
+	.sx-hosts-cta-copy {
+		position: relative;
+		z-index: 1;
+		max-width: 672px;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+		h2 {
+			margin: 0;
+			color: #fff;
+			font-size: 56px;
+			line-height: 1.25;
+			font-weight: 800;
+			letter-spacing: -0.03em;
+		}
+		p {
+			margin: 0;
+			max-width: 576px;
+			color: #cbd5e1;
+			font-size: 16px;
+			line-height: 1.65;
+		}
+	}
+
+	.sx-hosts-cta-tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 14px;
+		border-radius: 9999px;
+		background: rgba(255, 255, 255, 0.1);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		color: #ffdbd2;
+		font-size: 12px;
+		font-weight: 600;
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+	}
+
+	.sx-hosts-cta-actions {
+		position: relative;
+		z-index: 1;
+		flex-shrink: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		a {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 16px 32px;
+			border-radius: 12px;
+			color: #fff;
+			font-size: 14px;
+			line-height: 20px;
+			font-weight: 700;
+			transition: background 200ms ease, box-shadow 200ms ease;
+			svg {
+				width: 18px;
+				height: 18px;
+				transition: transform 200ms ease;
+			}
+			&:hover svg {
+				transform: translateX(4px);
+			}
+		}
+		.is-primary {
+			background: $ht-cta;
+			box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+			&:hover {
+				background: #ff734c;
+			}
+		}
+		.is-ghost {
+			padding: 14px 32px;
+			background: rgba(255, 255, 255, 0.1);
+			backdrop-filter: blur(4px);
+			font-weight: 600;
+			&:hover {
+				background: rgba(255, 255, 255, 0.15);
+			}
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.sx-host,
+		.sx-host-cta,
+		.sx-host-cta svg,
+		.sx-hosts-cta-actions a svg {
+			transition: none;
+		}
+		.sx-host-cta:hover svg,
+		.sx-hosts-cta-actions a:hover svg {
+			transform: none;
+		}
+	}
+}
+
+// Sort menu (Hosts and Stays) is portaled to <body>, so it lives outside the page scope.
+.sx-hosts-sort-menu,
+.sx-sort-menu {
+	margin-top: 6px;
+	min-width: 170px;
+	border: 1px solid $ht-line;
+	border-radius: 12px !important;
+	box-shadow: $ht-shadow-sm !important;
+	.MuiMenuItem-root {
+		margin: 0 6px;
+		border-radius: 8px;
+		color: $ht-ink;
+		font-size: 14px;
+		font-weight: 600;
+		&.Mui-selected,
+		&.Mui-selected:hover {
+			background: $ht-navy;
+			color: #fff;
+		}
+	}
+}
