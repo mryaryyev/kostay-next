@@ -16,7 +16,7 @@ export function setJwtToken(token: string) {
 }
 
 // DEFINE
-export const logIn = async (nick: string, password: string): Promise<void> => {
+export const logIn = async (nick: string, password: string): Promise<boolean> => {
 	try {
 		const { jwtToken } = await requestJwtToken({ nick, password });
 
@@ -24,10 +24,10 @@ export const logIn = async (nick: string, password: string): Promise<void> => {
 			updateStorage({ jwtToken }); // LocalStorage.accessToken > BACKEND
 			updateUserInfo(jwtToken); // ReactiveVariable > FRONTEND
 		}
+		return Boolean(jwtToken);
 	} catch (err) {
 		console.warn('login err', err);
-		logOut();
-		// throw new Error('Login Err');
+		return false;
 	}
 };
 
@@ -43,6 +43,7 @@ const requestJwtToken = async ({
 	try {
 		const result = await apolloClient.mutate({
 			mutation: LOGIN,
+			context: { skipGlobalErrorAlert: true },
 			variables: { input: { memberNick: nick, memberPassword: password } },
 			fetchPolicy: 'network-only',
 		});
@@ -53,13 +54,15 @@ const requestJwtToken = async ({
 		return { jwtToken: accessToken };
 	} catch (err: any) {
 		console.log('request token err', err.graphQLErrors);
-		switch (err.graphQLErrors[0].message) {
+		switch (err.graphQLErrors?.[0]?.message) {
 			case 'Definer: login and password do not match':
 				await sweetMixinErrorAlert('Please check your password again');
 				break;
 			case 'Definer: user has been blocked!':
 				await sweetMixinErrorAlert('User has been blocked!');
 				break;
+			default:
+				await sweetMixinErrorAlert(err.graphQLErrors?.[0]?.message ?? err.message);
 		}
 		throw new Error('token error');
 	}
