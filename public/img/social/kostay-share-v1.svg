@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <title>Kostay - Stays in Korea</title>
+  <rect width="1200" height="630" fill="#D65A32"/>
+  <g transform="translate(132 18) scale(6)" fill="none" stroke="#FDF9F3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 18.5L18 10L28 18.5" stroke-width="2.6"/>
+    <path d="M11 17V27H25V17" stroke-width="2.6"/>
+    <path d="M15.5 27V22.5C15.5 21.4 16.4 20.5 17.5 20.5H18.5C19.6 20.5 20.5 21.4 20.5 22.5V27" stroke-width="2.2"/>
+  </g>
+  <g fill="#FDF9F3" font-family="Arial, Helvetica, sans-serif">
+    <text x="414" y="190" font-size="192" font-weight="700" letter-spacing="-5">Kostay</text>
+    <text x="600" y="325" text-anchor="middle" font-size="64" font-weight="600">Stays in Korea</text>
+    <text x="600" y="403" text-anchor="middle" font-size="36">Apartments, villas and hanoks. Find your stay.</text>
+    <text x="600" y="570" text-anchor="middle" font-size="32">www.kostay.kr</text>
+  </g>
+</svg>
