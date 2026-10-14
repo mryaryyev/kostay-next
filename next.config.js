@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	output: 'standalone',
 	reactStrictMode: true,
 	// Old Nestar-style URLs keep working after the rename to /stay.
 	async redirects() {

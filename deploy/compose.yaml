@@ -1,0 +1,101 @@
+name: kostay
+
+x-service: &service
+  restart: unless-stopped
+  init: true
+  logging:
+    driver: json-file
+    options:
+      max-size: '10m'
+      max-file: '3'
+
+services:
+  frontend:
+    <<: *service
+    image: ${FRONTEND_IMAGE:?Set FRONTEND_IMAGE to a tested image tag}
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: '3000'
+    mem_limit: 384m
+
+  backend:
+    <<: *service
+    image: ${BACKEND_IMAGE:?Set BACKEND_IMAGE to a tested image tag}
+    env_file:
+      - path: ./backend.env
+        format: raw
+    environment:
+      NODE_ENV: production
+      PORT_API: '3007'
+      REDIS_URL: redis://redis:6379
+      TZ: Asia/Seoul
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      redis:
+        condition: service_healthy
+    mem_limit: 512m
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3007/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
+  batch:
+    <<: *service
+    image: ${BACKEND_IMAGE:?Set BACKEND_IMAGE to a tested image tag}
+    command: ['node', 'dist/apps/kostay-batch/main.js']
+    env_file:
+      - path: ./backend.env
+        format: raw
+    environment:
+      NODE_ENV: production
+      PORT_BATCH: '3008'
+      TZ: Asia/Seoul
+    depends_on:
+      backend:
+        condition: service_healthy
+    mem_limit: 384m
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3008/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
+  redis:
+    <<: *service
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory', '64mb', '--maxmemory-policy', 'noeviction']
+    volumes:
+      - redis-data:/data
+    mem_limit: 128m
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  proxy:
+    <<: *service
+    image: caddy:2-alpine
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    mem_limit: 128m
+
+volumes:
+  redis-data:
+  caddy-data:
+  caddy-config:
