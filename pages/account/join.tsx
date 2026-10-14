@@ -64,8 +64,9 @@ const Join: NextPage = () => {
 		if (!canSubmit || submitting) return;
 		try {
 			setSubmitting(true);
-			if (loginView) await logIn(input.nick.trim(), input.password);
-			else await signUp(input.nick.trim(), input.password, input.phone, input.type);
+			if (loginView) {
+				if (!(await logIn(input.nick.trim(), input.password))) return;
+			} else await signUp(input.nick.trim(), input.password, input.phone, input.type);
 			await router.push(`${router.query.referrer ?? '/'}`);
 		} catch (err: any) {
 			await sweetMixinErrorAlert(err.message);
