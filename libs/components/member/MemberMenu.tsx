@@ -27,7 +27,7 @@ interface MemberIdentityProps {
 export const MemberIdentity = (props: MemberIdentityProps) => {
 	const { member, isMe, onFollow, onUnfollow } = props;
 	const isFollowing = Boolean(member?.meFollowed?.[0]?.myFollowing);
-	const isHost = member?.memberType === MemberType.AGENT;
+	const isHost = member?.memberType === MemberType.HOST;
 
 	return (
 		<section className="sx-identity">
@@ -88,7 +88,7 @@ const MemberMenu = (props: MemberMenuProps) => {
 	const { member } = props;
 	const router = useRouter();
 	const category: any = router.query?.category;
-	const isHost = member?.memberType === MemberType.AGENT;
+	const isHost = member?.memberType === MemberType.HOST;
 
 	const groups = [
 		{

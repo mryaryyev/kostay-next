@@ -100,7 +100,7 @@ const MemberFollowers = (props: MemberFollowsProps) => {
 									</span>
 									<span className="sx-follow-name">
 										<strong>{person?.memberNick}</strong>
-										<small>{person?.memberType === 'AGENT' ? 'Host' : 'Guest'}</small>
+										<small>{person?.memberType === 'HOST' ? 'Host' : 'Guest'}</small>
 									</span>
 								</button>
 								<div className="sx-follow-stats">

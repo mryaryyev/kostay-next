@@ -728,7 +728,7 @@ $home-font: $font-display;
 	}
 
 	/* ---------- Hosts ---------- */
-	.top-agents {
+	.top-hosts {
 		.container {
 			flex-direction: column;
 		}
@@ -743,10 +743,10 @@ $home-font: $font-display;
 			flex: 1;
 			min-width: 0;
 		}
-		.top-agents-swiper {
+		.top-hosts-swiper {
 			padding: 4px;
 		}
-		.top-agents-slide {
+		.top-hosts-slide {
 			width: 232px;
 			height: auto;
 		}
@@ -768,7 +768,7 @@ $home-font: $font-display;
 				background: $home-ink;
 				color: #fff;
 			}
-			&.swiper-agents-next svg {
+			&.swiper-hosts-next svg {
 				transform: rotate(180deg);
 			}
 			&.swiper-button-disabled {

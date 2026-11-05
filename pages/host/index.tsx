@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useRef, ChangeEvent, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Link from 'next/link';
@@ -14,14 +14,14 @@ import RoofingIcon from '@mui/icons-material/Roofing';
 import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined';
 import TranslateIcon from '@mui/icons-material/Translate';
 import SecurityIcon from '@mui/icons-material/Security';
-import AgentCard from '../../libs/components/common/AgentCard';
+import HostCard from '../../libs/components/common/HostCard';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Member } from '../../libs/types/member/member';
 import { useMutation, useQuery } from '@apollo/client';
-import { GET_AGENTS } from '../../apollo/user/query';
+import { GET_HOSTS } from '../../apollo/user/query';
 import { LIKE_TARGET_MEMBER } from '../../apollo/user/mutation';
-import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
+import { sweetMixinErrorAlert } from '../../libs/sweetAlert';
 import { Messages } from '../../libs/config';
 import { T } from '../../libs/types/common';
 import { scrollToListTop } from '../../libs/utils';
@@ -32,12 +32,12 @@ export const getStaticProps = async ({ locale }: any) => ({
 	},
 });
 
-const AgentList: NextPage = ({ initialInput, ...props }: any) => {
+const HostList: NextPage = ({ initialInput, ...props }: any) => {
 	const router = useRouter();
 	const [searchFilter, setSearchFilter] = useState<any>(
 		router?.query?.input ? JSON.parse(router?.query?.input as string) : initialInput,
 	);
-	const [agents, setAgents] = useState<Member[]>([]);
+	const [hosts, setHosts] = useState<Member[]>([]);
 	const [total, setTotal] = useState<number>(0);
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [searchText, setSearchText] = useState<string>(searchFilter?.search?.text ?? '');
@@ -46,17 +46,17 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 	const [likeTargetMember] = useMutation(LIKE_TARGET_MEMBER);
 
 	const {
-		loading: getAgentsLoading,
-		data: getAgentsData,
-		error: getAgentsError,
-		refetch: getAgentsRefetch,
-	} = useQuery(GET_AGENTS, {
+		loading: getHostsLoading,
+		data: getHostsData,
+		error: getHostsError,
+		refetch: getHostsRefetch,
+	} = useQuery(GET_HOSTS, {
 		fetchPolicy: 'network-only',
 		variables: { input: searchFilter },
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
-			setAgents(data?.getAgents?.list);
-			setTotal(data?.getAgents?.metaCounter[0]?.total);
+			setHosts(data?.getHosts?.list);
+			setTotal(data?.getHosts?.metaCounter[0]?.total);
 		},
 	});
 
@@ -65,7 +65,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 		if (router.query.input) {
 			const input_obj = JSON.parse(router?.query?.input as string);
 			setSearchFilter(input_obj);
-		} else router.replace(`/agent?input=${JSON.stringify(searchFilter)}`, `/agent?input=${JSON.stringify(searchFilter)}`);
+		} else router.replace(`/host?input=${JSON.stringify(searchFilter)}`, `/host?input=${JSON.stringify(searchFilter)}`);
 
 		setCurrentPage(searchFilter.page === undefined ? 1 : searchFilter.page);
 	}, [router]);
@@ -122,14 +122,17 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 
 	const paginationChangeHandler = async (event: ChangeEvent<unknown>, value: number) => {
 		searchFilter.page = value;
-		await router.push(`/agent?input=${JSON.stringify(searchFilter)}`, `/agent?input=${JSON.stringify(searchFilter)}`, {
+		await router.push(`/host?input=${JSON.stringify(searchFilter)}`, `/host?input=${JSON.stringify(searchFilter)}`, {
 			scroll: false,
 		});
 		setCurrentPage(value);
 		scrollToListTop('.sx-hosts-controls');
 	};
 
+	const likePending = useRef(false);
 	const likeMemberHandler = async (user: any, id: string) => {
+		if (likePending.current) return;
+		likePending.current = true;
 		try {
 			if (!id) return;
 			if (!user._id) throw new Error(Messages.error2);
@@ -140,18 +143,19 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 				},
 			});
 
-			await getAgentsRefetch({ input: searchFilter });
-			await sweetTopSmallSuccessAlert('success', 800);
+			await getHostsRefetch({ input: searchFilter });
 		} catch (err: any) {
 			console.log('ERROR, likePropertyHandler:', err.message);
 			sweetMixinErrorAlert(err.message).then();
+		} finally {
+			likePending.current = false;
 		}
 	};
 
 	const pageCount = Math.ceil(total / searchFilter.limit);
 
 	return (
-		<div className={'agent-list-page'}>
+		<div className={'host-list-page'}>
 			<div className={'container sx-hosts'}>
 				<div className={'sx-hosts-controls'}>
 					<div className={'sx-hosts-controls-row'}>
@@ -224,11 +228,11 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 					</div>
 				</div>
 
-				{getAgentsLoading && agents.length === 0 ? (
+				{getHostsLoading && hosts.length === 0 ? (
 					<div className={'no-data'} role="status">
 						Loading hosts…
 					</div>
-				) : agents?.length === 0 ? (
+				) : hosts?.length === 0 ? (
 					<div className={'no-data'}>
 						<SearchOffOutlinedIcon aria-hidden="true" />
 						<strong>No hosts found</strong>
@@ -236,13 +240,13 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 					</div>
 				) : (
 					<div className={'sx-hosts-grid'}>
-						{agents.map((agent: Member) => (
-							<AgentCard agent={agent} key={agent._id} likeMemberHandler={likeMemberHandler} />
+						{hosts.map((host: Member) => (
+							<HostCard host={host} key={host._id} likeMemberHandler={likeMemberHandler} />
 						))}
 					</div>
 				)}
 
-				{agents.length !== 0 && pageCount > 1 && (
+				{hosts.length !== 0 && pageCount > 1 && (
 					<nav className={'sx-hosts-pagination'} aria-label="Pagination">
 						<button
 							type="button"
@@ -296,8 +300,8 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 						</span>
 						<h2>Have an apartment, a villa or a hanok to share?</h2>
 						<p>
-							Join {total} {total === 1 ? 'Host' : 'Hosts'} across Korea. List your stay, set your nightly price and manage every
-							booking and payout from My Page.
+							Join {total} {total === 1 ? 'Host' : 'Hosts'} across Korea. List your stay, set your nightly price and manage
+							every booking and payout from My Page.
 						</p>
 					</div>
 					<div className={'sx-hosts-cta-actions'}>
@@ -319,24 +323,21 @@ const trustItems = [
 	{
 		icon: <VerifiedUserOutlinedIcon />,
 		title: 'Reviewed Hosts & Stays',
-		text:
-			'Every stay is reviewed by the Kostay team and only active listings appear in search.',
+		text: 'Every stay is reviewed by the Kostay team and only active listings appear in search.',
 	},
 	{
 		icon: <TranslateIcon />,
 		title: 'Direct Host Messaging',
-		text:
-			'Message any host from their stay page, and reach the Kostay team anytime through the Help Center.',
+		text: 'Message any host from their stay page, and reach the Kostay team anytime through the Help Center.',
 	},
 	{
 		icon: <SecurityIcon />,
 		title: 'Clear Bookings & Payouts',
-		text:
-			'Every booking and payment is recorded securely, and hosts track their earnings in one place.',
+		text: 'Every booking and payment is recorded securely, and hosts track their earnings in one place.',
 	},
 ];
 
-AgentList.defaultProps = {
+HostList.defaultProps = {
 	initialInput: {
 		page: 1,
 		limit: 10,
@@ -346,4 +347,4 @@ AgentList.defaultProps = {
 	},
 };
 
-export default withLayoutBasic(AgentList);
+export default withLayoutBasic(HostList);

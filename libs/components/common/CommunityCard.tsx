@@ -123,7 +123,7 @@ const CommunityCard = (props: CommunityCardProps) => {
 							{authorName.charAt(0).toUpperCase()}
 						</span>
 						<strong>{authorName}</strong>
-						<em>· {author?.memberType === MemberType.AGENT ? 'Host' : 'Guest'}</em>
+						<em>· {author?.memberType === MemberType.HOST ? 'Host' : 'Guest'}</em>
 					</button>
 					<h3>{boardArticle?.articleTitle}</h3>
 					{preview && <p>{preview}</p>}

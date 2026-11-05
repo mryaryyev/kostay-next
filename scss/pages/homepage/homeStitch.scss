@@ -712,7 +712,7 @@ $sx-col4: 307px; // (1300 - 3 * 24) / 4
 	}
 
 	/* ---------- Top Hosts ---------- */
-	.top-agents {
+	.top-hosts {
 		.wrapper.sx-hosts-row {
 			position: relative;
 			width: 100%;
@@ -724,11 +724,11 @@ $sx-col4: 307px; // (1300 - 3 * 24) / 4
 			width: 100%;
 			margin: 0;
 		}
-		.top-agents-swiper {
+		.top-hosts-swiper {
 			// Room for the card's hover lift and shadow.
 			padding: 8px 0 24px;
 		}
-		.top-agents-slide {
+		.top-hosts-slide {
 			width: $sx-col4;
 			height: auto;
 		}

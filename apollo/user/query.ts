@@ -4,9 +4,9 @@ import { gql } from '@apollo/client';
  *         MEMBER         *
  *************************/
 
-export const GET_AGENTS = gql`
-	query GetAgents($input: AgentsInquiry!) {
-		getAgents(input: $input) {
+export const GET_HOSTS = gql`
+	query GetHosts($input: HostsInquiry!) {
+		getHosts(input: $input) {
 			list {
 				_id
 				memberType
@@ -195,9 +195,9 @@ export const GET_PROPERTIES = gql`
 	}
 `;
 
-export const GET_AGENT_PROPERTIES = gql`
-	query GetAgentProperties($input: AgentPropertiesInquiry!) {
-		getAgentProperties(input: $input) {
+export const GET_HOST_PROPERTIES = gql`
+	query GetHostProperties($input: HostPropertiesInquiry!) {
+		getHostProperties(input: $input) {
 			list {
 				_id
 				propertyType

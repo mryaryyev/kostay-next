@@ -90,7 +90,7 @@ const About: NextPage = () => {
 					<div className={'about-how-grid'}>
 						{[
 							{ title: 'For guests', steps: guestSteps, cta: { label: 'Browse stays', href: '/stay' } },
-							{ title: 'For Hosts', steps: hostSteps, cta: { label: 'Meet our Hosts', href: '/agent' } },
+							{ title: 'For Hosts', steps: hostSteps, cta: { label: 'Meet our Hosts', href: '/host' } },
 						].map((group) => (
 							<article className={'about-how-card'} key={group.title}>
 								<h3>{group.title}</h3>

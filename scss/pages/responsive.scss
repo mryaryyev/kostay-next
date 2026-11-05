@@ -376,7 +376,7 @@ body {
 	}
 	.top-properties .trend-property-slide,
 	.top-properties .top-property-slide,
-	.top-agents .top-agents-slide {
+	.top-hosts .top-hosts-slide {
 		@include tablet {
 			width: 46%;
 		}
@@ -384,7 +384,7 @@ body {
 			width: 82%;
 		}
 	}
-	.top-agents .sx-host-nav {
+	.top-hosts .sx-host-nav {
 		@include mobile {
 			display: none;
 		}
@@ -800,7 +800,7 @@ body {
 /* ================= Step 3: other redesigned pages ================= */
 
 /* ---------- Hosts list ---------- */
-#site-wrap .agent-list-page {
+#site-wrap .host-list-page {
 	.container.sx-hosts {
 		@include tablet {
 			padding: 24px 24px !important;

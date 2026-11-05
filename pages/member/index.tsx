@@ -49,7 +49,7 @@ const MemberPage: NextPage = () => {
 	useEffect(() => {
 		if (!router.isReady || !member) return;
 		// Only Hosts have a Stays tab; everyone else opens on Followers.
-		const isHost = member.memberType === MemberType.AGENT;
+		const isHost = member.memberType === MemberType.HOST;
 		if (!category || (category === 'properties' && !isHost)) {
 			router.replace(
 				{
@@ -108,7 +108,6 @@ const MemberPage: NextPage = () => {
 					input: id,
 				},
 			});
-			await sweetTopSmallSuccessAlert('Success!', 800);
 			await refetch({ input: query });
 		} catch (err: any) {
 			console.log('ERROR, likeMemberHandler:', err.message);

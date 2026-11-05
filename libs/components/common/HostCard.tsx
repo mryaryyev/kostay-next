@@ -13,22 +13,22 @@ import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import { Member } from '../../types/member/member';
 
-interface AgentCardProps {
-	agent: Member;
+interface HostCardProps {
+	host: Member;
 	likeMemberHandler: any;
 }
 
 /** Host directory card (Stitch: Kostay - Hosts Directory). */
-const AgentCard = (props: AgentCardProps) => {
-	const { agent, likeMemberHandler } = props;
+const HostCard = (props: HostCardProps) => {
+	const { host, likeMemberHandler } = props;
 	const user = useReactiveVar(userVar);
 	const [imageFailed, setImageFailed] = useState(false);
-	const imagePath = agent?.memberImage ? `${REACT_APP_API_URL}/${agent.memberImage}` : '';
-	const detailHref = { pathname: '/agent/detail', query: { agentId: agent?._id } };
-	const isSuperhost = (agent?.memberRank ?? 0) >= topPropertyRank;
-	const isLiked = Boolean(agent?.meLiked?.[0]?.myFavorite);
-	const properties = agent?.memberProperties ?? 0;
-	const description = agent?.memberDesc?.trim() || 'Kostay host welcoming guests across Korea.';
+	const imagePath = host?.memberImage ? `${REACT_APP_API_URL}/${host.memberImage}` : '';
+	const detailHref = { pathname: '/host/detail', query: { hostId: host?._id } };
+	const isSuperhost = (host?.memberRank ?? 0) >= topPropertyRank;
+	const isLiked = Boolean(host?.meLiked?.[0]?.myFavorite);
+	const properties = host?.memberProperties ?? 0;
+	const description = host?.memberDesc?.trim() || 'Kostay host welcoming guests across Korea.';
 	const firstSentence = description.match(/^[\s\S]*?[.!?](?=\s|$)/)?.[0] ?? description;
 
 	return (
@@ -44,7 +44,7 @@ const AgentCard = (props: AgentCardProps) => {
 				)}
 
 				<div className="sx-host-who">
-					<Link href={detailHref} className="sx-host-avatar" aria-label={`View ${agent?.memberNick}`}>
+					<Link href={detailHref} className="sx-host-avatar" aria-label={`View ${host?.memberNick}`}>
 						{imagePath && !imageFailed ? (
 							<img src={imagePath} alt="" loading="lazy" onError={() => setImageFailed(true)} />
 						) : (
@@ -57,16 +57,16 @@ const AgentCard = (props: AgentCardProps) => {
 					<div>
 						<div className="sx-host-name-row">
 							<h3>
-								<Link href={detailHref}>{agent?.memberFullName || agent?.memberNick}</Link>
+								<Link href={detailHref}>{host?.memberFullName || host?.memberNick}</Link>
 							</h3>
 							<span className="sx-host-count">
 								{properties} {properties === 1 ? 'Stay' : 'Stays'}
 							</span>
 						</div>
-						{agent?.memberAddress && (
+						{host?.memberAddress && (
 							<span className="sx-host-place">
 								<PlaceOutlinedIcon aria-hidden="true" />
-								{agent.memberAddress}
+								{host.memberAddress}
 							</span>
 						)}
 					</div>
@@ -77,19 +77,19 @@ const AgentCard = (props: AgentCardProps) => {
 
 			<div>
 				<div className="sx-host-stats">
-					<span aria-label={`${agent?.memberViews ?? 0} views`}>
+					<span aria-label={`${host?.memberViews ?? 0} views`}>
 						<VisibilityOutlinedIcon aria-hidden="true" />
-						{agent?.memberViews ?? 0}
+						{host?.memberViews ?? 0}
 					</span>
 					<button
 						type="button"
 						className={isLiked ? 'is-on' : ''}
 						aria-pressed={isLiked}
-						aria-label={`${isLiked ? 'Unlike' : 'Like'} ${agent?.memberNick}`}
-						onClick={() => likeMemberHandler(user, agent?._id)}
+						aria-label={`${isLiked ? 'Unlike' : 'Like'} ${host?.memberNick}`}
+						onClick={() => likeMemberHandler(user, host?._id)}
 					>
 						{isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-						{agent?.memberLikes ?? 0}
+						{host?.memberLikes ?? 0}
 					</button>
 				</div>
 				<Link href={detailHref} className="sx-host-cta">
@@ -101,4 +101,4 @@ const AgentCard = (props: AgentCardProps) => {
 	);
 };
 
-export default AgentCard;
+export default HostCard;

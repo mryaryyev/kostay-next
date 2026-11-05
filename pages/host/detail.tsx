@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useRef, ChangeEvent, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -33,8 +33,7 @@ import {
 	sweetErrorHandling,
 	sweetLoginConfirmAlert,
 	sweetMixinErrorAlert,
-	sweetTopSmallSuccessAlert,
-} from '../../libs/sweetAlert';
+	} from '../../libs/sweetAlert';
 import { T } from '../../libs/types/common';
 
 export const getStaticProps = async ({ locale }: any) => ({
@@ -46,16 +45,16 @@ export const getStaticProps = async ({ locale }: any) => ({
 const avatar = (image?: string) => (image ? `${REACT_APP_API_URL}/${image}` : '/img/profile/defaultUser.svg');
 
 /** Host profile: their stays and reviews. Same queries as before (GET_MEMBER, GET_PROPERTIES, GET_COMMENTS), Kostay design. */
-const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) => {
+const HostDetail: NextPage = ({ initialInput, initialComment, ...props }: any) => {
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
-	const [agentId, setAgentId] = useState<string | null>(null);
-	const [agent, setAgent] = useState<Member | null>(null);
+	const [hostId, setHostId] = useState<string | null>(null);
+	const [host, setHost] = useState<Member | null>(null);
 	const [searchFilter, setSearchFilter] = useState<PropertiesInquiry>(initialInput);
-	const [agentProperties, setAgentProperties] = useState<Property[]>([]);
+	const [hostProperties, setHostProperties] = useState<Property[]>([]);
 	const [propertyTotal, setPropertyTotal] = useState<number>(0);
 	const [commentInquiry, setCommentInquiry] = useState<CommentsInquiry>(initialComment);
-	const [agentComments, setAgentComments] = useState<Comment[]>([]);
+	const [hostComments, setHostComments] = useState<Comment[]>([]);
 	const [commentTotal, setCommentTotal] = useState<number>(0);
 	const [insertCommentData, setInsertCommentData] = useState<CommentInput>({
 		commentGroup: CommentGroup.MEMBER,
@@ -69,10 +68,10 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 
 	const { loading: getMemberLoading } = useQuery(GET_MEMBER, {
 		fetchPolicy: 'network-only',
-		variables: { input: agentId },
-		skip: !agentId,
+		variables: { input: hostId },
+		skip: !hostId,
 		onCompleted: (data: T) => {
-			setAgent(data?.getMember);
+			setHost(data?.getMember);
 			setSearchFilter({ ...searchFilter, search: { memberId: data?.getMember?._id } });
 			setCommentInquiry({ ...commentInquiry, search: { commentRefId: data?.getMember?._id } });
 			setInsertCommentData({ ...insertCommentData, commentRefId: data?.getMember?._id });
@@ -85,7 +84,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 		skip: !searchFilter.search.memberId,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
-			setAgentProperties(data?.getProperties?.list);
+			setHostProperties(data?.getProperties?.list);
 			setPropertyTotal(data?.getProperties?.metaCounter[0]?.total ?? 0);
 		},
 	});
@@ -96,14 +95,14 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 		skip: !commentInquiry.search.commentRefId,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
-			setAgentComments(data?.getComments?.list);
+			setHostComments(data?.getComments?.list);
 			setCommentTotal(data?.getComments?.metaCounter[0]?.total ?? 0);
 		},
 	});
 
 	/** LIFECYCLES **/
 	useEffect(() => {
-		if (router.query.agentId) setAgentId(router.query.agentId as string);
+		if (router.query.hostId) setHostId(router.query.hostId as string);
 	}, [router]);
 
 	useEffect(() => {
@@ -115,7 +114,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 	}, [commentInquiry]);
 
 	/** HANDLERS **/
-	const isMe = Boolean(user?._id) && user?._id === agent?._id;
+	const isMe = Boolean(user?._id) && user?._id === host?._id;
 	// As in Nestar: the host's name opens their member profile (or My Page for yourself).
 	const redirectToMemberPageHandler = async (memberId: string) => {
 		try {
@@ -137,7 +136,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 	const createCommentHandler = async () => {
 		try {
 			if (!user._id) throw new Error(Messages.error2);
-			if (user._id === agentId) throw new Error('Cannot write a review for yourself');
+			if (user._id === hostId) throw new Error('Cannot write a review for yourself');
 			await createComment({ variables: { input: insertCommentData } });
 			setInsertCommentData({ ...insertCommentData, commentContent: '' });
 			await getCommentsRefetch({ input: commentInquiry });
@@ -146,27 +145,31 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 		}
 	};
 
+	const likePending = useRef(false);
 	const likePropertyHandler = async (user: any, id: string) => {
+		if (likePending.current) return;
+		likePending.current = true;
 		try {
 			if (!id) return;
 			if (!user._id) throw new Error(Messages.error2);
 			await likeTargetProperty({ variables: { input: id } });
 			await getPropertiesRefetch({ input: searchFilter });
-			await sweetTopSmallSuccessAlert('success', 800);
 		} catch (err: any) {
 			sweetMixinErrorAlert(err.message).then();
+		} finally {
+			likePending.current = false;
 		}
 	};
 
-	if (!agent) {
+	if (!host) {
 		return (
 			<div id="host-detail-page" className="is-loading">
-				{getMemberLoading || !agentId ? <CircularProgress /> : <p>Host not found.</p>}
+				{getMemberLoading || !hostId ? <CircularProgress /> : <p>Host not found.</p>}
 			</div>
 		);
 	}
 
-	const name = agent.memberFullName || agent.memberNick;
+	const name = host.memberFullName || host.memberNick;
 
 	return (
 		<div id="host-detail-page">
@@ -176,7 +179,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 					<nav className="sx-host-crumbs" aria-label="Breadcrumb">
 						<Link href="/">Home</Link>
 						<ChevronRightIcon aria-hidden="true" />
-						<Link href="/agent">Hosts</Link>
+						<Link href="/host">Hosts</Link>
 						<ChevronRightIcon aria-hidden="true" />
 						<span aria-current="page">{name}</span>
 					</nav>
@@ -185,20 +188,20 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 							type="button"
 							className="sx-host-avatar"
 							aria-label={`Open ${name}'s profile`}
-							onClick={() => redirectToMemberPageHandler(agent._id)}
+							onClick={() => redirectToMemberPageHandler(host._id)}
 						>
-							<img src={avatar(agent.memberImage)} alt="" />
+							<img src={avatar(host.memberImage)} alt="" />
 						</button>
 						<div className="sx-host-title">
 							<span className="sx-host-kicker">Host</span>
 							<h1>{name}</h1>
 							<p>
-								Hosting since {moment(agent.createdAt).format('YYYY')} · {agent.memberProperties ?? 0}{' '}
-								{agent.memberProperties === 1 ? 'stay' : 'stays'}
+								Hosting since {moment(host.createdAt).format('YYYY')} · {host.memberProperties ?? 0}{' '}
+								{host.memberProperties === 1 ? 'stay' : 'stays'}
 							</p>
 						</div>
 						{/* Contact, bio and follow live on the member profile, as in Nestar. */}
-						<button type="button" className="sx-host-profile-btn" onClick={() => redirectToMemberPageHandler(agent._id)}>
+						<button type="button" className="sx-host-profile-btn" onClick={() => redirectToMemberPageHandler(host._id)}>
 							{isMe ? 'Go to My Page' : 'View profile'}
 							<EastIcon aria-hidden="true" />
 						</button>
@@ -211,7 +214,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 					<main className="sx-host-main">
 						<section className="sx-host-section">
 							<header>
-								<h2>Stays by {agent.memberNick}</h2>
+								<h2>Stays by {host.memberNick}</h2>
 								<span>
 									{propertyTotal} {propertyTotal === 1 ? 'stay' : 'stays'}
 								</span>
@@ -219,7 +222,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 							{propertyTotal ? (
 								<>
 									<div className="sx-stays-grid">
-										{agentProperties.map((property: Property) => (
+										{hostProperties.map((property: Property) => (
 											<PropertyCard
 												key={property._id}
 												property={property}
@@ -257,10 +260,10 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 								</span>
 							</header>
 							{commentTotal === 0 ? (
-								<p className="sx-host-muted">No reviews yet. Stayed with {agent.memberNick}? Share how it went.</p>
+								<p className="sx-host-muted">No reviews yet. Stayed with {host.memberNick}? Share how it went.</p>
 							) : (
 								<ul className="sx-host-reviews">
-									{agentComments.map((comment) => (
+									{hostComments.map((comment) => (
 										<li key={comment._id}>
 											<img src={avatar(comment.memberData?.memberImage)} alt="" />
 											<div>
@@ -290,7 +293,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 									<textarea
 										id="host-review"
 										rows={4}
-										placeholder={user?._id ? `How was your stay with ${agent.memberNick}?` : 'Log in to write a review'}
+										placeholder={user?._id ? `How was your stay with ${host.memberNick}?` : 'Log in to write a review'}
 										value={insertCommentData.commentContent}
 										onChange={(e) => setInsertCommentData({ ...insertCommentData, commentContent: e.target.value })}
 									/>
@@ -312,7 +315,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 	);
 };
 
-AgentDetail.defaultProps = {
+HostDetail.defaultProps = {
 	initialInput: {
 		page: 1,
 		limit: 6,
@@ -331,4 +334,4 @@ AgentDetail.defaultProps = {
 	},
 };
 
-export default withLayoutBasic(AgentDetail);
+export default withLayoutBasic(HostDetail);
