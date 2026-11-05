@@ -9,6 +9,8 @@ const nextConfig = {
 			{ source: '/stays', destination: '/stay', permanent: false },
 			{ source: '/stays/detail', destination: '/stay/detail', permanent: false },
 			{ source: '/_admin/properties', destination: '/_admin/stays', permanent: false },
+			{ source: '/agent', destination: '/host', permanent: false },
+			{ source: '/agent/detail', destination: '/host/detail', permanent: false },
 		];
 	},
 	env: {

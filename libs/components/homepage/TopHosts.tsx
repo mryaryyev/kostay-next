@@ -8,77 +8,77 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper';
-import TopAgentCard from './TopAgentCard';
+import TopHostCard from './TopHostCard';
 import { Member } from '../../types/member/member';
-import { AgentsInquiry } from '../../types/member/member.input';
+import { HostsInquiry } from '../../types/member/member.input';
 import { useQuery } from '@apollo/client';
-import { GET_AGENTS } from '../../../apollo/user/query';
+import { GET_HOSTS } from '../../../apollo/user/query';
 import { T } from '../../types/common';
 
-interface TopAgentsProps {
-	initialInput: AgentsInquiry;
+interface TopHostsProps {
+	initialInput: HostsInquiry;
 }
 
-const TopAgents = (props: TopAgentsProps) => {
+const TopHosts = (props: TopHostsProps) => {
 	const { initialInput } = props;
 	const router = useRouter();
-	const [topAgents, setTopAgents] = useState<Member[]>([]);
+	const [topHosts, setTopHosts] = useState<Member[]>([]);
 
 	/** APOLLO REQUESTS **/
 	const {
-		loading: getAgentsLoading,
-		data: getAgentsData,
-		error: getAgentsError,
-		refetch: getAgentsRefetch,
-	} = useQuery(GET_AGENTS, {
+		loading: getHostsLoading,
+		data: getHostsData,
+		error: getHostsError,
+		refetch: getHostsRefetch,
+	} = useQuery(GET_HOSTS, {
 		fetchPolicy: 'cache-and-network',
 		variables: { input: initialInput },
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
-			setTopAgents(data?.getAgents?.list);
+			setTopHosts(data?.getHosts?.list);
 		},
 	});
 	/** HANDLERS **/
 
 	return (
-		<Stack className={'top-agents'}>
+		<Stack className={'top-hosts'}>
 			<Stack className={'container'}>
 				<SectionHeader
 					eyebrow={'Hosts'}
 					title={'Top Hosts'}
 					subtitle={'Our top Hosts are ready to welcome you'}
 					action={
-						<Link href={'/agent'} className={'home-link'}>
+						<Link href={'/host'} className={'home-link'}>
 							See all Hosts
 							<EastIcon aria-hidden="true" />
 						</Link>
 					}
 				/>
 				<Stack className={'wrapper sx-hosts-row'}>
-					<button type={'button'} className={'sx-host-nav is-prev swiper-agents-prev'} aria-label={'Previous host'}>
+					<button type={'button'} className={'sx-host-nav is-prev swiper-hosts-prev'} aria-label={'Previous host'}>
 						<ChevronLeftIcon />
 					</button>
 					<Box component={'div'} className={'card-wrapper'}>
 						<Swiper
-							className={'top-agents-swiper'}
+							className={'top-hosts-swiper'}
 							slidesPerView={'auto'}
 							spaceBetween={24}
 							modules={[Autoplay, Navigation, Pagination]}
 							navigation={{
-								nextEl: '.swiper-agents-next',
-								prevEl: '.swiper-agents-prev',
+								nextEl: '.swiper-hosts-next',
+								prevEl: '.swiper-hosts-prev',
 							}}
 						>
-							{topAgents.map((agent: Member) => {
+							{topHosts.map((host: Member) => {
 								return (
-									<SwiperSlide className={'top-agents-slide'} key={agent?._id}>
-										<TopAgentCard agent={agent} key={agent?.memberNick} />
+									<SwiperSlide className={'top-hosts-slide'} key={host?._id}>
+										<TopHostCard host={host} key={host?.memberNick} />
 									</SwiperSlide>
 								);
 							})}
 						</Swiper>
 					</Box>
-					<button type={'button'} className={'sx-host-nav is-next swiper-agents-next'} aria-label={'Next host'}>
+					<button type={'button'} className={'sx-host-nav is-next swiper-hosts-next'} aria-label={'Next host'}>
 						<ChevronRightIcon />
 					</button>
 				</Stack>
@@ -87,7 +87,7 @@ const TopAgents = (props: TopAgentsProps) => {
 	);
 };
 
-TopAgents.defaultProps = {
+TopHosts.defaultProps = {
 	initialInput: {
 		page: 1,
 		limit: 10,
@@ -97,4 +97,4 @@ TopAgents.defaultProps = {
 	},
 };
 
-export default TopAgents;
+export default TopHosts;

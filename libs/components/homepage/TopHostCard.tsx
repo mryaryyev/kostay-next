@@ -8,26 +8,26 @@ import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import EastIcon from '@mui/icons-material/East';
 import { Member } from '../../types/member/member';
 
-interface TopAgentProps {
-	agent: Member;
+interface TopHostProps {
+	host: Member;
 }
-const TopAgentCard = (props: TopAgentProps) => {
-	const { agent } = props;
+const TopHostCard = (props: TopHostProps) => {
+	const { host } = props;
 	const router = useRouter();
 	const [imageFailed, setImageFailed] = useState(false);
-	const agentImage = agent?.memberImage
-		? `${process.env.REACT_APP_API_URL}/${agent?.memberImage}`
+	const hostImage = host?.memberImage
+		? `${process.env.REACT_APP_API_URL}/${host?.memberImage}`
 		: '/img/profile/defaultUser.svg';
 
 	/** HANDLERS **/
 
 	return (
-		<Link href={{ pathname: '/agent/detail', query: { agentId: agent?._id } }} className="sx-host-card">
+		<Link href={{ pathname: '/host/detail', query: { hostId: host?._id } }} className="sx-host-card">
 			<span className="sx-host-cover" aria-hidden="true" />
 			<span className="sx-host-avatar">
 				<span className="sx-host-photo">
-					{agent?.memberImage && !imageFailed ? (
-						<img src={agentImage} alt="" loading="lazy" onError={() => setImageFailed(true)} />
+					{host?.memberImage && !imageFailed ? (
+						<img src={hostImage} alt="" loading="lazy" onError={() => setImageFailed(true)} />
 					) : (
 						<PersonIcon aria-hidden="true" />
 					)}
@@ -36,12 +36,12 @@ const TopAgentCard = (props: TopAgentProps) => {
 					<CheckIcon aria-hidden="true" />
 				</span>
 			</span>
-			<strong>{agent?.memberNick}</strong>
+			<strong>{host?.memberNick}</strong>
 			<span className="sx-host-meta">
-				{agent?.memberAddress ? (
+				{host?.memberAddress ? (
 					<>
 						<PlaceOutlinedIcon aria-hidden="true" />
-						{agent.memberAddress}
+						{host.memberAddress}
 					</>
 				) : (
 					'Kostay Host'
@@ -49,16 +49,16 @@ const TopAgentCard = (props: TopAgentProps) => {
 			</span>
 			<dl className="sx-host-stats">
 				<div>
-					<dt>{agent?.memberProperties === 1 ? 'Stay' : 'Stays'}</dt>
-					<dd>{agent?.memberProperties ?? 0}</dd>
+					<dt>{host?.memberProperties === 1 ? 'Stay' : 'Stays'}</dt>
+					<dd>{host?.memberProperties ?? 0}</dd>
 				</div>
 				<div>
 					<dt>Likes</dt>
-					<dd>{agent?.memberLikes ?? 0}</dd>
+					<dd>{host?.memberLikes ?? 0}</dd>
 				</div>
 				<div>
 					<dt>Views</dt>
-					<dd>{agent?.memberViews ?? 0}</dd>
+					<dd>{host?.memberViews ?? 0}</dd>
 				</div>
 			</dl>
 			<span className="sx-host-link">
@@ -69,4 +69,4 @@ const TopAgentCard = (props: TopAgentProps) => {
 	);
 };
 
-export default TopAgentCard;
+export default TopHostCard;

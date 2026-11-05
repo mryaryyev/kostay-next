@@ -43,7 +43,7 @@ interface APISearch {
 	propertyStatus?: PropertyStatus;
 }
 
-export interface AgentPropertiesInquiry {
+export interface HostPropertiesInquiry {
 	page: number;
 	limit: number;
 	sort?: string;

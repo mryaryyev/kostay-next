@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 export const MOBILE_QUERY = '(max-width: 767px)';
 
 /**
- * 'mobile' | 'desktop' by screen width (not the user agent), so a narrow desktop window or a tablet
+ * 'mobile' | 'desktop' by screen width (not the user host), so a narrow desktop window or a tablet
  * behaves like the CSS does. Layout is responsive SCSS; use this hook only where the markup itself differs
  * (e.g. the filter drawer or the sticky booking bar).
  */

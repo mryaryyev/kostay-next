@@ -6,7 +6,7 @@ import { Stack } from '@mui/material';
 import { getJwtToken, updateUserInfo } from '../../auth';
 import Chat from '../Chat';
 import StaysHero from '../property/StaysHero';
-import HostsHero from '../agent/HostsHero';
+import HostsHero from '../host/HostsHero';
 import CommunityHero from '../community/CommunityHero';
 import MyPageHero from '../mypage/MyPageHero';
 import CsHero from '../cs/CsHero';
@@ -68,7 +68,7 @@ const withLayoutBasic = (Component: any) => {
 
 					{router.pathname === '/community' || router.pathname === '/community/detail' ? (
 						<CommunityHero detail={router.pathname === '/community/detail'} />
-					) : router.pathname === '/agent' ? (
+					) : router.pathname === '/host' ? (
 						<HostsHero />
 					) : router.pathname === '/stay' ? (
 						<StaysHero />
@@ -79,7 +79,7 @@ const withLayoutBasic = (Component: any) => {
 					) : router.pathname === '/about' ? (
 						<AboutHero />
 					) : router.pathname === '/account/join' ||
-					  router.pathname === '/agent/detail' ||
+					  router.pathname === '/host/detail' ||
 					  router.pathname === '/member' ? null : (
 						<Stack
 							className={`header-basic ${authHeader && 'auth'}`}

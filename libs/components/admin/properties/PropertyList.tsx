@@ -26,7 +26,7 @@ interface Data {
 	id: string;
 	title: string;
 	price: string;
-	agent: string;
+	host: string;
 	location: string;
 	type: string;
 	status: string;
@@ -61,7 +61,7 @@ const headCells: readonly HeadCell[] = [
 		label: 'PRICE / NIGHT (KRW)',
 	},
 	{
-		id: 'agent',
+		id: 'host',
 		numeric: false,
 		disablePadding: false,
 		label: 'HOST',

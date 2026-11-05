@@ -6,20 +6,20 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined';
 import { PropertyCard } from './PropertyCard';
 import { Property } from '../../types/property/property';
-import { AgentPropertiesInquiry } from '../../types/property/property.input';
+import { HostPropertiesInquiry } from '../../types/property/property.input';
 import { T } from '../../types/common';
 import { PropertyStatus } from '../../enums/property.enum';
 import { userVar } from '../../../apollo/store';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { UPDATE_PROPERTY } from '../../../apollo/user/mutation';
-import { GET_AGENT_PROPERTIES } from '../../../apollo/user/query';
+import { GET_HOST_PROPERTIES } from '../../../apollo/user/query';
 import { sweetConfirmAlert, sweetErrorHandling } from '../../sweetAlert';
 import { scrollToListTop } from '../../utils';
 
 const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
-	const [searchFilter, setSearchFilter] = useState<AgentPropertiesInquiry>(initialInput);
-	const [agentProperties, setAgentProperties] = useState<Property[]>([]);
+	const [searchFilter, setSearchFilter] = useState<HostPropertiesInquiry>(initialInput);
+	const [hostProperties, setHostProperties] = useState<Property[]>([]);
 	const [total, setTotal] = useState<number>(0);
 	const user = useReactiveVar(userVar);
 	const router = useRouter();
@@ -28,17 +28,17 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 	const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
 	const {
-		loading: getAgentPropertiesLoading,
-		data: getAgentPropertiesData,
-		error: getAgentPropertiesError,
-		refetch: getAgentPropertiesRefetch,
-	} = useQuery(GET_AGENT_PROPERTIES, {
+		loading: getHostPropertiesLoading,
+		data: getHostPropertiesData,
+		error: getHostPropertiesError,
+		refetch: getHostPropertiesRefetch,
+	} = useQuery(GET_HOST_PROPERTIES, {
 		fetchPolicy: 'network-only',
 		variables: { input: searchFilter },
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
-			setAgentProperties(data?.getAgentProperties?.list);
-			setTotal(data?.getAgentProperties?.metaCounter[0]?.total ?? 0);
+			setHostProperties(data?.getHostProperties?.list);
+			setTotal(data?.getHostProperties?.metaCounter[0]?.total ?? 0);
 		},
 	});
 
@@ -59,8 +59,8 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 
 	/** After a listing leaves the current tab, step back if the page became empty. **/
 	const refetchAfterChange = async () => {
-		const result = await getAgentPropertiesRefetch({ input: searchFilter });
-		const list = result?.data?.getAgentProperties?.list ?? [];
+		const result = await getHostPropertiesRefetch({ input: searchFilter });
+		const list = result?.data?.getHostProperties?.list ?? [];
 		if (list.length === 0 && searchFilter.page > 1) {
 			setSearchFilter({ ...searchFilter, page: searchFilter.page - 1 });
 		}
@@ -107,7 +107,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		}
 	};
 
-	if (user?.memberType !== 'AGENT') {
+	if (user?.memberType !== 'HOST') {
 		router.back();
 	}
 
@@ -151,7 +151,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 				})}
 			</div>
 
-			{agentProperties?.length === 0 ? (
+			{hostProperties?.length === 0 ? (
 				<div className="sx-stays-empty">
 					<HomeWorkOutlinedIcon aria-hidden="true" />
 					<p>{currentTab.empty}</p>
@@ -163,7 +163,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 				</div>
 			) : (
 				<ul className="sx-stays-list">
-					{agentProperties.map((property: Property) => (
+					{hostProperties.map((property: Property) => (
 						<PropertyCard
 							key={property._id}
 							property={property}

@@ -1,16 +1,16 @@
 import React from 'react';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import { useQuery } from '@apollo/client';
-import { GET_AGENTS } from '../../../apollo/user/query';
+import { GET_HOSTS } from '../../../apollo/user/query';
 
-/** Desktop hero for /agent (Stitch: Kostay - Hosts Directory). */
+/** Desktop hero for /host (Stitch: Kostay - Hosts Directory). */
 const HostsHero = () => {
 	// Live count of active hosts (same query the Hosts list uses), independent of the page's search.
-	const { data } = useQuery(GET_AGENTS, {
+	const { data } = useQuery(GET_HOSTS, {
 		fetchPolicy: 'cache-and-network',
 		variables: { input: { page: 1, limit: 1, search: {} } },
 	});
-	const total: number | undefined = data ? data.getAgents?.metaCounter?.[0]?.total ?? 0 : undefined;
+	const total: number | undefined = data ? data.getHosts?.metaCounter?.[0]?.total ?? 0 : undefined;
 
 	return (
 		<section className="sx-hosts-hero">

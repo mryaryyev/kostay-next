@@ -32,7 +32,7 @@ const MyMenu = () => {
 	const router = useRouter();
 	const category: any = router.query?.category ?? 'myProfile';
 	const user = useReactiveVar(userVar);
-	const isHost = user.memberType === 'AGENT';
+	const isHost = user.memberType === 'HOST';
 	const { data: reservationsData } = useQuery(GET_HOST_BOOKINGS, {
 		fetchPolicy: 'network-only',
 		skip: !user?._id || !isHost,
