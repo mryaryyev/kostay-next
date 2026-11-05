@@ -190,7 +190,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 				},
 			});
 
-			await sweetMixinSuccessAlert('This listing has been updated successfully.');
+			await sweetMixinSuccessAlert('Listing updated');
 			await router.push({
 				pathname: '/mypage',
 				query: {
@@ -202,7 +202,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		}
 	}, [insertPropertyData, getPropertyData]);
 
-	if (user?.memberType !== 'AGENT') {
+	if (user?.memberType !== 'HOST') {
 		router.back();
 	}
 
