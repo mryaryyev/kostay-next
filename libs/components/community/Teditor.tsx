@@ -136,7 +136,7 @@ const TuiEditor = () => {
 						input: { _id: articleId, articleTitle: title, articleContent, articleImage },
 					},
 				});
-				await sweetTopSuccessAlert('Article is updated successfully', 700);
+				await sweetTopSuccessAlert('Article updated', 700);
 				await router.push({ pathname: '/community/detail', query: { articleCategory, id: articleId } });
 			} else {
 				await createboardArticle({
@@ -144,7 +144,7 @@ const TuiEditor = () => {
 						input: { articleTitle: title, articleContent, articleImage, articleCategory },
 					},
 				});
-				await sweetTopSuccessAlert('Article is created successfully', 700);
+				await sweetTopSuccessAlert('Article published', 700);
 				await router.push({ pathname: '/mypage', query: { category: 'myArticles' } });
 			}
 		} catch (err: any) {

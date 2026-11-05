@@ -165,7 +165,10 @@ export const logOut = () => {
 	deleteUserInfo(); // ReactiveVariable > FRONTEND
 	// Public pages reload in place as a guest; member-only pages would be empty, so send those home.
 	const privatePaths = ['/mypage', '/_admin', '/booking'];
-	if (privatePaths.some((path) => window.location.pathname.startsWith(path))) window.location.href = '/';
+	// Drop the language prefix (/kr/mypage → /mypage) so translated pages match too, and keep it for home.
+	const langPrefix = window.location.pathname.match(/^\/(kr|ru)(?=\/|$)/)?.[0] ?? '';
+	const path = window.location.pathname.slice(langPrefix.length) || '/';
+	if (privatePaths.some((privatePath) => path.startsWith(privatePath))) window.location.href = langPrefix || '/';
 	else window.location.reload();
 };
 

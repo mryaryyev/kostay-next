@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
@@ -34,7 +34,6 @@ import { CommentUpdate } from '../../libs/types/comment/comment.update';
 import {
 	sweetConfirmAlert,
 	sweetMixinErrorAlert,
-	sweetMixinSuccessAlert,
 	sweetTopSmallSuccessAlert,
 } from '../../libs/sweetAlert';
 import {
@@ -75,6 +74,8 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 	const open = Boolean(anchorEl);
 	const id = open ? 'simple-popover' : undefined;
 	const [openBackdrop, setOpenBackdrop] = useState<boolean>(false);
+	// Toast to show once the edit dialog has fully closed (the scrollbar is back, so it does not jump).
+	const pendingToast = useRef<string | null>(null);
 	const [updatedComment, setUpdatedComment] = useState<string>('');
 	const [updatedCommentId, setUpdatedCommentId] = useState<string>('');
 	const [likeLoading, setLikeLoading] = useState<boolean>(false);
@@ -153,7 +154,6 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 				},
 			});
 			await boardArticleRefetch({ input: articleId });
-			await sweetTopSmallSuccessAlert('Success!', 800);
 		} catch (err: any) {
 			console.log('ERROR, likeBoArticleHandler:', err.message);
 			sweetMixinErrorAlert(err.message).then();
@@ -179,7 +179,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 			await getCommentsRefetch({ input: searchFilter });
 			await boardArticleRefetch({ input: articleId });
 			setComment('');
-			await sweetMixinSuccessAlert('Successfully commented!');
+			await sweetTopSmallSuccessAlert('Comment added', 800);
 		} catch (error: any) {
 			await sweetMixinErrorAlert(error.message);
 		}
@@ -207,7 +207,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 							input: updateData,
 						},
 					});
-					await sweetMixinSuccessAlert('Successfully deleted!');
+					await sweetTopSmallSuccessAlert('Comment deleted', 800);
 				} else return;
 			} else {
 				await updateComment({
@@ -215,7 +215,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 						input: updateData,
 					},
 				});
-				await sweetMixinSuccessAlert('Successfully updated!');
+				pendingToast.current = 'Comment updated';
 			}
 			await getCommentsRefetch({ input: searchFilter });
 		} catch (error: any) {
@@ -548,6 +548,12 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 				fullWidth
 				maxWidth="sm"
 				PaperProps={{ className: 'sx-comment-dialog' }}
+				TransitionProps={{
+					onExited: () => {
+						if (pendingToast.current) sweetTopSmallSuccessAlert(pendingToast.current, 800).then();
+						pendingToast.current = null;
+					},
+				}}
 			>
 				<h3>Edit comment</h3>
 				<textarea

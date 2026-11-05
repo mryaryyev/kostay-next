@@ -17,6 +17,7 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import { getJwtToken, logOut, updateUserInfo } from '../../auth';
+import { sweetConfirmAlert } from '../../sweetAlert';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import { REACT_APP_API_URL } from '../../config';
@@ -60,7 +61,9 @@ const withAdminLayout = (Component: ComponentType) => {
 			setAnchorElUser(null);
 		};
 
-		const logoutHandler = () => {
+		const logoutHandler = async () => {
+			setAnchorElUser(null);
+			if (!(await sweetConfirmAlert('Do you want to logout?'))) return;
 			logOut();
 			router.push('/').then();
 		};

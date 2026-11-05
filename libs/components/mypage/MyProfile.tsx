@@ -107,7 +107,7 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 			const jwtToken = result.data.updateMember?.accessToken;
 			await updateStorage({ jwtToken });
 			updateUserInfo(result.data.updateMember?.accessToken);
-			await sweetMixinSuccessAlert('information updated successfully.');
+			await sweetMixinSuccessAlert('Profile updated');
 		} catch (err: any) {
 			sweetErrorHandling(err).then();
 		}

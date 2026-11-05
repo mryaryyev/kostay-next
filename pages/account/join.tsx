@@ -10,7 +10,7 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import { logIn, signUp } from '../../libs/auth';
-import { sweetMixinErrorAlert } from '../../libs/sweetAlert';
+import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 export const getStaticProps = async ({ locale }: any) => ({
@@ -21,7 +21,7 @@ export const getStaticProps = async ({ locale }: any) => ({
 
 const accountTypes = [
 	{ key: 'USER', label: 'Guest', desc: 'Find and book stays', icon: <LuggageOutlinedIcon /> },
-	{ key: 'AGENT', label: 'Host', desc: 'List my place and get bookings', icon: <HomeWorkOutlinedIcon /> },
+	{ key: 'HOST', label: 'Host', desc: 'List my place and get bookings', icon: <HomeWorkOutlinedIcon /> },
 ];
 
 const perks = [
@@ -66,7 +66,9 @@ const Join: NextPage = () => {
 			setSubmitting(true);
 			if (loginView) {
 				if (!(await logIn(input.nick.trim(), input.password))) return;
-			} else await signUp(input.nick.trim(), input.password, input.phone, input.type);
+			} else if (!(await signUp(input.nick.trim(), input.password, input.phone, input.type))) return;
+			// Small toast; it stays visible while the page changes.
+			sweetTopSmallSuccessAlert(loginView ? `Welcome back, ${input.nick.trim()}` : 'Account created', 1500).then();
 			await router.push(`${router.query.referrer ?? '/'}`);
 		} catch (err: any) {
 			await sweetMixinErrorAlert(err.message);
@@ -196,7 +198,7 @@ const Join: NextPage = () => {
 								? 'Please wait…'
 								: loginView
 								? 'Log in'
-								: `Create ${input.type === 'AGENT' ? 'host' : 'guest'} account`}
+								: `Create ${input.type === 'HOST' ? 'host' : 'guest'} account`}
 							<ArrowForwardRoundedIcon aria-hidden="true" />
 						</button>
 					</form>
