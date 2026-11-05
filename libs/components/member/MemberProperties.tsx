@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { Pagination } from '@mui/material';
 import PropertyCard from '../property/PropertyCard';
@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import { useMutation, useQuery } from '@apollo/client';
 import { LIKE_TARGET_PROPERTY } from '../../../apollo/user/mutation';
 import { Messages } from '../../config';
-import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../sweetAlert';
+import { sweetMixinErrorAlert } from '../../sweetAlert';
 import { GET_PROPERTIES } from '../../../apollo/user/query';
 import { scrollToListTop } from '../../utils';
 
@@ -17,7 +17,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 	const router = useRouter();
 	const { memberId } = router.query;
 	const [searchFilter, setSearchFilter] = useState<PropertiesInquiry>({ ...initialInput });
-	const [agentProperties, setAgentProperties] = useState<Property[]>([]);
+	const [hostProperties, setHostProperties] = useState<Property[]>([]);
 	const [total, setTotal] = useState<number>(0);
 
 	/** APOLLO REQUESTS **/
@@ -34,7 +34,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		skip: !searchFilter?.search?.memberId,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: any) => {
-			setAgentProperties(data?.getProperties?.list);
+			setHostProperties(data?.getProperties?.list);
 			setTotal(data?.getProperties?.metaCounter[0]?.total ?? 0);
 		},
 	});
@@ -54,15 +54,19 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		scrollToListTop('.main-config');
 	};
 
+	const likePending = useRef(false);
 	const likePropertyHandler = async (user: any, id: string) => {
+		if (likePending.current) return;
+		likePending.current = true;
 		try {
 			if (!id) return;
 			if (!user._id) throw new Error(Messages.error2);
 			await likeTargetProperty({ variables: { input: id } });
 			await getPropertiesRefetch({ input: searchFilter });
-			await sweetTopSmallSuccessAlert('success', 800);
 		} catch (err: any) {
 			sweetMixinErrorAlert(err.message).then();
+		} finally {
+			likePending.current = false;
 		}
 	};
 
@@ -74,13 +78,13 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 					{total} {total === 1 ? 'stay' : 'stays'}
 				</span>
 			</div>
-			{agentProperties?.length === 0 ? (
+			{hostProperties?.length === 0 ? (
 				<div className={'no-data'}>
 					<p>This Host has no stays yet.</p>
 				</div>
 			) : (
 				<div className="sx-stays-grid">
-					{agentProperties.map((property: Property) => (
+					{hostProperties.map((property: Property) => (
 						<PropertyCard
 							key={property._id}
 							property={property}

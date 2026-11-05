@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, useState } from 'react';
+import React, { useRef, ChangeEvent, useMemo, useState } from 'react';
 import { NextPage } from 'next';
 import { Button, Menu, MenuItem } from '@mui/material';
 import PropertyCard from '../../libs/components/property/PropertyCard';
@@ -20,7 +20,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { GET_PROPERTIES } from '../../apollo/user/query';
 import { T } from '../../libs/types/common';
 import { LIKE_TARGET_PROPERTY } from '../../apollo/user/mutation';
-import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
+import { sweetMixinErrorAlert } from '../../libs/sweetAlert';
 import moment from 'moment';
 import { scrollToListTop } from '../../libs/utils';
 
@@ -91,7 +91,10 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 		scrollToListTop('.sx-results');
 	};
 
+	const likePending = useRef(false);
 	const likePropertyHandler = async (user: T, id: string) => {
+		if (likePending.current) return;
+		likePending.current = true;
 		try {
 			if (!id) return;
 			if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
@@ -104,10 +107,11 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 			// execute getPropertiesRefetch
 			await getPropertiesRefetch({ input: searchFilter });
 
-			await sweetTopSmallSuccessAlert('success', 800);
 		} catch (err: any) {
 			console.log('ERROR, likePropertyHandler:', err);
 			sweetMixinErrorAlert(err.message).then();
+		} finally {
+			likePending.current = false;
 		}
 	};
 

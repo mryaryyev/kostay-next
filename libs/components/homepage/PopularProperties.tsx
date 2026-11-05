@@ -1,5 +1,5 @@
 import SectionHeader from './SectionHeader';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Stack, Box } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper';
@@ -12,7 +12,7 @@ import { GET_PROPERTIES } from '../../../apollo/user/query';
 import { useMutation, useQuery } from '@apollo/client';
 import { T } from '../../types/common';
 import { LIKE_TARGET_PROPERTY } from '../../../apollo/user/mutation';
-import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../sweetAlert';
+import { sweetMixinErrorAlert } from '../../sweetAlert';
 import { Message } from '../../enums/common.enum';
 
 interface PopularPropertiesProps {
@@ -40,7 +40,10 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 		},
 	});
 	/** HANDLERS **/
+	const likePending = useRef(false);
 	const likePropertyHandler = async (user: T, id: string) => {
+		if (likePending.current) return;
+		likePending.current = true;
 		try {
 			if (!id) return;
 			if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
@@ -51,10 +54,11 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 
 			await getPropertiesRefetch({ input: initialInput });
 
-			await sweetTopSmallSuccessAlert('success', 800);
 		} catch (err: any) {
 			console.log('ERROR, likePropertyHandler:', err);
 			sweetMixinErrorAlert(err.message).then();
+		} finally {
+			likePending.current = false;
 		}
 	};
 
