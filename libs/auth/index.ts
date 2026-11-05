@@ -68,7 +68,7 @@ const requestJwtToken = async ({
 	}
 };
 
-export const signUp = async (nick: string, password: string, phone: string, type: string): Promise<void> => {
+export const signUp = async (nick: string, password: string, phone: string, type: string): Promise<boolean> => {
 	try {
 		const { jwtToken } = await requestSignUpJwtToken({ nick, password, phone, type });
 
@@ -76,10 +76,10 @@ export const signUp = async (nick: string, password: string, phone: string, type
 			updateStorage({ jwtToken });
 			updateUserInfo(jwtToken);
 		}
+		return Boolean(jwtToken);
 	} catch (err) {
-		console.warn('login err', err);
-		logOut();
-		// throw new Error('Login Err');
+		console.warn('signup err', err);
+		return false;
 	}
 };
 
@@ -103,6 +103,7 @@ const requestSignUpJwtToken = async ({
 				input: { memberNick: nick, memberPassword: password, memberPhone: phone, memberType: type },
 			},
 			fetchPolicy: 'network-only',
+			context: { skipGlobalErrorAlert: true },
 		});
 
 		console.log('---------- login ----------');
@@ -111,13 +112,15 @@ const requestSignUpJwtToken = async ({
 		return { jwtToken: accessToken };
 	} catch (err: any) {
 		console.log('request token err', err.graphQLErrors);
-		switch (err.graphQLErrors[0].message) {
+		switch (err.graphQLErrors?.[0]?.message) {
 			case 'Definer: login and password do not match':
 				await sweetMixinErrorAlert('Please check your password again');
 				break;
 			case 'Definer: user has been blocked!':
 				await sweetMixinErrorAlert('User has been blocked!');
 				break;
+			default:
+				await sweetMixinErrorAlert(err.graphQLErrors?.[0]?.message ?? err.message);
 		}
 		throw new Error('token error');
 	}

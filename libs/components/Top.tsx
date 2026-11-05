@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter, withRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { getJwtToken, logOut, updateUserInfo } from '../auth';
+import { sweetConfirmAlert } from '../sweetAlert';
 import { Stack, Box, Drawer } from '@mui/material';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
@@ -36,6 +37,13 @@ const Top = () => {
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 	const [languageAnchor, setLanguageAnchor] = useState<HTMLElement | null>(null);
 
+	// Same confirm as the My Page logout button.
+	const logoutHandler = async () => {
+		setLogoutAnchor(null);
+		setDrawerOpen(false);
+		if (await sweetConfirmAlert(t('Do you want to logout?'), { confirm: t('OK'), cancel: t('Cancel') })) logOut();
+	};
+
 	/** Home matches exactly; other links stay active on their sub-pages (e.g. /property/detail). */
 	const isActive = (path: string) =>
 		path === '/' ? router.pathname === '/' : router.pathname === path || router.pathname.startsWith(`${path}/`);
@@ -43,7 +51,7 @@ const Top = () => {
 	const navLinks = [
 		{ href: '/', label: t('Home'), path: '/' },
 		{ href: '/stay', label: t('Stays'), path: '/stay' },
-		{ href: '/agent', label: t('Hosts'), path: '/agent' },
+		{ href: '/host', label: t('Hosts'), path: '/host' },
 		{ href: '/community?articleCategory=FREE', label: t('Community'), path: '/community' },
 		...(user?._id ? [{ href: '/mypage', label: t('My Page'), path: '/mypage' }] : []),
 		{ href: '/help', label: t('Help'), path: '/help' },
@@ -119,7 +127,7 @@ const Top = () => {
 
 	return (
 		<Stack className={'navbar'}>
-			<Stack className={`navbar-main ${colorChange ? 'transparent' : ''} ${bgColor ? 'transparent' : ''}`}>
+			<Stack className={`navbar-main mui-fixed ${colorChange ? 'transparent' : ''} ${bgColor ? 'transparent' : ''}`}>
 				<Stack className={'container'}>
 					<Box component={'div'} className={'logo-box'}>
 						<Link href={'/'}>
@@ -133,7 +141,7 @@ const Top = () => {
 						<Link href={'/stay'} aria-current={isActive('/stay') ? 'page' : undefined}>
 							<div>{t('Stays')}</div>
 						</Link>
-						<Link href={'/agent'} aria-current={isActive('/agent') ? 'page' : undefined}>
+						<Link href={'/host'} aria-current={isActive('/host') ? 'page' : undefined}>
 							<div> {t('Hosts')} </div>
 						</Link>
 						<Link href={'/community?articleCategory=FREE'} aria-current={isActive('/community') ? 'page' : undefined}>
@@ -159,6 +167,7 @@ const Top = () => {
 								</div>
 
 								<Menu
+									disableScrollLock
 									id="basic-menu"
 									anchorEl={logoutAnchor}
 									open={logoutOpen}
@@ -179,9 +188,9 @@ const Top = () => {
 											<span>@{user.memberNick}</span>
 										</div>
 									</div>
-									<MenuItem className={'sx-user-menu-item is-logout'} onClick={() => logOut()}>
+									<MenuItem className={'sx-user-menu-item is-logout'} onClick={logoutHandler}>
 										<Logout fontSize="small" />
-										Logout
+										{t('Logout')}
 									</MenuItem>
 								</Menu>
 							</>
@@ -214,6 +223,7 @@ const Top = () => {
 								</button>
 							</div>
 							<Menu
+								disableScrollLock
 								id="language-menu"
 								anchorEl={languageAnchor}
 								open={Boolean(languageAnchor)}
@@ -297,9 +307,9 @@ const Top = () => {
 				</div>
 				<div className={'nav-drawer-foot'}>
 					{user?._id ? (
-						<button type={'button'} onClick={() => logOut()}>
+						<button type={'button'} onClick={logoutHandler}>
 							<Logout fontSize="small" />
-							Logout
+							{t('Logout')}
 						</button>
 					) : (
 						<Link href={'/account/join'} className={'nav-drawer-login'}>

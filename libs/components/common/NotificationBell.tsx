@@ -80,6 +80,7 @@ const NotificationBell = () => {
 				{unread > 0 && <span className="sx-bell-badge">{unread > 9 ? '9+' : unread}</span>}
 			</button>
 			<Menu
+				disableScrollLock
 				anchorEl={anchorEl}
 				open={open}
 				onClose={closeHandler}
