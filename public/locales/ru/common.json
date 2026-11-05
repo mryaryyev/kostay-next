@@ -16,7 +16,7 @@
 	"Property Search": "Поиск жилья",
 	"We are glad to see you again!": "Мы рады видеть вас снова!",
 	"Home / For Rent": "Главная / Жильё",
-	"Agent Page": "Страница хозяина",
+	"Host Page": "Страница хозяина",
 	"my page": "моя страница",
 	"Community Detail": "Детали сообщества",
 	"Login/Signup": "Логин/регистрация",
@@ -24,5 +24,9 @@
 	"Stay type": "Тип жилья",
 	"Dates": "Даты",
 	"Guests": "Гости",
-	"Search": "Найти"
+	"Search": "Найти",
+	"Logout": "Выйти",
+	"Do you want to logout?": "Выйти из аккаунта?",
+	"Cancel": "Отмена",
+	"OK": "ОК"
 }
