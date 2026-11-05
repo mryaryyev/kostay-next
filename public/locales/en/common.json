@@ -16,7 +16,7 @@
   "Property Search": "Find a Stay",
   "We are glad to see you again!": "We are glad to see you again!",
   "Home / For Rent": "Home / Stays",
-  "Agent Page": "Host Page",
+  "Host Page": "Host Page",
   "my page": "my page",
   "Community Detail": "Community Detail",
   "Login/Signup": "Login/Signup",
@@ -24,5 +24,9 @@
   "Stay type": "Stay type",
   "Dates": "Dates",
   "Guests": "Guests",
-  "Search": "Search"
+  "Search": "Search",
+  "Logout": "Logout",
+  "Do you want to logout?": "Do you want to logout?",
+  "Cancel": "Cancel",
+  "OK": "OK"
 }
