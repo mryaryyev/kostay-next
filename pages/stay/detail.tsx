@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, { useRef, ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { CircularProgress, Stack, Typography } from '@mui/material';
 import withLayoutFull from '../../libs/components/layout/LayoutFull';
 import { NextPage } from 'next';
@@ -226,7 +226,10 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		}
 	};
 
+	const likePending = useRef(false);
 	const likePropertyHandler = async (user: T, id: string) => {
+		if (likePending.current) return;
+		likePending.current = true;
 		try {
 			if (!id) return;
 			if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
@@ -250,10 +253,11 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 				},
 			});
 
-			await sweetTopSmallSuccessAlert('success', 800);
 		} catch (err: any) {
 			console.log('ERROR, likePropertyHandler:', err);
 			sweetMixinErrorAlert(err.message).then();
+		} finally {
+			likePending.current = false;
 		}
 	};
 
@@ -356,7 +360,11 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		}
 	};
 
-	if (!router.isReady || getPropertyLoading || (typeof router.query.id === 'string' && propertyId !== router.query.id)) {
+	if (
+		!router.isReady ||
+		(getPropertyLoading && !property) ||
+		(typeof router.query.id === 'string' && propertyId !== router.query.id)
+	) {
 		return (
 			<div id={'property-detail-page'}>
 				<Stack className="sx-detail-loading">

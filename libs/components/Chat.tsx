@@ -170,7 +170,7 @@ const Chat = () => {
 							<Box flexDirection={'row'} style={{ display: 'flex' }} sx={{ m: '10px 0px' }} component={'div'}>
 								<div className={'welcome'}>Welcome to Live chat!</div>
 							</Box>
-							{messagesList.map((ele: MessagePayload) => {
+							{messagesList.map((ele: MessagePayload, index: number) => {
 								const { text, memberData } = ele;
 								const memberImage = memberData?.memberImage
 									? `${REACT_APP_API_URL}/${memberData.memberImage}`
@@ -178,9 +178,11 @@ const Chat = () => {
 
 								const sentAt = ele.createdAt ?? ele.receivedAt;
 								const time = sentAt ? moment(sentAt).format('HH:mm') : '';
+								const key = `${sentAt ?? 'msg'}-${index}`;
 
 								return memberData?._id === user?._id ? (
 									<Box
+										key={key}
 										component={'div'}
 										flexDirection={'row'}
 										style={{ display: 'flex' }}
@@ -194,7 +196,7 @@ const Chat = () => {
 										</div>
 									</Box>
 								) : (
-									<Box flexDirection={'row'} style={{ display: 'flex' }} sx={{ m: '10px 0px' }} component={'div'}>
+									<Box key={key} flexDirection={'row'} style={{ display: 'flex' }} sx={{ m: '10px 0px' }} component={'div'}>
 										<Avatar alt={memberData?.memberNick ?? 'Guest'} src={memberImage} />
 										<div className={'msg-group'}>
 											<span className={'msg-name'}>{memberData?.memberNick ?? 'Guest'}</span>

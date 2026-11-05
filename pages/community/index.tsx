@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import CommunityCard, { boardLabels, boardMeta } from '../../libs/components/common/CommunityCard';
@@ -21,7 +21,7 @@ import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { userVar } from '../../apollo/store';
 import { GET_BOARD_ARTICLES } from '../../apollo/user/query';
 import { Messages } from '../../libs/config';
-import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
+import { sweetMixinErrorAlert } from '../../libs/sweetAlert';
 import { LIKE_TARGET_BOARD_ARTICLE } from '../../apollo/user/mutation';
 import { scrollToListTop } from '../../libs/utils';
 
@@ -134,7 +134,10 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 		scrollToListTop('.sx-community-main');
 	};
 
+	const likePending = useRef(false);
 	const likeArticleHandler = async (e: any, user: any, id: string) => {
+		if (likePending.current) return;
+		likePending.current = true;
 		try {
 			e.stopPropagation();
 			if (!id) return;
@@ -146,10 +149,11 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 				},
 			});
 			await boardArticlesRefetch({ input: searchCommunity });
-			await sweetTopSmallSuccessAlert('success', 800);
 		} catch (err: any) {
 			console.log('ERROR, likePropertyHandler:', err.message);
 			sweetMixinErrorAlert(err.message).then();
+		} finally {
+			likePending.current = false;
 		}
 	};
 

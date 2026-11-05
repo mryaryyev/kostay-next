@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { Pagination } from '@mui/material';
 import { useRouter } from 'next/router';
@@ -9,7 +9,7 @@ import { T } from '../../types/common';
 import { BoardArticle } from '../../types/board-article/board-article';
 import { BoardArticlesInquiry } from '../../types/board-article/board-article.input';
 import { Messages } from '../../config';
-import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../sweetAlert';
+import { sweetMixinErrorAlert } from '../../sweetAlert';
 import { LIKE_TARGET_BOARD_ARTICLE } from '../../../apollo/user/mutation';
 import { scrollToListTop } from '../../utils';
 
@@ -51,7 +51,10 @@ const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 		scrollToListTop('.main-config');
 	};
 
+	const likePending = useRef(false);
 	const likeArticleHandler = async (e: any, user: any, id: string) => {
+		if (likePending.current) return;
+		likePending.current = true;
 		try {
 			e.stopPropagation();
 			if (!id) return;
@@ -63,10 +66,11 @@ const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 				},
 			});
 			await boardArticlesRefetch({ input: searchFilter });
-			await sweetTopSmallSuccessAlert('success', 800);
 		} catch (err: any) {
 			console.log('ERROR, likePropertyHandler:', err.message);
 			sweetMixinErrorAlert(err.message).then();
+		} finally {
+			likePending.current = false;
 		}
 	};
 
