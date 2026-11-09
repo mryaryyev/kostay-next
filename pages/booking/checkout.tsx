@@ -250,7 +250,7 @@ const Checkout: NextPage = () => {
 
 							<aside className="sx-checkout-summary">
 								<div className="sx-checkout-stay">
-									<img src={image ? `${REACT_APP_API_URL}/${image}` : '/img/property/bigImage.png'} alt="" />
+									<img src={image ? `${REACT_APP_API_URL}/${image}` : '/img/property/bigImage.webp'} alt="" />
 									<div>
 										<small>{toLabel(property?.propertyType)}</small>
 										<strong>{property?.propertyTitle}</strong>

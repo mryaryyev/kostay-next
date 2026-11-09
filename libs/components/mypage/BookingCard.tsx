@@ -45,7 +45,7 @@ const BookingCard = ({ booking, view, actions }: BookingCardProps) => {
 		<article className="sx-booking-card">
 			<Link href={{ pathname: '/stay/detail', query: { id: booking.propertyId } }} className="sx-booking-photo">
 				<img
-					src={stay?.propertyImage ? `${REACT_APP_API_URL}/${stay.propertyImage}` : '/img/property/bigImage.png'}
+					src={stay?.propertyImage ? `${REACT_APP_API_URL}/${stay.propertyImage}` : '/img/property/bigImage.webp'}
 					alt=""
 				/>
 			</Link>

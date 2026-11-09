@@ -459,7 +459,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 
 				<section className="sx-gallery">
 					<div className="sx-gallery-main">
-						<img src={mainImage ? `${REACT_APP_API_URL}/${mainImage}` : '/img/property/bigImage.png'} alt="" />
+						<img src={mainImage ? `${REACT_APP_API_URL}/${mainImage}` : '/img/property/bigImage.webp'} alt="" />
 					</div>
 					{images.length > 1 && (
 						<div className="sx-gallery-thumbs">
