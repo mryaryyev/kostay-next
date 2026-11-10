@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { ApolloClient, ApolloLink, InMemoryCache, from, NormalizedCacheObject } from '@apollo/client';
 import createUploadLink from 'apollo-upload-client/public/createUploadLink.js';
 import { onError } from '@apollo/client/link/error';
-import { getJwtToken } from '../libs/auth';
+import { getJwtToken, logOut } from '../libs/auth';
 import { TokenRefreshLink } from 'apollo-link-token-refresh';
 import { sweetErrorAlert } from '../libs/sweetAlert';
 let apolloClient: ApolloClient<NormalizedCacheObject>;
@@ -47,6 +47,13 @@ function createIsomorphicLink() {
 		});
 
 		const errorLink = onError(({ graphQLErrors, networkError, response, operation }) => {
+			// Expired or invalid saved token => log out quietly instead of showing an error alert
+			const isAuthError = graphQLErrors?.some(({ extensions }) => extensions?.code === 'UNAUTHENTICATED');
+			if (isAuthError && getJwtToken()) {
+				logOut();
+				return;
+			}
+
 			if (graphQLErrors) {
 				graphQLErrors.map(({ message, locations, path, extensions }) => {
 					console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
