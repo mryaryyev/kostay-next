@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: true,
+	// Docker: build a minimal server with only the files needed at runtime
+	output: 'standalone',
 	// Old Nestar-style URLs keep working after the rename to /stay.
 	async redirects() {
 		return [
