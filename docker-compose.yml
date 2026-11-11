@@ -2,7 +2,13 @@ services:
   kostay-next:
     container_name: kostay-next
     restart: always
-    build: .
+    build:
+      context: .
+      # Values come from .env next to this file (not in git): different on Mac and server
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL:?set REACT_APP_API_URL in .env}
+        REACT_APP_API_GRAPHQL_URL: ${REACT_APP_API_GRAPHQL_URL:?set REACT_APP_API_GRAPHQL_URL in .env}
+        REACT_APP_API_WS: ${REACT_APP_API_WS:?set REACT_APP_API_WS in .env}
     image: kostay-client
     ports:
       - 4000:3000

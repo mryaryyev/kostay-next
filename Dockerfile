@@ -6,7 +6,14 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
-# .env.local is copied with the code: Next bakes its public API URLs into the build
+# API URLs come from docker-compose.yml (build args); Next bakes them into the build
+ARG REACT_APP_API_URL
+ARG REACT_APP_API_GRAPHQL_URL
+ARG REACT_APP_API_WS
+ENV REACT_APP_API_URL=$REACT_APP_API_URL \
+	REACT_APP_API_GRAPHQL_URL=$REACT_APP_API_GRAPHQL_URL \
+	REACT_APP_API_WS=$REACT_APP_API_WS
+
 COPY . .
 RUN yarn build
 
