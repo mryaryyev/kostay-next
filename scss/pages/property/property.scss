@@ -1283,7 +1283,8 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 /* ---------- AI search (natural-language search through kostay-ai-search) ---------- */
-#site-wrap #property-list-page {
+// shared by the stays page and the home hero
+#site-wrap {
 	.sx-ai-search {
 		position: relative;
 		display: flex;
@@ -1341,13 +1342,17 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 	.sx-ai-search-submit {
 		padding: 10px 20px;
 		border: none;
-		border-radius: 12px;
-		background: $st-navy;
+		border-radius: 9999px;
+		background: #aa3614; // brand CTA, same as the home Search button
 		color: #fff;
 		font-family: $font;
 		font-size: 14px;
-		font-weight: 600;
+		font-weight: 700;
 		cursor: pointer;
+		transition: background 0.2s;
+		&:hover:not(:disabled) {
+			background: #591000;
+		}
 		&:disabled {
 			opacity: 0.45;
 			cursor: default;
@@ -1391,5 +1396,51 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 			color: $st-navy;
 			font-weight: 600;
 		}
+	}
+}
+
+// Smart Search heading, shared by the stays page and the home hero
+#site-wrap {
+	.sx-ai-search-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 4px 12px;
+		margin-bottom: 8px;
+		font-family: $font;
+		// same type as the "Find your stay" filter heading
+		strong {
+			color: $st-navy;
+			font-size: 20px;
+			font-weight: 700;
+			line-height: 28px;
+			letter-spacing: -0.2px;
+		}
+	}
+	.sx-ai-search-hint {
+		color: $st-outline;
+		font-size: 13px;
+	}
+	// stays page: the results column has a 24px gap, keep the heading close to its bar
+	#property-list-page .sx-ai-search-head + .sx-ai-search {
+		margin-top: -24px;
+	}
+}
+
+// home hero: Smart Search above the classic filters
+#site-wrap.is-home .home-ai-search {
+	width: 100%;
+	margin: 28px 0 0;
+	.home-ai-search-or {
+		margin: 12px 0 0;
+		color: $st-outline;
+		font-family: $font;
+		font-size: 13px;
+		font-weight: 600;
+		text-align: center;
+	}
+	// the filter box has a 48px top margin of its own; pull it closer under the AI bar
+	+ .search-box.home-glass-search {
+		margin-top: 12px !important;
 	}
 }

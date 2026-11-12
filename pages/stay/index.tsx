@@ -200,6 +200,10 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 				</div>
 
 				<section className="sx-results">
+					<div className="sx-ai-search-head">
+						<strong>Smart Search</strong>
+						<span className="sx-ai-search-hint">Describe your stay in your own words: city, dates, guests, budget.</span>
+					</div>
 					<AiSearchBar query={aiQuery} onSearch={aiSearchHandler} onClear={clearAiSearch} />
 
 					<div className="sx-results-head">
