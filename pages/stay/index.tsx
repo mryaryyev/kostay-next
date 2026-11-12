@@ -4,6 +4,7 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import PropertyCard from '../../libs/components/property/PropertyCard';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Filter from '../../libs/components/property/Filter';
+import AiSearchBar from '../../libs/components/property/AiSearchBar';
 import { useRouter } from 'next/router';
 import { buildPropertyQuery, parsePropertyQuery } from '../../libs/utils';
 import { PropertiesInquiry } from '../../libs/types/property/property.input';
@@ -17,7 +18,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { useMutation, useQuery } from '@apollo/client';
-import { GET_PROPERTIES } from '../../apollo/user/query';
+import { AI_SEARCH_PROPERTIES, GET_PROPERTIES } from '../../apollo/user/query';
 import { T } from '../../libs/types/common';
 import { LIKE_TARGET_PROPERTY } from '../../apollo/user/mutation';
 import { sweetMixinErrorAlert } from '../../libs/sweetAlert';
@@ -34,6 +35,8 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	const router = useRouter();
 	const searchFilter = useMemo(() => parsePropertyQuery(router.query, initialInput), [router.query, initialInput]);
 	const currentPage = searchFilter.page;
+	// ?ai=... switches the page to natural-language search (shareable URL, back button works)
+	const aiQuery = typeof router.query.ai === 'string' ? router.query.ai.trim() : '';
 	// Availability dates live in search (home search or the Dates filter); getProperties hides booked stays.
 	const { checkIn, checkOut } = searchFilter.search;
 	const stayDates =
@@ -77,13 +80,40 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 		fetchPolicy: 'network-only',
 		variables: { input: searchFilter },
 		notifyOnNetworkStatusChange: true,
-		skip: !router.isReady,
+		skip: !router.isReady || Boolean(aiQuery),
 	});
+
+	const {
+		loading: aiSearchLoading,
+		data: aiSearchData,
+		error: aiSearchError,
+		refetch: aiSearchRefetch,
+	} = useQuery(AI_SEARCH_PROPERTIES, {
+		fetchPolicy: 'network-only',
+		variables: { input: { query: aiQuery, limit: 12 } },
+		notifyOnNetworkStatusChange: true,
+		skip: !router.isReady || !aiQuery,
+	});
+
 	// Keep the last list on screen while a filter change loads, so the page does not jump.
 	const getPropertiesData = currentPropertiesData ?? previousPropertiesData;
-	const isUpdating = getPropertiesLoading && Boolean(getPropertiesData);
-	const properties: Property[] = getPropertiesData?.getProperties?.list ?? [];
-	const total: number = getPropertiesData?.getProperties?.metaCounter?.[0]?.total ?? 0;
+	const isAiMode = Boolean(aiQuery);
+	const listLoading = isAiMode ? aiSearchLoading : getPropertiesLoading;
+	const listError = isAiMode ? aiSearchError : getPropertiesError;
+	const listData = isAiMode ? aiSearchData?.aiSearchProperties : getPropertiesData?.getProperties;
+	const isUpdating = listLoading && Boolean(listData);
+	const properties: Property[] = listData?.list ?? [];
+	const total: number = listData?.metaCounter?.[0]?.total ?? 0;
+	const refetchList = () => (isAiMode ? aiSearchRefetch() : getPropertiesRefetch({ input: searchFilter }));
+
+	const aiSearchHandler = async (query: string): Promise<void> => {
+		await router.push({ pathname: '/stay', query: { ai: query } }, undefined, { scroll: false });
+	};
+	const clearAiSearch = async (): Promise<void> => {
+		await router.push({ pathname: '/stay', query: buildPropertyQuery(searchFilter, initialInput) }, undefined, {
+			scroll: false,
+		});
+	};
 
 	/** HANDLERS **/
 	const handlePaginationChange = async (event: ChangeEvent<unknown>, value: number) => {
@@ -104,9 +134,8 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 				variables: { input: id },
 			});
 
-			// execute getPropertiesRefetch
-			await getPropertiesRefetch({ input: searchFilter });
-
+			// refresh the list that is on screen (AI or regular search)
+			await refetchList();
 		} catch (err: any) {
 			console.log('ERROR, likePropertyHandler:', err);
 			sweetMixinErrorAlert(err.message).then();
@@ -142,7 +171,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 		Array.isArray(value) ? value.length > 0 : Boolean(value),
 	).length;
 
-	const showResults = !getPropertiesLoading && !getPropertiesError && properties.length !== 0;
+	const showResults = !isAiMode && !listLoading && !listError && properties.length !== 0;
 
 	return (
 		<div id="property-list-page">
@@ -171,73 +200,90 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 				</div>
 
 				<section className="sx-results">
+					<div className="sx-ai-search-head">
+						<strong>Smart Search</strong>
+						<span className="sx-ai-search-hint">Describe your stay in your own words: city, dates, guests, budget.</span>
+					</div>
+					<AiSearchBar query={aiQuery} onSearch={aiSearchHandler} onClear={clearAiSearch} />
+
 					<div className="sx-results-head">
 						<button type="button" className="sx-filters-btn" onClick={() => setFiltersOpen(true)}>
 							<TuneRoundedIcon aria-hidden="true" />
 							Filters{activeFilters ? ` (${activeFilters})` : ''}
 						</button>
 						<div className="sx-results-title">
-							<h2>Available Stays</h2>
+							<h2>{isAiMode ? 'Best Matches' : 'Available Stays'}</h2>
 						</div>
-						<div className="sx-sort">
-							<span id="sx-sort-label">Sort by</span>
-							<span className="sx-sort-select">
-								<button
-									type="button"
-									aria-haspopup="listbox"
-									aria-expanded={Boolean(sortAnchor)}
-									aria-labelledby="sx-sort-label"
-									onClick={(e) => setSortAnchor(e.currentTarget)}
-								>
-									{sortOptions.find((option) => option.value === sortKey)?.label ?? 'Custom'}
-								</button>
-								<ExpandMoreIcon aria-hidden="true" />
-							</span>
-							<Menu
-								anchorEl={sortAnchor}
-								open={Boolean(sortAnchor)}
-								onClose={() => setSortAnchor(null)}
-								anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-								PaperProps={{ className: 'sx-sort-menu' }}
-								disableScrollLock
-							>
-								{sortOptions.map((option) => (
-									<MenuItem
-										key={option.value}
-										selected={option.value === sortKey}
-										onClick={() => {
-											setSortAnchor(null);
-											sortChangeHandler(option.value);
-										}}
+						{!isAiMode && (
+							<div className="sx-sort">
+								<span id="sx-sort-label">Sort by</span>
+								<span className="sx-sort-select">
+									<button
+										type="button"
+										aria-haspopup="listbox"
+										aria-expanded={Boolean(sortAnchor)}
+										aria-labelledby="sx-sort-label"
+										onClick={(e) => setSortAnchor(e.currentTarget)}
 									>
-										{option.label}
-									</MenuItem>
-								))}
-							</Menu>
-						</div>
+										{sortOptions.find((option) => option.value === sortKey)?.label ?? 'Custom'}
+									</button>
+									<ExpandMoreIcon aria-hidden="true" />
+								</span>
+								<Menu
+									anchorEl={sortAnchor}
+									open={Boolean(sortAnchor)}
+									onClose={() => setSortAnchor(null)}
+									anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+									transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+									PaperProps={{ className: 'sx-sort-menu' }}
+									disableScrollLock
+								>
+									{sortOptions.map((option) => (
+										<MenuItem
+											key={option.value}
+											selected={option.value === sortKey}
+											onClick={() => {
+												setSortAnchor(null);
+												sortChangeHandler(option.value);
+											}}
+										>
+											{option.label}
+										</MenuItem>
+									))}
+								</Menu>
+							</div>
+						)}
 					</div>
 
-					{stayDates && (
+					{isAiMode && !listLoading && !listError && (
+						<p className={'sx-ai-note'}>
+							{total} {total === 1 ? 'stay' : 'stays'} for <strong>“{aiQuery}”</strong>, ranked by how well they match. Using
+							the filters on the left goes back to the regular search.
+						</p>
+					)}
+
+					{!isAiMode && stayDates && (
 						<p className={'stay-dates-note'}>
 							Available for <strong>{stayDates}</strong>
 						</p>
 					)}
 
-					{!router.isReady || (getPropertiesLoading && !getPropertiesData) ? (
+					{!router.isReady || (listLoading && !listData) ? (
 						<div className="no-data" role="status">
-							Loading stays…
+							{isAiMode ? 'Finding stays that match your request…' : 'Loading stays…'}
 						</div>
-					) : getPropertiesError ? (
+					) : listError ? (
 						<div className="no-data" role="alert">
 							<p>Could not load stays. Please try again.</p>
-							<Button onClick={() => getPropertiesRefetch().catch(() => undefined)}>Retry</Button>
+							<Button onClick={() => refetchList().catch(() => undefined)}>Retry</Button>
 						</div>
 					) : properties.length === 0 ? (
 						<div className={'no-data'}>
 							<SearchOffOutlinedIcon aria-hidden="true" />
-							<strong>No stays match your filters</strong>
-							<p>Try another region, dates or price range.</p>
+							<strong>{isAiMode ? 'No stays match your request' : 'No stays match your filters'}</strong>
+							<p>
+								{isAiMode ? 'Try describing it differently, or other dates.' : 'Try another region, dates or price range.'}
+							</p>
 						</div>
 					) : (
 						<div className={`sx-stays-grid ${isUpdating ? 'is-updating' : ''}`} aria-busy={isUpdating}>
@@ -252,7 +298,6 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 							))}
 						</div>
 					)}
-
 
 					{showResults && (
 						<div className="sx-pagination">
