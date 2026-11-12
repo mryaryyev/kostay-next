@@ -4,6 +4,7 @@ import Top from '../Top';
 import HomeFooter from '../homepage/HomeFooter';
 import { Stack } from '@mui/material';
 import HeaderFilter from '../homepage/HeaderFilter';
+import HomeAiSearch from '../homepage/HomeAiSearch';
 import HomeHero from '../homepage/HomeHero';
 import { userVar } from '../../../apollo/store';
 import { useReactiveVar } from '@apollo/client';
@@ -40,6 +41,7 @@ const withLayoutMain = (Component: any) => {
 					<Stack className={'header-main home-hero'}>
 						<Stack className={'container'}>
 							<HomeHero />
+							<HomeAiSearch />
 							<HeaderFilter />
 						</Stack>
 					</Stack>
