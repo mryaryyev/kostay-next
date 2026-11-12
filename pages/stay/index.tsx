@@ -212,7 +212,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 							Filters{activeFilters ? ` (${activeFilters})` : ''}
 						</button>
 						<div className="sx-results-title">
-							<h2>{isAiMode ? 'Best Matches' : 'Available Stays'}</h2>
+							<h2>{isAiMode ? 'Smart Search Results' : 'Available Stays'}</h2>
 						</div>
 						{!isAiMode && (
 							<div className="sx-sort">
@@ -257,8 +257,8 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 
 					{isAiMode && !listLoading && !listError && (
 						<p className={'sx-ai-note'}>
-							{total} {total === 1 ? 'stay' : 'stays'} for <strong>“{aiQuery}”</strong>, ranked by how well they match. Using
-							the filters on the left goes back to the regular search.
+							{total} {total === 1 ? 'stay' : 'stays'} for <strong>“{aiQuery}”</strong>. Changing a filter switches back to the
+							regular search.
 						</p>
 					)}
 
