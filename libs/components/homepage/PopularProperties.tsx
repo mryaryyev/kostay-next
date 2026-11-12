@@ -2,7 +2,7 @@ import SectionHeader from './SectionHeader';
 import React, { useRef, useState } from 'react';
 import { Stack, Box } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper';
+import { Autoplay } from 'swiper/modules';
 import EastIcon from '@mui/icons-material/East';
 import PopularPropertyCard from './PopularPropertyCard';
 import { Property } from '../../types/property/property';

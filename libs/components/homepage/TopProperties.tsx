@@ -4,7 +4,7 @@ import { Stack, Box } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import TopPropertyCard from './TopPropertyCard';
 import { PropertiesInquiry } from '../../types/property/property.input';
 import { Property } from '../../types/property/property';
