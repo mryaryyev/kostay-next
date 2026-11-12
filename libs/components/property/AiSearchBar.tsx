@@ -8,7 +8,8 @@ interface AiSearchBarProps {
 	onClear: () => void;
 }
 
-const EXAMPLES = ['Quiet hanok in Seoul this weekend', 'Villa in Jeju for 6 under ₩300,000', '부산 바다 근처 숙소'];
+// each example matches a real stay, so a click never ends on an empty page
+const EXAMPLES = ['Hanok near Gyeongbokgung Palace', 'Villa in Jeju for 4 under ₩300,000', '부산 바다 근처 숙소'];
 
 /** Describe the stay in your own words; kostay-ai-search turns it into filters and ranks stays by meaning. */
 const AiSearchBar = ({ query, onSearch, onClear }: AiSearchBarProps) => {
@@ -30,7 +31,7 @@ const AiSearchBar = ({ query, onSearch, onClear }: AiSearchBarProps) => {
 				type="search"
 				value={text}
 				maxLength={300}
-				placeholder={`Describe your stay, e.g. "${EXAMPLES[0]}"`}
+				placeholder="Describe your stay"
 				aria-label="Describe the stay you are looking for"
 				onChange={(event) => setText(event.target.value)}
 			/>
