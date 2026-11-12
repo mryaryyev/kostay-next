@@ -124,8 +124,8 @@ const AdminBookings: NextPage = () => {
 							count={result?.total ?? 0}
 							rowsPerPage={inquiry.limit}
 							page={inquiry.page - 1}
-							onPageChange={(_, page) => setInquiry({ ...inquiry, page: page + 1 })}
-							onRowsPerPageChange={(e) => setInquiry({ ...inquiry, page: 1, limit: parseInt(e.target.value, 10) })}
+							onPageChange={(_: unknown, page: number) => setInquiry({ ...inquiry, page: page + 1 })}
+							onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) => setInquiry({ ...inquiry, page: 1, limit: parseInt(e.target.value, 10) })}
 						/>
 					</TabContext>
 				</Box>

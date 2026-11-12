@@ -346,7 +346,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 			<Stack
 				className="search-box home-glass-search"
 				ref={searchRef}
-				onKeyDown={(event) => {
+				onKeyDown={(event: React.KeyboardEvent) => {
 					if (event.key === 'Escape') {
 						const active = openLocation
 							? 'location'
