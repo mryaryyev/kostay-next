@@ -319,6 +319,35 @@ $dt-shadow-lg: 0 20px 40px rgba(26, 43, 76, 0.1);
 		white-space: pre-line;
 	}
 
+	// "- " lines of the description: a quiet two-column highlights list
+	.sx-highlights {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px 28px;
+		margin: 20px 0 0;
+		padding: 18px 0 0;
+		border-top: 1px solid $dt-line;
+		list-style: none;
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+			color: $dt-body;
+			font-size: 15px;
+			line-height: 22px;
+		}
+		svg {
+			flex-shrink: 0;
+			width: 18px;
+			height: 18px;
+			margin-top: 2px;
+			color: $dt-outline;
+		}
+		@media (max-width: 768px) {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.sx-address {
 		display: flex;
 		align-items: center;

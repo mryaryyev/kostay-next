@@ -4,6 +4,7 @@ import withLayoutFull from '../../libs/components/layout/LayoutFull';
 import { NextPage } from 'next';
 import Review from '../../libs/components/property/Review';
 import BookingCalendar from '../../libs/components/property/BookingCalendar';
+import StayDescription from '../../libs/components/property/StayDescription';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay, Navigation, Pagination } from 'swiper';
 import PropertyBigCard from '../../libs/components/common/PropertyBigCard';
@@ -494,7 +495,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 
 						<section className="sx-section">
 							<h3>About this stay</h3>
-							<p className="sx-desc">{property?.propertyDesc || 'The host has not added a description yet.'}</p>
+							<StayDescription description={property?.propertyDesc} />
 						</section>
 
 						<section className="sx-section">
