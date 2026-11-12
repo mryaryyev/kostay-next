@@ -7,7 +7,7 @@ import { Stack, Box } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import TopHostCard from './TopHostCard';
 import { Member } from '../../types/member/member';
 import { HostsInquiry } from '../../types/member/member.input';
