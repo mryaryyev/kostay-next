@@ -195,6 +195,67 @@ export const GET_PROPERTIES = gql`
 	}
 `;
 
+/** Natural-language search through kostay-ai-search (falls back to keyword search in the API). */
+export const AI_SEARCH_PROPERTIES = gql`
+	query AiSearchProperties($input: AiSearchInquiry!) {
+		aiSearchProperties(input: $input) {
+			list {
+				_id
+				propertyType
+				propertyStatus
+				propertyLocation
+				propertyAddress
+				propertyTitle
+				pricePerNight
+				maxGuests
+				propertySquare
+				propertyBeds
+				propertyRooms
+				propertyViews
+				propertyLikes
+				propertyRank
+				propertyImages
+				propertyDesc
+				memberId
+				deletedAt
+				constructedAt
+				createdAt
+				updatedAt
+				memberData {
+					_id
+					memberType
+					memberStatus
+					memberAuthType
+					memberPhone
+					memberNick
+					memberFullName
+					memberImage
+					memberAddress
+					memberDesc
+					memberWarnings
+					memberBlocks
+					memberProperties
+					memberRank
+					memberPoints
+					memberLikes
+					memberViews
+					deletedAt
+					createdAt
+					updatedAt
+				}
+				meLiked {
+					memberId
+					likeRefId
+					myFavorite
+				}
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+
 export const GET_HOST_PROPERTIES = gql`
 	query GetHostProperties($input: HostPropertiesInquiry!) {
 		getHostProperties(input: $input) {
