@@ -253,7 +253,7 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 								/>
 								<Select sx={{ width: '160px', ml: '20px' }} value={searchType}>
 									<MenuItem value={'ALL'} onClick={() => searchTypeHandler('ALL')}>
-										All
+										All types
 									</MenuItem>
 									<MenuItem value={'USER'} onClick={() => searchTypeHandler('USER')}>
 										User
