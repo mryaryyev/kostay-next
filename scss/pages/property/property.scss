@@ -1396,6 +1396,12 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 			color: $st-navy;
 			font-weight: 600;
 		}
+		// "no exact match" line: its own row, in the brand color so it is not missed
+		.sx-ai-relaxed {
+			display: block;
+			margin-top: 4px;
+			color: #aa3614;
+		}
 	}
 }
 
