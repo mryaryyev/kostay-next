@@ -252,6 +252,8 @@ export const AI_SEARCH_PROPERTIES = gql`
 			metaCounter {
 				total
 			}
+			aiRelaxedFields
+			aiAllBooked
 		}
 	}
 `;
