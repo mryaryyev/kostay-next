@@ -707,3 +707,267 @@
 		text-decoration: none;
 	}
 }
+
+// Admin → AI Search monitoring (pages/_admin/ai-search.tsx).
+.admin-ai-search {
+	$ais-navy: #031636;
+	$ais-brand: #aa3614;
+	$ais-line: #e6e2dc;
+	$ais-muted: #75777f;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	font-family: $font-display;
+	color: $ais-navy;
+
+	.ais-head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 16px;
+		flex-wrap: wrap;
+		h2 {
+			margin: 2px 0 2px;
+			font-size: 26px;
+			font-weight: 800;
+		}
+		p {
+			margin: 0;
+			color: $ais-muted;
+			font-size: 14px;
+		}
+	}
+	.ais-eyebrow {
+		color: $ais-brand;
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.ais-range {
+		display: flex;
+		padding: 3px;
+		border-radius: 9999px;
+		background: #f7f3ed;
+		button {
+			border: none;
+			border-radius: 9999px;
+			padding: 7px 14px;
+			background: transparent;
+			color: $ais-muted;
+			font: inherit;
+			font-size: 13px;
+			font-weight: 600;
+			cursor: pointer;
+			&.on {
+				background: #fbe6e0;
+				color: $ais-brand;
+			}
+			&:focus-visible {
+				outline: 2px solid $ais-brand;
+			}
+		}
+	}
+
+	.ais-status {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 14px;
+		border-radius: 12px;
+		background: #f7f3ed;
+		color: #44474e;
+		font-size: 14px;
+		font-weight: 600;
+		&.is-good {
+			background: #e6f4ea;
+			color: #1e7a3c;
+		}
+		&.is-warn {
+			background: #fdf3dc;
+			color: #8a5a00;
+		}
+		&.is-bad,
+		&.is-down {
+			background: #fbe6e0;
+			color: $ais-brand;
+		}
+		button {
+			margin-left: auto;
+			border: 1px solid currentColor;
+			border-radius: 8px;
+			padding: 4px 10px;
+			background: transparent;
+			color: inherit;
+			font: inherit;
+			cursor: pointer;
+		}
+	}
+
+	.ais-cards {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 14px;
+	}
+	.ais-card {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 18px 20px;
+		border: 1px solid $ais-line;
+		border-radius: 16px;
+		background: #fff;
+		span {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			color: $ais-muted;
+			font-size: 12px;
+			font-weight: 700;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			svg {
+				width: 16px;
+				height: 16px;
+			}
+		}
+		strong {
+			font-size: 28px;
+			font-weight: 800;
+			line-height: 1.1;
+			font-variant-numeric: tabular-nums;
+			em {
+				color: $ais-muted;
+				font-size: 18px;
+				font-style: normal;
+				font-weight: 600;
+			}
+		}
+		small {
+			color: #44474e;
+			font-size: 13px;
+		}
+		&.is-watch {
+			border-color: #f0b8a6;
+		}
+		&.is-hot strong {
+			color: $ais-brand;
+		}
+	}
+
+	.ais-charts {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+	}
+	.ais-panel {
+		padding: 18px 20px;
+		border: 1px solid $ais-line;
+		border-radius: 16px;
+		background: #fff;
+	}
+	.ais-panel-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		margin-bottom: 8px;
+		h3 {
+			margin: 0;
+			font-size: 15px;
+			font-weight: 700;
+		}
+		small {
+			color: $ais-muted;
+			font-size: 12px;
+		}
+	}
+	.ais-chart {
+		display: block;
+		width: 100%;
+		height: auto;
+		.ais-grid {
+			stroke: #efece6;
+		}
+		.ais-axis {
+			fill: $ais-muted;
+			font-size: 11px;
+		}
+		.ais-bar {
+			fill: $ais-brand;
+		}
+		.ais-line {
+			fill: none;
+			stroke: $ais-navy;
+			stroke-width: 2;
+			stroke-linejoin: round;
+			stroke-linecap: round;
+		}
+		.ais-area {
+			fill: rgba(3, 22, 54, 0.07);
+		}
+		.ais-dot {
+			fill: $ais-navy;
+		}
+		g:hover .ais-bar {
+			fill: #8a2b0f;
+		}
+	}
+
+	.ais-split {
+		display: flex;
+		gap: 2px;
+		height: 12px;
+		overflow: hidden;
+		border-radius: 9999px;
+		background: #efece6;
+	}
+	.is-llm {
+		background: $ais-brand;
+	}
+	.is-embed {
+		background: #f0997b;
+	}
+	.is-qdrant {
+		background: $ais-navy;
+	}
+	.is-rerank {
+		background: #94a3b8;
+	}
+	.ais-legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
+		margin-top: 12px;
+		color: #44474e;
+		font-size: 13px;
+		span {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+		i {
+			width: 10px;
+			height: 10px;
+			border-radius: 2px;
+		}
+	}
+	.ais-foot {
+		margin: 12px 0 0;
+		color: $ais-brand;
+		font-size: 13px;
+	}
+
+	@include tablet {
+		.ais-cards {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+		.ais-charts {
+			grid-template-columns: 1fr;
+		}
+	}
+	@include mobile {
+		.ais-cards {
+			grid-template-columns: 1fr;
+		}
+	}
+}

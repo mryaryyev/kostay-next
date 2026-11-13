@@ -5,7 +5,8 @@ import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow, Chip } fr
 import Typography from '@mui/material/Typography';
 import { useQuery } from '@apollo/client';
 import withAdminLayout from '../../libs/components/layout/LayoutAdmin';
-import { GET_ADMIN_DASHBOARD, GET_ALL_BOOKINGS_BY_ADMIN } from '../../apollo/admin/query';
+import { GET_ADMIN_DASHBOARD, GET_AI_SEARCH_METRICS, GET_ALL_BOOKINGS_BY_ADMIN } from '../../apollo/admin/query';
+import { AiSearchMetrics, aiSearchHealth, percent, seconds } from '../../libs/types/ai-search/ai-search-metrics';
 import { Booking } from '../../libs/types/booking/booking';
 import { BookingStatus } from '../../libs/enums/booking.enum';
 import { formatKRW } from '../../libs/utils';
@@ -42,7 +43,11 @@ const AdminHome: NextPage = () => {
 		variables: { input: { page: 1, limit: 5 } },
 	});
 
+	const { data: aiData } = useQuery(GET_AI_SEARCH_METRICS, { fetchPolicy: 'network-only', variables: { days: 7 } });
+
 	const stats: AdminDashboardData | undefined = data?.getAdminDashboard;
+	const ai: AiSearchMetrics | undefined = aiData?.getAiSearchMetrics;
+	const aiHealth = ai ? aiSearchHealth(ai) : null;
 	const recent: Booking[] = bookingsData?.getAllBookingsByAdmin?.list ?? [];
 	const month = new Date().toLocaleDateString('en-US', { month: 'long' });
 
@@ -83,6 +88,19 @@ const AdminHome: NextPage = () => {
 					href: '/_admin/stays?status=PENDING',
 					warn: stats.pendingStays > 0,
 				},
+				...(ai
+					? [
+							{
+								label: 'AI search · 7 days',
+								value: ai.available ? ai.searches : 'Down',
+								note: ai.available
+									? `p95 ${seconds(ai.p95Ms)} · ${percent(ai.fallbacks, ai.requests)} fallback`
+									: 'Guests get keyword search',
+								href: '/_admin/ai-search',
+								warn: aiHealth === 'warn' || aiHealth === 'bad' || aiHealth === 'down',
+							},
+					  ]
+					: []),
 		  ]
 		: [];
 
