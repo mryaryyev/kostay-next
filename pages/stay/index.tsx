@@ -25,6 +25,22 @@ import { sweetMixinErrorAlert } from '../../libs/sweetAlert';
 import moment from 'moment';
 import { scrollToListTop } from '../../libs/utils';
 
+// AI search filters, in words, for the "no exact match" note
+const RELAXED_WORDS: Record<string, string> = {
+	typeList: 'stay type',
+	guestsCount: 'number of guests',
+	pricesRange: 'budget',
+	locationList: 'city',
+};
+
+/** "No exact match, so the stay type and budget were left out." ('' when nothing was dropped) */
+const describeRelaxed = (fields?: string[] | null): string => {
+	const words = (fields ?? []).map((field) => RELAXED_WORDS[field]).filter(Boolean);
+	if (!words.length) return '';
+	const list = words.length === 1 ? words[0] : `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
+	return `No exact match, so the ${list} ${words.length === 1 ? 'was' : 'were'} left out.`;
+};
+
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
 		...(await serverSideTranslations(locale, ['common'])),
@@ -104,6 +120,8 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	const isUpdating = listLoading && Boolean(listData);
 	const properties: Property[] = listData?.list ?? [];
 	const total: number = listData?.metaCounter?.[0]?.total ?? 0;
+	const relaxedNote = isAiMode ? describeRelaxed(aiSearchData?.aiSearchProperties?.aiRelaxedFields) : '';
+	const allBooked = isAiMode && Boolean(aiSearchData?.aiSearchProperties?.aiAllBooked);
 	const refetchList = () => (isAiMode ? aiSearchRefetch() : getPropertiesRefetch({ input: searchFilter }));
 
 	const aiSearchHandler = async (query: string): Promise<void> => {
@@ -259,6 +277,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 						<p className={'sx-ai-note'}>
 							{total} {total === 1 ? 'stay' : 'stays'} for <strong>“{aiQuery}”</strong>. Changing a filter switches back to the
 							regular search.
+							{relaxedNote && <span className={'sx-ai-relaxed'}>{relaxedNote}</span>}
 						</p>
 					)}
 
@@ -280,9 +299,19 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 					) : properties.length === 0 ? (
 						<div className={'no-data'}>
 							<SearchOffOutlinedIcon aria-hidden="true" />
-							<strong>{isAiMode ? 'No stays match your request' : 'No stays match your filters'}</strong>
+							<strong>
+								{allBooked
+									? 'Fully booked on these dates'
+									: isAiMode
+									? 'No stays match your request'
+									: 'No stays match your filters'}
+							</strong>
 							<p>
-								{isAiMode ? 'Try describing it differently, or other dates.' : 'Try another region, dates or price range.'}
+								{allBooked
+									? 'Try other dates.'
+									: isAiMode
+									? 'Try describing it differently, or other dates.'
+									: 'Try another region, dates or price range.'}
 							</p>
 						</div>
 					) : (
