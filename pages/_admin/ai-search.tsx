@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { NextPage } from 'next';
 import { Box } from '@mui/material';
+import AdminPageHeader from '../../libs/components/admin/AdminPageHeader';
 import { useQuery } from '@apollo/client';
 import {
 	CheckCircle,
@@ -203,26 +204,25 @@ const AdminAiSearch: NextPage = () => {
 
 	return (
 		<Box component={'div'} className={'content admin-ai-search'}>
-			<div className={'ais-head'}>
-				<div>
-					<span className={'ais-eyebrow'}>Monitoring</span>
-					<h2>AI search</h2>
-					<p>Smart Search health on kostay.kr</p>
-				</div>
-				<div className={'ais-range'} role={'group'} aria-label={'Time range'}>
-					{RANGES.map((range) => (
-						<button
-							type={'button'}
-							key={range.days}
-							className={days === range.days ? 'on' : ''}
-							aria-pressed={days === range.days}
-							onClick={() => setDays(range.days)}
-						>
-							{range.label}
-						</button>
-					))}
-				</div>
-			</div>
+			<AdminPageHeader
+				title={'AI search'}
+				subtitle={'Smart Search health on kostay.kr'}
+				actions={
+					<div className={'ais-range'} role={'group'} aria-label={'Time range'}>
+						{RANGES.map((range) => (
+							<button
+								type={'button'}
+								key={range.days}
+								className={days === range.days ? 'on' : ''}
+								aria-pressed={days === range.days}
+								onClick={() => setDays(range.days)}
+							>
+								{range.label}
+							</button>
+						))}
+					</div>
+				}
+			/>
 
 			{error ? (
 				<div className={'ais-status is-bad'} role={'alert'}>
