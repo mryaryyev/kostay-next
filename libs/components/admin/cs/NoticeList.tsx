@@ -53,7 +53,9 @@ export const NoticeList = ({ category, notices, editHandler, statusChangeHandler
 						{notices.length === 0 && (
 							<TableRow>
 								<TableCell align="center" colSpan={columns.length}>
-									<span className={'no-data'}>No {isFaq ? 'questions' : 'notices'} yet. Use + ADD to write one.</span>
+									<span className={'no-data'}>
+										No {isFaq ? 'questions' : 'notices'} yet. Use {isFaq ? 'New question' : 'New notice'} to write one.
+									</span>
 								</TableCell>
 							</TableRow>
 						)}
@@ -76,7 +78,11 @@ export const NoticeList = ({ category, notices, editHandler, statusChangeHandler
 									<Stack direction={'row'} alignItems={'center'} gap={1}>
 										<Avatar
 											alt={notice.memberData?.memberNick}
-											src={notice.memberData?.memberImage ? `${REACT_APP_API_URL}/${notice.memberData.memberImage}` : '/img/profile/defaultUser.svg'}
+											src={
+												notice.memberData?.memberImage
+													? `${REACT_APP_API_URL}/${notice.memberData.memberImage}`
+													: '/img/profile/defaultUser.svg'
+											}
 											sx={{ width: 28, height: 28 }}
 										/>
 										{notice.memberData?.memberNick ?? '—'}

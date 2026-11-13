@@ -23,7 +23,21 @@ import { userVar } from '../../../apollo/store';
 import { REACT_APP_API_URL } from '../../config';
 import { MemberType } from '../../enums/member.enum';
 import KostayLogo from '../common/KostayLogo';
-const drawerWidth = 280;
+import Link from 'next/link';
+const drawerWidth = 248;
+
+/** Breadcrumb names for the top bar ("Admin / Stays"). */
+const PAGE_NAMES: Record<string, string> = {
+	'/_admin': 'Dashboard',
+	'/_admin/users': 'Users',
+	'/_admin/stays': 'Stays',
+	'/_admin/bookings': 'Bookings',
+	'/_admin/community': 'Community',
+	'/_admin/cs/faq': 'FAQ',
+	'/_admin/cs/notice': 'Notices',
+	'/_admin/cs/inquiry': 'Inquiries',
+	'/_admin/ai-search': 'AI search',
+};
 
 const withAdminLayout = (Component: ComponentType) => {
 	return (props: object) => {
@@ -97,13 +111,20 @@ const withAdminLayout = (Component: ComponentType) => {
 									<MenuRoundedIcon />
 								</IconButton>
 							)}
+							<nav className={'adm-crumbs'} aria-label="Breadcrumb">
+								<Link href={'/_admin'}>Admin</Link>
+								<span aria-hidden="true">/</span>
+								<span aria-current="page">{PAGE_NAMES[router.pathname] ?? 'Admin'}</span>
+							</nav>
 							<div style={{ flexGrow: 1 }} />
-							<Tooltip title="Open settings">
-								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+							<Tooltip title="Account">
+								<button type="button" className={'adm-user'} onClick={handleOpenUserMenu} aria-label="Open account menu">
 									<Avatar
+										sx={{ width: 32, height: 32 }}
 										src={user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'}
 									/>
-								</IconButton>
+									<span>{user?.memberNick}</span>
+								</button>
 							</Tooltip>
 							<Menu
 								sx={{ mt: '45px' }}
@@ -181,33 +202,12 @@ const withAdminLayout = (Component: ComponentType) => {
 								<CloseRoundedIcon />
 							</IconButton>
 						)}
-						<Toolbar sx={{ flexDirection: 'column', alignItems: 'flexStart' }}>
-							<Stack className={'logo-box'}>
-								<KostayLogo />
-							</Stack>
-
-							<Stack
-								className="user"
-								direction={'row'}
-								alignItems={'center'}
-								sx={{
-									bgcolor: openMenu ? 'rgba(255, 255, 255, 0.04)' : 'none',
-									borderRadius: '8px',
-									px: '24px',
-									py: '11px',
-								}}
-							>
-								<Avatar
-									src={user?.memberImage ? `${REACT_APP_API_URL}/${user?.memberImage}` : '/img/profile/defaultUser.svg'}
-								/>
-								<Typography variant={'body2'} p={1} ml={1}>
-									{user?.memberNick} <br />
-									{user?.memberPhone}
-								</Typography>
-							</Stack>
-						</Toolbar>
-
-						<Divider />
+						<div className={'adm-brand'}>
+							<Link href={'/'} aria-label="Kostay home">
+								<KostayLogo width={110} height={44} />
+							</Link>
+							<span>Admin</span>
+						</div>
 
 						<MenuList />
 					</Drawer>

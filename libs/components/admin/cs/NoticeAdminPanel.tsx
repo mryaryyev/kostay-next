@@ -1,5 +1,17 @@
+import AdminPageHeader from '../AdminPageHeader';
 import React, { useState } from 'react';
-import { Box, Button, Divider, InputAdornment, List, ListItem, MenuItem, OutlinedInput, Select, Stack } from '@mui/material';
+import {
+	Box,
+	Button,
+	Divider,
+	InputAdornment,
+	List,
+	ListItem,
+	MenuItem,
+	OutlinedInput,
+	Select,
+	Stack,
+} from '@mui/material';
 import Typography from '@mui/material/Typography';
 import TablePagination from '@mui/material/TablePagination';
 import { TabContext } from '@mui/lab';
@@ -25,7 +37,11 @@ const statusTabs: { key: NoticeStatus | 'ALL'; label: string }[] = [
 /** Admin CS page body shared by Notice and FAQ: what is saved here is shown on /cs. */
 const NoticeAdminPanel = ({ category }: { category: NoticeCategory }) => {
 	const isFaq = category === NoticeCategory.FAQ;
-	const [inquiry, setInquiry] = useState<AllNoticesInquiry>({ page: 1, limit: 10, search: { noticeCategory: category } });
+	const [inquiry, setInquiry] = useState<AllNoticesInquiry>({
+		page: 1,
+		limit: 10,
+		search: { noticeCategory: category },
+	});
 	const [searchText, setSearchText] = useState<string>('');
 	const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 	const [editing, setEditing] = useState<Notice | null>(null);
@@ -45,7 +61,9 @@ const NoticeAdminPanel = ({ category }: { category: NoticeCategory }) => {
 	const total = result?.metaCounter?.[0]?.total ?? 0;
 	const counts = result?.statusCounter ?? [];
 	const countOf = (key: NoticeStatus | 'ALL') =>
-		key === 'ALL' ? counts.reduce((sum, item) => sum + item.count, 0) : counts.find((item) => item._id === key)?.count ?? 0;
+		key === 'ALL'
+			? counts.reduce((sum, item) => sum + item.count, 0)
+			: counts.find((item) => item._id === key)?.count ?? 0;
 	const activeTab = inquiry.search.noticeStatus ?? 'ALL';
 
 	/** HANDLERS **/
@@ -90,21 +108,24 @@ const NoticeAdminPanel = ({ category }: { category: NoticeCategory }) => {
 
 	return (
 		<Box component={'div'} className={'content'}>
-			<Box component={'div'} className={'title flex_space'}>
-				<Typography variant={'h2'}>{isFaq ? 'FAQ' : 'Notice'} Management</Typography>
-				<Button
-					className="btn_add"
-					variant={'contained'}
-					size={'medium'}
-					onClick={() => {
-						setEditing(null);
-						setDialogOpen(true);
-					}}
-				>
-					<AddRoundedIcon sx={{ mr: '8px' }} />
-					ADD
-				</Button>
-			</Box>
+			<AdminPageHeader
+				title={isFaq ? 'FAQ' : 'Notices'}
+				subtitle={isFaq ? 'Questions and answers shown on the help page' : 'Announcements shown on the help page'}
+				actions={
+					<Button
+						className="btn_add"
+						variant={'contained'}
+						size={'medium'}
+						onClick={() => {
+							setEditing(null);
+							setDialogOpen(true);
+						}}
+					>
+						<AddRoundedIcon sx={{ mr: '8px' }} />
+						{isFaq ? 'New question' : 'New notice'}
+					</Button>
+				}
+			/>
 			<Box component={'div'} className={'table-wrap'}>
 				<Box component={'div'} sx={{ width: '100%', typography: 'body1' }}>
 					<TabContext value={activeTab}>
@@ -189,7 +210,9 @@ const NoticeAdminPanel = ({ category }: { category: NoticeCategory }) => {
 							rowsPerPage={inquiry.limit}
 							page={inquiry.page - 1}
 							onPageChange={(_: unknown, page: number) => setInquiry({ ...inquiry, page: page + 1 })}
-							onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) => setInquiry({ ...inquiry, page: 1, limit: parseInt(e.target.value, 10) })}
+							onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+								setInquiry({ ...inquiry, page: 1, limit: parseInt(e.target.value, 10) })
+							}
 						/>
 					</TabContext>
 				</Box>

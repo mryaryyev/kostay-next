@@ -45,7 +45,7 @@ export const InquiryList = ({ inquiries, answerHandler, statusChangeHandler }: I
 						{inquiries.length === 0 && (
 							<TableRow>
 								<TableCell align="center" colSpan={columns.length}>
-									<span className={'no-data'}>No inquiries here.</span>
+									<span className={'no-data'}>Nothing matches these filters</span>
 								</TableCell>
 							</TableRow>
 						)}
