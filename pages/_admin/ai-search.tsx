@@ -35,6 +35,14 @@ const FIELD_WORDS: Record<string, string> = {
 	locationList: 'city',
 };
 
+/** Small amounts keep 4 decimals, so a few searches do not show as $0.000. */
+const usd = (n: number) => `$${n === 0 ? '0' : n.toFixed(n < 0.01 ? 4 : n < 1 ? 3 : 2)}`;
+
+const perDay = (count: number, days: number) => {
+	const rate = count / days;
+	return rate > 0 && rate < 1 ? '<1 a day' : `${Math.round(rate)} a day`;
+};
+
 const dayLabel = (date: string) =>
 	new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
@@ -45,20 +53,24 @@ const DailyChart = ({
 	title,
 	kind,
 	format,
+	integer = false,
 }: {
 	days: AiSearchDailyMetrics[];
 	value: (day: AiSearchDailyMetrics) => number;
 	title: (day: AiSearchDailyMetrics) => string;
 	kind: 'bar' | 'line';
 	format: (n: number) => string;
+	/** Counts: round the top of the axis up to an even number, so 0 / half / top are whole numbers. */
+	integer?: boolean;
 }) => {
 	const width = 520;
 	const height = 150;
-	const pad = { top: 10, right: 8, bottom: 22, left: 44 };
+	const pad = { top: 10, right: 8, bottom: 22, left: 60 };
 	const innerW = width - pad.left - pad.right;
 	const innerH = height - pad.top - pad.bottom;
 	const values = days.map(value);
-	const max = Math.max(...values, 0) || 1;
+	const top = Math.max(...values, 0);
+	const max = integer ? Math.max(2, Math.ceil(top / 2) * 2) : top || 1;
 	const step = innerW / Math.max(days.length, 1);
 	const x = (i: number) => pad.left + step * i + step / 2;
 	const y = (v: number) => pad.top + innerH - (v / max) * innerH;
@@ -148,7 +160,7 @@ const AdminAiSearch: NextPage = () => {
 
 	const cards = m
 		? [
-				{ icon: <MagnifyingGlass />, label: 'Searches', value: m.searches, note: `${Math.round(m.searches / days)} a day` },
+				{ icon: <MagnifyingGlass />, label: 'Searches', value: m.searches, note: perDay(m.searches, days) },
 				{
 					icon: <Clock />,
 					label: 'Latency p50 / p95',
@@ -162,7 +174,7 @@ const AdminAiSearch: NextPage = () => {
 				{
 					icon: <Coins />,
 					label: 'LLM cost',
-					value: `$${m.costUsd.toFixed(m.costUsd < 1 ? 3 : 2)}`,
+					value: usd(m.costUsd),
 					note: `$${m.costPer1kUsd.toFixed(2)} per 1,000 searches`,
 				},
 				{
@@ -255,6 +267,7 @@ const AdminAiSearch: NextPage = () => {
 								kind={'bar'}
 								value={(day) => day.searches}
 								format={(n) => String(Math.round(n))}
+								integer
 								title={(day) =>
 									`${dayLabel(day.date)}: ${day.searches} searches · p95 ${seconds(day.p95Ms)} · ${day.fallbacks} fallbacks`
 								}
@@ -269,7 +282,7 @@ const AdminAiSearch: NextPage = () => {
 								days={m.daily}
 								kind={'line'}
 								value={(day) => day.costUsd}
-								format={(n) => `$${n.toFixed(n === 0 ? 0 : n < 0.01 ? 4 : n < 0.1 ? 3 : 2)}`}
+								format={usd}
 								title={(day) => `${dayLabel(day.date)}: $${day.costUsd.toFixed(4)}`}
 							/>
 						</div>
