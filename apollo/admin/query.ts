@@ -348,3 +348,39 @@ export const GET_ADMIN_DASHBOARD = gql`
 		}
 	}
 `;
+
+/** Smart Search monitoring (kostay-ai-search metrics + NestJS keyword fallbacks). */
+export const GET_AI_SEARCH_METRICS = gql`
+	query GetAiSearchMetrics($days: Int!) {
+		getAiSearchMetrics(days: $days) {
+			days
+			available
+			searches
+			p50Ms
+			p95Ms
+			avgLlmMs
+			avgEmbedMs
+			avgSearchMs
+			avgRerankMs
+			costUsd
+			costPer1kUsd
+			noResults
+			relaxed
+			relaxedFields {
+				field
+				count
+			}
+			llmFailed
+			requests
+			fallbacks
+			daily {
+				date
+				searches
+				p95Ms
+				costUsd
+				requests
+				fallbacks
+			}
+		}
+	}
+`;

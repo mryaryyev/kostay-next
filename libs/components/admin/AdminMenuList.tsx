@@ -6,7 +6,7 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { CalendarCheck, ChartBar, ChatsCircle, Headset, User, UserCircleGear } from 'phosphor-react';
+import { CalendarCheck, ChartBar, ChatsCircle, Headset, Sparkle, User, UserCircleGear } from 'phosphor-react';
 import cookies from 'js-cookie';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { useQuery } from '@apollo/client';
@@ -62,6 +62,9 @@ const AdminMenuList = (props: any) => {
 				break;
 			case 'cs':
 				setClickMenu(['Cs']);
+				break;
+			case 'ai-search':
+				setClickMenu(['AI Search']);
 				break;
 			default:
 				setClickMenu(['Users']);
@@ -135,6 +138,11 @@ const AdminMenuList = (props: any) => {
 			icon: <Headset size={20} color="#bdbdbd" weight="fill" />,
 			on_click: () => subMenuChangeHandler('Cs'),
 		},
+		{
+			title: 'AI Search',
+			icon: <Sparkle size={20} color="#bdbdbd" weight="fill" />,
+			on_click: () => subMenuChangeHandler('AI Search'),
+		},
 	];
 
 	const sub_menu_set: any = {
@@ -148,6 +156,7 @@ const AdminMenuList = (props: any) => {
 			{ title: 'Notice', url: '/_admin/cs/notice' },
 			{ title: '1:1 Inquiry', url: '/_admin/cs/inquiry' },
 		],
+		'AI Search': [{ title: 'Monitoring', url: '/_admin/ai-search' }],
 	};
 
 	return (
