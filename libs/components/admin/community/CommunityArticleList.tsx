@@ -45,12 +45,6 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
 	{
-		id: 'article_id',
-		numeric: true,
-		disablePadding: false,
-		label: 'ARTICLE ID',
-	},
-	{
 		id: 'title',
 		numeric: true,
 		disablePadding: false,
@@ -141,8 +135,8 @@ const CommunityArticleList = (props: CommunityArticleListProps) => {
 					<TableBody>
 						{articles.length === 0 && (
 							<TableRow>
-								<TableCell align="center" colSpan={8}>
-									<span className={'no-data'}>data not found!</span>
+								<TableCell align="center" colSpan={headCells.length}>
+									<span className={'no-data'}>Nothing matches these filters</span>
 								</TableCell>
 							</TableRow>
 						)}
@@ -150,10 +144,10 @@ const CommunityArticleList = (props: CommunityArticleListProps) => {
 						{articles.length !== 0 &&
 							articles.map((article: BoardArticle, index: number) => (
 								<TableRow hover key={article._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-									<TableCell align="left">{article._id}</TableCell>
 									<TableCell align="left">
 										<Box component={'div'}>
 											{article.articleTitle}
+											<small className={'adm-sub'}>#{article._id.slice(-6)}</small>
 											{article.articleStatus === BoardArticleStatus.ACTIVE && (
 												<Link
 													href={`/community/detail?articleCategory=${article.articleCategory}&id=${article._id}`}

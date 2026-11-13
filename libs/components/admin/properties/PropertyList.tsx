@@ -43,12 +43,6 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
 	{
-		id: 'id',
-		numeric: true,
-		disablePadding: false,
-		label: 'MB ID',
-	},
-	{
 		id: 'title',
 		numeric: true,
 		disablePadding: false,
@@ -58,25 +52,13 @@ const headCells: readonly HeadCell[] = [
 		id: 'price',
 		numeric: false,
 		disablePadding: false,
-		label: 'PRICE / NIGHT (KRW)',
+		label: 'PRICE / NIGHT',
 	},
 	{
 		id: 'host',
 		numeric: false,
 		disablePadding: false,
 		label: 'HOST',
-	},
-	{
-		id: 'location',
-		numeric: false,
-		disablePadding: false,
-		label: 'LOCATION',
-	},
-	{
-		id: 'type',
-		numeric: false,
-		disablePadding: false,
-		label: 'TYPE',
 	},
 	{
 		id: 'status',
@@ -124,6 +106,9 @@ interface PropertyPanelListType {
 	removePropertyHandler: any;
 }
 
+/** HOUSE → House, for the small line under the stay title. */
+const titleCase = (value: string) => value.charAt(0) + value.slice(1).toLowerCase();
+
 export const PropertyPanelList = (props: PropertyPanelListType) => {
 	const {
 		properties,
@@ -143,8 +128,8 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 					<TableBody>
 						{properties.length === 0 && (
 							<TableRow>
-								<TableCell align="center" colSpan={8}>
-									<span className={'no-data'}>data not found!</span>
+								<TableCell align="center" colSpan={headCells.length}>
+									<span className={'no-data'}>Nothing matches these filters</span>
 								</TableCell>
 							</TableRow>
 						)}
@@ -155,7 +140,6 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 
 								return (
 									<TableRow hover key={property?._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-										<TableCell align="left">{property._id}</TableCell>
 										<TableCell align="left" className={'name'}>
 											{property.propertyStatus === PropertyStatus.ACTIVE ? (
 												<Stack direction={'row'}>
@@ -165,7 +149,12 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 														</div>
 													</Link>
 													<Link href={`/stay/detail?id=${property?._id}`}>
-														<div>{property.propertyTitle}</div>
+														<div>
+															{property.propertyTitle}
+															<small className={'adm-sub'}>
+																{titleCase(property.propertyType)} · {titleCase(property.propertyLocation)} · #{property._id.slice(-6)}
+															</small>
+														</div>
 													</Link>
 												</Stack>
 											) : (
@@ -173,14 +162,19 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 													<div>
 														<Avatar alt="Remy Sharp" src={propertyImage} sx={{ ml: '2px', mr: '10px' }} />
 													</div>
-													<div style={{ marginTop: '10px' }}>{property.propertyTitle}</div>
+													<div>
+														{property.propertyTitle}
+														<small className={'adm-sub'}>
+															{titleCase(property.propertyType)} · {titleCase(property.propertyLocation)} · #{property._id.slice(-6)}
+														</small>
+													</div>
 												</Stack>
 											)}
 										</TableCell>
-										<TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>{formatKRW(property.pricePerNight)} / night</TableCell>
+										<TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>
+											{formatKRW(property.pricePerNight)} / night
+										</TableCell>
 										<TableCell align="center">{property.memberData?.memberNick}</TableCell>
-										<TableCell align="center">{property.propertyLocation}</TableCell>
-										<TableCell align="center">{property.propertyType}</TableCell>
 										<TableCell align="center">
 											{property.propertyStatus === PropertyStatus.DELETE && (
 												<Button

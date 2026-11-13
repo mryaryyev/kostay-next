@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import TablePagination from '@mui/material/TablePagination';
 import { TabContext } from '@mui/lab';
 import { useMutation, useQuery } from '@apollo/client';
+import AdminPageHeader from '../../../libs/components/admin/AdminPageHeader';
 import withAdminLayout from '../../../libs/components/layout/LayoutAdmin';
 import { BookingList } from '../../../libs/components/admin/bookings/BookingList';
 import { GET_ALL_BOOKINGS_BY_ADMIN } from '../../../apollo/admin/query';
@@ -38,7 +39,9 @@ const AdminBookings: NextPage = () => {
 	const result: Bookings | undefined = data?.getAllBookingsByAdmin;
 	const counts = result?.statusCounter ?? [];
 	const countOf = (key: BookingStatus | 'ALL') =>
-		key === 'ALL' ? counts.reduce((sum, item) => sum + item.count, 0) : counts.find((item) => item.status === key)?.count ?? 0;
+		key === 'ALL'
+			? counts.reduce((sum, item) => sum + item.count, 0)
+			: counts.find((item) => item.status === key)?.count ?? 0;
 	const activeTab = inquiry.status ?? 'ALL';
 	const paid = result?.paymentSummary?.paidTotal ?? 0;
 	const refunded = result?.paymentSummary?.refundedTotal ?? 0;
@@ -47,7 +50,8 @@ const AdminBookings: NextPage = () => {
 	const update = (patch: Partial<AllBookingsInquiry>) => setInquiry({ ...inquiry, page: 1, ...patch });
 
 	const cancelHandler = async (booking: Booking) => {
-		const refund = booking.paymentStatus === PaymentStatus.SUCCEEDED ? ` ${formatKRW(booking.totalPrice)} will be refunded.` : '';
+		const refund =
+			booking.paymentStatus === PaymentStatus.SUCCEEDED ? ` ${formatKRW(booking.totalPrice)} will be refunded.` : '';
 		if (!(await sweetConfirmAlert(`Cancel this booking?${refund} The guest and the host are notified.`))) return;
 		try {
 			await cancelBookingByAdmin({ variables: { bookingId: booking.id } });
@@ -68,9 +72,7 @@ const AdminBookings: NextPage = () => {
 
 	return (
 		<Box component={'div'} className={'content'}>
-			<Typography variant={'h2'} className={'tit'} sx={{ mb: '24px' }}>
-				Bookings
-			</Typography>
+			<AdminPageHeader title={'Bookings'} subtitle={'Every booking and its payment'} />
 
 			<Stack direction={'row'} gap={2} sx={{ mb: 3 }} className={'admin-summary'}>
 				{summary.map((item) => (
@@ -125,7 +127,9 @@ const AdminBookings: NextPage = () => {
 							rowsPerPage={inquiry.limit}
 							page={inquiry.page - 1}
 							onPageChange={(_: unknown, page: number) => setInquiry({ ...inquiry, page: page + 1 })}
-							onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) => setInquiry({ ...inquiry, page: 1, limit: parseInt(e.target.value, 10) })}
+							onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+								setInquiry({ ...inquiry, page: 1, limit: parseInt(e.target.value, 10) })
+							}
 						/>
 					</TabContext>
 				</Box>

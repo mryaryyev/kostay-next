@@ -971,3 +971,440 @@
 		}
 	}
 }
+
+/* ------------------------------------------------------------------
+ * Admin redesign: one look for every admin page (shell, header, cards,
+ * toolbar tabs, tables, status pills). Scoped to #site-wrap.admin, so it
+ * overrides the older admin rules above and touches nothing else.
+ * ------------------------------------------------------------------ */
+$adm-navy: #031636;
+$adm-brand: #aa3614;
+$adm-brand-soft: #fbe6e0;
+$adm-canvas: #faf8f5;
+$adm-line: #d9d3ca;
+$adm-line-soft: #ece7e0;
+$adm-text: #1f2430;
+$adm-muted: #6b6f78;
+
+#site-wrap.admin {
+	font-family: $font-display;
+	color: $adm-text;
+	background: $adm-canvas;
+	min-height: 100vh;
+	.MuiTypography-root,
+	.MuiTableCell-root,
+	.MuiButton-root,
+	.MuiInputBase-root,
+	.MuiTablePagination-root,
+	.MuiMenuItem-root {
+		font-family: $font-display;
+	}
+
+	/* top bar */
+	.MuiAppBar-root {
+		height: 60px;
+		padding: 0 28px;
+		background: rgba(255, 255, 255, 0.92);
+		backdrop-filter: blur(6px);
+		border-bottom: 1px solid $adm-line-soft;
+		box-shadow: none !important;
+		color: $adm-text;
+		.MuiToolbar-root {
+			min-height: 60px;
+			padding: 0;
+			gap: 12px;
+		}
+	}
+	.adm-crumbs {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: $adm-muted;
+		a {
+			color: $adm-muted;
+			text-decoration: none;
+			&:hover {
+				color: $adm-navy;
+			}
+		}
+		[aria-current='page'] {
+			color: $adm-navy;
+			font-weight: 700;
+		}
+	}
+	.adm-user {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 4px 12px 4px 4px;
+		border: 1px solid $adm-line-soft;
+		border-radius: 9999px;
+		background: #fff;
+		color: $adm-navy;
+		font: inherit;
+		font-size: 13px;
+		font-weight: 700;
+		cursor: pointer;
+		&:hover {
+			border-color: $adm-line;
+		}
+		&:focus-visible {
+			outline: 2px solid $adm-brand;
+			outline-offset: 2px;
+		}
+	}
+
+	/* sidebar */
+	.aside .MuiDrawer-paper {
+		width: 248px;
+		padding: 0 12px 24px;
+		border-right: 1px solid $adm-line-soft;
+		background: #fff;
+	}
+	.adm-brand {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		height: 60px;
+		padding: 0 6px;
+		margin-bottom: 8px;
+		a {
+			display: flex;
+		}
+		// the logo's STAY letters are white for the dark site header; navy on the white sidebar
+		.kostay-logo text {
+			fill: $adm-navy;
+		}
+		> span {
+			padding: 2px 8px;
+			border-radius: 9999px;
+			background: $adm-brand-soft;
+			color: $adm-brand;
+			font-size: 11px;
+			font-weight: 700;
+			letter-spacing: 0.04em;
+		}
+	}
+	.adm-nav {
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+	}
+	.adm-nav-group + .adm-nav-group {
+		margin-top: 14px;
+	}
+	.adm-nav-label {
+		padding: 0 12px 6px;
+		color: #9aa0a9;
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	.adm-nav-link {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		min-height: 40px;
+		padding: 0 12px;
+		border-radius: 10px;
+		color: #44474e;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+		transition: background 140ms ease, color 140ms ease;
+		&:hover {
+			background: #f5f2ee;
+			color: $adm-navy;
+		}
+		&.on {
+			background: $adm-brand-soft;
+			color: $adm-brand;
+			.adm-nav-icon {
+				color: $adm-brand;
+			}
+		}
+		&:focus-visible {
+			outline: 2px solid $adm-brand;
+			outline-offset: 1px;
+		}
+		.admin-menu-badge {
+			margin-left: auto;
+		}
+	}
+	.adm-nav-icon {
+		display: inline-flex;
+		color: #8a8f98;
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+	}
+
+	/* page area */
+	#bunker {
+		width: calc(100% - 248px);
+		padding: 92px 32px 48px;
+		box-sizing: border-box;
+	}
+	.adm-page-head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 16px;
+		flex-wrap: wrap;
+		margin-bottom: 20px;
+		h1 {
+			margin: 0;
+			color: $adm-navy;
+			font-size: 26px;
+			font-weight: 800;
+			line-height: 1.2;
+		}
+		p {
+			margin: 4px 0 0;
+			color: $adm-muted;
+			font-size: 14px;
+		}
+		.MuiButton-root {
+			border-radius: 10px;
+			background: $adm-navy;
+			color: #fff;
+			box-shadow: none;
+			text-transform: none;
+			font-weight: 700;
+			&:hover {
+				background: #1a2b4c;
+			}
+		}
+	}
+
+	/* page content: under #bunker so it outranks the older #site-wrap #bunker rules */
+	#bunker {
+		/* cards and panels: one border, clearly visible */
+		.admin-dash-card,
+		.admin-summary-card,
+		.admin-dash-panel,
+		.ais-card,
+		.ais-panel,
+		.table-wrap {
+			border: 1px solid $adm-line;
+			border-radius: 16px;
+			background: #fff;
+			box-shadow: 0 1px 2px rgba(3, 22, 54, 0.05);
+		}
+		.admin-dash-card:hover {
+			border-color: $adm-navy;
+		}
+		.admin-dash-card.is-warn,
+		.ais-card.is-watch {
+			border-color: #e07a5f;
+		}
+		.admin-dash-card.is-accent {
+			border-color: $adm-navy;
+			background: linear-gradient(140deg, $adm-navy, #1a2b4c);
+		}
+		.admin-dash-card span,
+		.admin-summary-card span {
+			color: $adm-muted;
+		}
+
+		/* table card: tabs as pills, toolbar, table */
+		.table-wrap {
+			overflow: hidden;
+			.tab-menu {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 4px;
+				padding: 14px 16px;
+				li {
+					width: auto;
+					height: auto;
+					padding: 7px 14px;
+					border: none;
+					border-radius: 9999px;
+					color: $adm-muted;
+					font-size: 13px;
+					font-weight: 600;
+					transition: background 140ms ease, color 140ms ease;
+					&:hover {
+						background: #f5f2ee;
+						color: $adm-navy;
+					}
+					&.on {
+						border-bottom: none;
+						background: $adm-navy;
+						color: #fff;
+					}
+				}
+			}
+			hr.MuiDivider-root {
+				border-color: $adm-line-soft;
+			}
+			.search-area {
+				margin: 12px 16px !important;
+				gap: 10px;
+				.MuiOutlinedInput-root {
+					height: 40px;
+					border-radius: 10px;
+					font-size: 14px;
+				}
+				.MuiOutlinedInput-notchedOutline {
+					border-color: $adm-line;
+				}
+			}
+			thead tr {
+				background: $adm-canvas;
+			}
+			thead th {
+				padding: 12px 16px;
+				border-bottom: 1px solid $adm-line-soft;
+				color: $adm-muted;
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 0.06em;
+				text-transform: uppercase;
+				white-space: nowrap;
+			}
+			tbody tr {
+				border-bottom: 1px solid $adm-line-soft;
+				transition: background 120ms ease;
+				&:hover {
+					background: #fcfbf9;
+				}
+			}
+			tbody td {
+				padding: 12px 16px;
+				color: $adm-text;
+				font-size: 14px;
+			}
+			.name a,
+			.name > div {
+				color: $adm-navy;
+				font-weight: 600;
+				text-decoration: none;
+			}
+			.MuiAvatar-root {
+				border-radius: 10px;
+			}
+			.no-data {
+				display: block;
+				padding: 28px 0;
+				color: $adm-muted;
+				font-size: 14px;
+			}
+			.MuiTablePagination-root {
+				border-top: 1px solid $adm-line-soft;
+				color: $adm-muted;
+			}
+		}
+		// community: title, open-window icon on the same line, short id below
+		td > .MuiBox-root:has(.img_box) {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			column-gap: 4px;
+			color: $adm-navy;
+			font-weight: 600;
+			.adm-sub {
+				order: 3;
+				flex-basis: 100%;
+			}
+			.img_box .MuiIconButton-root {
+				padding: 4px;
+				color: $adm-muted;
+			}
+		}
+		.adm-sub {
+			display: block;
+			margin-top: 2px;
+			color: $adm-muted;
+			font-size: 12px;
+			font-weight: 500;
+		}
+
+		/* status pills */
+		.badge {
+			min-width: 0;
+			padding: 3px 10px;
+			border-radius: 9999px;
+			font-size: 11px;
+			font-weight: 700;
+			letter-spacing: 0.04em;
+			line-height: 1.6;
+			box-shadow: none;
+		}
+		.badge.success {
+			background: #e6f4ea;
+			color: #1e7a3c;
+		}
+		.badge.warning {
+			background: #fdf3dc;
+			color: #8a5a00;
+		}
+		.badge.error {
+			background: #fbe6e0;
+			color: $adm-brand;
+		}
+		.badge.block {
+			background: #efe9fb;
+			color: #5b3fb0;
+		}
+		.badge.delete {
+			background: #eceff3;
+			color: #44474e;
+		}
+		.MuiChip-root {
+			height: 24px;
+			border-radius: 9999px;
+			font-size: 11px;
+			font-weight: 700;
+			letter-spacing: 0.04em;
+			&.MuiChip-colorSuccess {
+				background: #e6f4ea;
+				color: #1e7a3c;
+			}
+			&.MuiChip-colorInfo {
+				background: #e7eef9;
+				color: #1d4f91;
+			}
+			&.MuiChip-colorWarning {
+				background: #fdf3dc;
+				color: #8a5a00;
+			}
+			&.MuiChip-colorError {
+				background: #fbe6e0;
+				color: $adm-brand;
+			}
+			&.MuiChip-colorDefault {
+				background: #eceff3;
+				color: #44474e;
+			}
+		}
+	}
+}
+
+@include tablet {
+	#site-wrap.admin {
+		#bunker {
+			width: 100%;
+			padding: 84px 20px 40px;
+		}
+		.MuiAppBar-root {
+			padding: 0 12px;
+		}
+	}
+}
+@include mobile {
+	#site-wrap.admin {
+		.adm-user span {
+			display: none;
+		}
+		.adm-page-head h1 {
+			font-size: 22px;
+		}
+	}
+}

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow, Chip } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { useQuery } from '@apollo/client';
+import AdminPageHeader from '../../libs/components/admin/AdminPageHeader';
 import withAdminLayout from '../../libs/components/layout/LayoutAdmin';
 import { GET_ADMIN_DASHBOARD, GET_AI_SEARCH_METRICS, GET_ALL_BOOKINGS_BY_ADMIN } from '../../apollo/admin/query';
 import { AiSearchMetrics, aiSearchHealth, percent, seconds } from '../../libs/types/ai-search/ai-search-metrics';
@@ -106,9 +107,7 @@ const AdminHome: NextPage = () => {
 
 	return (
 		<Box component={'div'} className={'content admin-dashboard'}>
-			<Typography variant={'h2'} className={'tit'} sx={{ mb: '24px' }}>
-				Dashboard
-			</Typography>
+			<AdminPageHeader title={'Dashboard'} subtitle={'Platform numbers across stays, bookings and support'} />
 
 			<div className={'admin-dash-grid'}>
 				{cards.map((card) => (
