@@ -1,219 +1,100 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter, withRouter } from 'next/router';
+import React from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import Collapse from '@mui/material/Collapse';
-import Typography from '@mui/material/Typography';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import { CalendarCheck, ChartBar, ChatsCircle, Headset, Sparkle, User, UserCircleGear } from 'phosphor-react';
-import cookies from 'js-cookie';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
+import {
+	CalendarCheck,
+	ChatsCircle,
+	House,
+	Megaphone,
+	Question,
+	SquaresFour,
+	Sparkle,
+	Tray,
+	Users,
+} from 'phosphor-react';
 import { useQuery } from '@apollo/client';
-import { GET_WAITING_INQUIRY_COUNT } from '../../../apollo/admin/query';
+import { GET_ADMIN_DASHBOARD, GET_WAITING_INQUIRY_COUNT } from '../../../apollo/admin/query';
 import { InquiryStatus } from '../../enums/inquiry.enum';
 
-const AdminMenuList = (props: any) => {
+interface NavItem {
+	label: string;
+	href: string;
+	icon: React.ReactNode;
+	count?: number;
+}
+
+/** Admin sidebar: one click per page, grouped, with counts for work that is waiting. */
+const AdminMenuList = () => {
 	const router = useRouter();
-	const device = useDeviceDetect();
-	const [mobileLayout, setMobileLayout] = useState(false);
-	const [openSubMenu, setOpenSubMenu] = useState('Users');
-	const [openMenu, setOpenMenu] = useState(typeof window === 'object' ? cookies.get('admin_menu') === 'true' : false);
-	const [clickMenu, setClickMenu] = useState<any>([]);
-	const [clickSubMenu, setClickSubMenu] = useState('');
-
-	const {
-		router: { pathname },
-	} = props;
-
-	const pathnames = pathname.split('/').filter((x: any) => x);
 
 	/** APOLLO REQUESTS **/
-	// Questions still waiting for an answer; shown next to Cs and 1:1 Inquiry.
 	const { data: waitingData } = useQuery(GET_WAITING_INQUIRY_COUNT, {
 		fetchPolicy: 'cache-and-network',
 		variables: { input: { page: 1, limit: 1, search: { inquiryStatus: InquiryStatus.WAITING } } },
 		pollInterval: 30000,
 	});
-	const waitingCount: number = waitingData?.getAllInquiriesByAdmin?.metaCounter?.[0]?.total ?? 0;
-	const badge = (count: number) =>
-		count > 0 ? (
-			<span className={'admin-menu-badge'} aria-label={`${count} waiting`}>
-				{count > 99 ? '99+' : count}
-			</span>
-		) : null;
+	const { data: dashboardData } = useQuery(GET_ADMIN_DASHBOARD, {
+		fetchPolicy: 'cache-and-network',
+		pollInterval: 60000,
+	});
+	const waitingInquiries: number = waitingData?.getAllInquiriesByAdmin?.metaCounter?.[0]?.total ?? 0;
+	const pendingStays: number = dashboardData?.getAdminDashboard?.pendingStays ?? 0;
 
-	/** LIFECYCLES **/
-	useEffect(() => {
-		if (device === 'mobile') setMobileLayout(true);
-
-		switch (pathnames[1]) {
-			case undefined:
-				setClickMenu(['Dashboard']);
-				break;
-			case 'stays':
-				setClickMenu(['Stays']);
-				break;
-			case 'bookings':
-				setClickMenu(['Bookings']);
-				break;
-			case 'community':
-				setClickMenu(['Community']);
-				break;
-			case 'cs':
-				setClickMenu(['Cs']);
-				break;
-			case 'ai-search':
-				setClickMenu(['AI Search']);
-				break;
-			default:
-				setClickMenu(['Users']);
-				break;
-		}
-
-		switch (pathnames[1] === undefined ? 'overview' : pathnames[2]) {
-			case 'overview':
-				setClickSubMenu('Overview');
-				break;
-			case 'logs':
-				setClickSubMenu('Logs');
-				break;
-			case 'inquiry':
-				setClickSubMenu('1:1 Inquiry');
-				break;
-			case 'notice':
-				setClickSubMenu('Notice');
-				break;
-			case 'faq':
-				setClickSubMenu('FAQ');
-				break;
-			case 'board_create':
-				setClickSubMenu('Board Create');
-				break;
-			default:
-				setClickSubMenu('List');
-				break;
-		}
-	}, []);
-
-	/** HANDLERS **/
-	const subMenuChangeHandler = (target: string) => {
-		if (clickMenu.find((item: string) => item === target)) {
-			// setOpenSubMenu('');
-			setClickMenu(clickMenu.filter((menu: string) => target !== menu));
-		} else {
-			// setOpenSubMenu(target);
-			setClickMenu([...clickMenu, target]);
-		}
-	};
-
-	const menu_set = [
+	const groups: { label?: string; items: NavItem[] }[] = [
+		{ items: [{ label: 'Dashboard', href: '/_admin', icon: <SquaresFour /> }] },
 		{
-			title: 'Dashboard',
-			icon: <ChartBar size={20} color="#bdbdbd" weight="fill" />,
-			on_click: () => subMenuChangeHandler('Dashboard'),
+			label: 'Manage',
+			items: [
+				{ label: 'Users', href: '/_admin/users', icon: <Users /> },
+				{ label: 'Stays', href: '/_admin/stays', icon: <House />, count: pendingStays },
+				{ label: 'Bookings', href: '/_admin/bookings', icon: <CalendarCheck /> },
+				{ label: 'Community', href: '/_admin/community', icon: <ChatsCircle /> },
+			],
 		},
 		{
-			title: 'Users',
-			icon: <User size={20} color="#bdbdbd" weight="fill" />,
-			on_click: () => subMenuChangeHandler('Users'),
+			label: 'Support',
+			items: [
+				{ label: 'FAQ', href: '/_admin/cs/faq', icon: <Question /> },
+				{ label: 'Notices', href: '/_admin/cs/notice', icon: <Megaphone /> },
+				{ label: 'Inquiries', href: '/_admin/cs/inquiry', icon: <Tray />, count: waitingInquiries },
+			],
 		},
-		{
-			title: 'Stays',
-			icon: <UserCircleGear size={20} color="#bdbdbd" weight="fill" />,
-			on_click: () => subMenuChangeHandler('Stays'),
-		},
-		{
-			title: 'Bookings',
-			icon: <CalendarCheck size={20} color="#bdbdbd" weight="fill" />,
-			on_click: () => subMenuChangeHandler('Bookings'),
-		},
-		{
-			title: 'Community',
-			icon: <ChatsCircle size={20} color="#bdbdbd" weight="fill" />,
-			on_click: () => subMenuChangeHandler('Community'),
-		},
-		{
-			title: 'Cs',
-			icon: <Headset size={20} color="#bdbdbd" weight="fill" />,
-			on_click: () => subMenuChangeHandler('Cs'),
-		},
-		{
-			title: 'AI Search',
-			icon: <Sparkle size={20} color="#bdbdbd" weight="fill" />,
-			on_click: () => subMenuChangeHandler('AI Search'),
-		},
+		{ label: 'Insights', items: [{ label: 'AI search', href: '/_admin/ai-search', icon: <Sparkle /> }] },
 	];
 
-	const sub_menu_set: any = {
-		Dashboard: [{ title: 'Overview', url: '/_admin' }],
-		Users: [{ title: 'List', url: '/_admin/users' }],
-		Stays: [{ title: 'List', url: '/_admin/stays' }],
-		Bookings: [{ title: 'List', url: '/_admin/bookings' }],
-		Community: [{ title: 'List', url: '/_admin/community' }],
-		Cs: [
-			{ title: 'FAQ', url: '/_admin/cs/faq' },
-			{ title: 'Notice', url: '/_admin/cs/notice' },
-			{ title: '1:1 Inquiry', url: '/_admin/cs/inquiry' },
-		],
-		'AI Search': [{ title: 'Monitoring', url: '/_admin/ai-search' }],
-	};
+	const isActive = (href: string) =>
+		href === '/_admin' ? router.pathname === '/_admin' : router.pathname.startsWith(href);
 
 	return (
-		<>
-			{menu_set.map((item, index) => (
-				<List className={'menu_wrap'} key={index} disablePadding>
-					<ListItemButton
-						onClick={item.on_click}
-						component={'li'}
-						className={clickMenu[0] === item.title ? 'menu on' : 'menu'}
-						sx={{
-							minHeight: 48,
-							justifyContent: openMenu ? 'initial' : 'center',
-							px: 2.5,
-						}}
-					>
-						<ListItemIcon
-							sx={{
-								minWidth: 0,
-								mr: openMenu ? 3 : 'auto',
-								justifyContent: 'center',
-							}}
-						>
-							{item.icon}
-						</ListItemIcon>
-						<ListItemText>{item.title}</ListItemText>
-						{item.title === 'Cs' && badge(waitingCount)}
-						{clickMenu.find((menu: string) => item.title === menu) ? <ExpandLess /> : <ExpandMore />}
-					</ListItemButton>
-					<Collapse
-						in={!!clickMenu.find((menu: string) => menu === item.title)}
-						className="menu"
-						timeout="auto"
-						component="li"
-						unmountOnExit
-					>
-						<List className="menu-list" disablePadding>
-							{sub_menu_set[item.title] &&
-								sub_menu_set[item.title].map((sub: any, i: number) => (
-									<Link href={sub.url} shallow={true} replace={true} key={i}>
-										<ListItemButton
-											component="li"
-											className={clickMenu[0] === item.title && clickSubMenu === sub.title ? 'li on' : 'li'}
-										>
-											<Typography variant={sub.title} component={'span'}>
-												{sub.title}
-											</Typography>
-											{sub.url === '/_admin/cs/inquiry' && badge(waitingCount)}
-										</ListItemButton>
-									</Link>
-								))}
-						</List>
-					</Collapse>
-				</List>
+		<div className={'adm-nav'}>
+			{groups.map((group, index) => (
+				<div className={'adm-nav-group'} key={group.label ?? index}>
+					{group.label && <div className={'adm-nav-label'}>{group.label}</div>}
+					<ul>
+						{group.items.map((item) => (
+							<li key={item.href}>
+								<Link
+									href={item.href}
+									className={`adm-nav-link ${isActive(item.href) ? 'on' : ''}`}
+									aria-current={isActive(item.href) ? 'page' : undefined}
+								>
+									<span className={'adm-nav-icon'} aria-hidden="true">
+										{item.icon}
+									</span>
+									{item.label}
+									{!!item.count && (
+										<span className={'admin-menu-badge'} aria-label={`${item.count} waiting`}>
+											{item.count > 99 ? '99+' : item.count}
+										</span>
+									)}
+								</Link>
+							</li>
+						))}
+					</ul>
+				</div>
 			))}
-		</>
+		</div>
 	);
 };
 
-export default withRouter(AdminMenuList);
+export default AdminMenuList;
