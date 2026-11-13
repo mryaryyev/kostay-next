@@ -6,6 +6,7 @@ import TablePagination from '@mui/material/TablePagination';
 import { TabContext } from '@mui/lab';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 import { useMutation, useQuery } from '@apollo/client';
+import AdminPageHeader from '../../../libs/components/admin/AdminPageHeader';
 import withAdminLayout from '../../../libs/components/layout/LayoutAdmin';
 import { InquiryList } from '../../../libs/components/admin/cs/InquiryList';
 import InquiryAnswerDialog from '../../../libs/components/admin/cs/InquiryAnswerDialog';
@@ -76,9 +77,7 @@ const AdminInquiry: NextPage = () => {
 
 	return (
 		<Box component={'div'} className={'content'}>
-			<Typography variant={'h2'} className={'tit'} sx={{ mb: '24px' }}>
-				1:1 Inquiry Management
-			</Typography>
+			<AdminPageHeader title={'Inquiries'} subtitle={'Answer questions from guests and hosts'} />
 			<Box component={'div'} className={'table-wrap'}>
 				<Box component={'div'} sx={{ width: '100%', typography: 'body1' }}>
 					<TabContext value={activeTab}>
@@ -155,7 +154,9 @@ const AdminInquiry: NextPage = () => {
 							rowsPerPage={inquiry.limit}
 							page={inquiry.page - 1}
 							onPageChange={(_: unknown, page: number) => setInquiry({ ...inquiry, page: page + 1 })}
-							onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) => setInquiry({ ...inquiry, page: 1, limit: parseInt(e.target.value, 10) })}
+							onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+								setInquiry({ ...inquiry, page: 1, limit: parseInt(e.target.value, 10) })
+							}
 						/>
 					</TabContext>
 				</Box>
