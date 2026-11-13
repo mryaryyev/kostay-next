@@ -58,12 +58,6 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
 	{
-		id: 'id',
-		numeric: true,
-		disablePadding: false,
-		label: 'MB ID',
-	},
-	{
 		id: 'nickname',
 		numeric: true,
 		disablePadding: false,
@@ -156,8 +150,8 @@ export const MemberPanelList = (props: MemberPanelListType) => {
 					<TableBody>
 						{members.length === 0 && (
 							<TableRow>
-								<TableCell align="center" colSpan={8}>
-									<span className={'no-data'}>data not found!</span>
+								<TableCell align="center" colSpan={headCells.length}>
+									<span className={'no-data'}>Nothing matches these filters</span>
 								</TableCell>
 							</TableRow>
 						)}
@@ -169,8 +163,6 @@ export const MemberPanelList = (props: MemberPanelListType) => {
 									: '/img/profile/defaultUser.svg';
 								return (
 									<TableRow hover key={member?._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-										<TableCell align="left">{member._id}</TableCell>
-
 										<TableCell align="left" className={'name'}>
 											<Stack direction={'row'}>
 												<Link href={`/member?memberId=${member._id}`}>
@@ -179,7 +171,10 @@ export const MemberPanelList = (props: MemberPanelListType) => {
 													</div>
 												</Link>
 												<Link href={`/member?memberId=${member._id}`}>
-													<div>{member.memberNick}</div>
+													<div>
+														{member.memberNick}
+														<small className={'adm-sub'}>#{member._id.slice(-6)}</small>
+													</div>
 												</Link>
 											</Stack>
 										</TableCell>
@@ -206,10 +201,7 @@ export const MemberPanelList = (props: MemberPanelListType) => {
 												{Object.values(MemberType)
 													.filter((ele) => ele !== member?.memberType)
 													.map((type: string) => (
-														<MenuItem
-															onClick={() => updateMemberHandler({ _id: member._id, memberType: type })}
-															key={type}
-														>
+														<MenuItem onClick={() => updateMemberHandler({ _id: member._id, memberType: type })} key={type}>
 															<Typography variant={'subtitle1'} component={'span'}>
 																{memberTypeLabels[type] ?? type}
 															</Typography>
@@ -239,10 +231,7 @@ export const MemberPanelList = (props: MemberPanelListType) => {
 												{Object.values(MemberStatus)
 													.filter((ele: string) => ele !== member?.memberStatus)
 													.map((status: string) => (
-														<MenuItem
-															onClick={() => updateMemberHandler({ _id: member._id, memberStatus: status })}
-															key={status}
-														>
+														<MenuItem onClick={() => updateMemberHandler({ _id: member._id, memberStatus: status })} key={status}>
 															<Typography variant={'subtitle1'} component={'span'}>
 																{status}
 															</Typography>

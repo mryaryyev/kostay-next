@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import type { NextPage } from 'next';
+import AdminPageHeader from '../../../libs/components/admin/AdminPageHeader';
 import withAdminLayout from '../../../libs/components/layout/LayoutAdmin';
 import { MemberPanelList } from '../../../libs/components/admin/users/MemberList';
 import { Box, InputAdornment, List, ListItem, Stack } from '@mui/material';
@@ -179,15 +180,17 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 
 	return (
 		<Box component={'div'} className={'content'}>
-			<Typography variant={'h2'} className={'tit'} sx={{ mb: '24px' }}>
-				Member List
-			</Typography>
+			<AdminPageHeader title={'Users'} subtitle={'Guests and hosts; block or restore accounts'} />
 			<Box component={'div'} className={'table-wrap'}>
 				<Box component={'div'} sx={{ width: '100%', typography: 'body1' }}>
 					<TabContext value={value}>
 						<Box component={'div'}>
 							<List className={'tab-menu'}>
-								<ListItem onClick={(e: React.MouseEvent) => tabChangeHandler(e, 'ALL')} value="ALL" className={value === 'ALL' ? 'li on' : 'li'}>
+								<ListItem
+									onClick={(e: React.MouseEvent) => tabChangeHandler(e, 'ALL')}
+									value="ALL"
+									className={value === 'ALL' ? 'li on' : 'li'}
+								>
 									All
 								</ListItem>
 								<ListItem

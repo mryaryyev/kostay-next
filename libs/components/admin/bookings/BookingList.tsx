@@ -36,7 +36,9 @@ const statusColors: Record<BookingStatus, 'success' | 'info' | 'default' | 'warn
 const paymentLabel = (booking: Booking) => {
 	if (!booking.paymentStatus) return 'Not paid';
 	const method = booking.paymentMethod ? ` · ${booking.paymentMethod}` : '';
-	return booking.paymentStatus === PaymentStatus.SUCCEEDED ? `Paid${method}` : `${booking.paymentStatus.toLowerCase()}${method}`;
+	return booking.paymentStatus === PaymentStatus.SUCCEEDED
+		? `Paid${method}`
+		: `${booking.paymentStatus.toLowerCase()}${method}`;
 };
 
 /** Admin bookings table: data from PostgreSQL, stay and guest names from MongoDB. */
@@ -58,7 +60,7 @@ export const BookingList = ({ bookings, cancelHandler }: BookingListProps) => {
 						{bookings.length === 0 && (
 							<TableRow>
 								<TableCell align="center" colSpan={columns.length}>
-									<span className={'no-data'}>No bookings here.</span>
+									<span className={'no-data'}>Nothing matches these filters</span>
 								</TableCell>
 							</TableRow>
 						)}
