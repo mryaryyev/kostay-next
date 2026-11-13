@@ -1309,7 +1309,8 @@ $adm-muted: #6b6f78;
 			column-gap: 4px;
 			color: $adm-navy;
 			font-weight: 600;
-			.adm-sub {
+			}
+		.adm-sub {
 				order: 3;
 				flex-basis: 100%;
 			}
@@ -1318,6 +1319,37 @@ $adm-muted: #6b6f78;
 				color: $adm-muted;
 			}
 		}
+		// dashboard "Latest bookings": same table look as the list pages
+		.admin-dash-panel {
+			.MuiTable-root {
+				margin-top: 4px;
+			}
+			thead th {
+				padding: 10px 12px;
+				border-bottom: 1px solid $adm-line-soft;
+				background: $adm-canvas;
+				color: $adm-muted;
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 0.06em;
+				white-space: nowrap;
+			}
+			tbody td {
+				padding: 10px 12px;
+				border-bottom: 1px solid $adm-line-soft;
+				color: $adm-text;
+				font-size: 14px;
+			}
+			tbody tr:last-child td {
+				border-bottom: none;
+			}
+			tbody tr:hover {
+				background: #fcfbf9;
+			}
+			tbody td:first-child {
+				color: $adm-navy;
+				font-weight: 600;
+			}
 		.adm-sub {
 			display: block;
 			margin-top: 2px;
@@ -1405,6 +1437,48 @@ $adm-muted: #6b6f78;
 		}
 		.adm-page-head h1 {
 			font-size: 22px;
+		}
+	}
+}
+
+/* Admin menus and dropdowns: MUI renders them at the end of <body>, outside #site-wrap,
+ * so LayoutAdmin marks <body> with .is-admin. */
+body.is-admin {
+	.MuiPopover-paper,
+	.MuiMenu-paper {
+		margin-top: 6px;
+		padding: 4px;
+		border: 1px solid $adm-line;
+		border-radius: 12px;
+		box-shadow: 0 12px 28px rgba(3, 22, 54, 0.12);
+	}
+	.MuiMenu-list,
+	.MuiList-root {
+		padding: 0;
+	}
+	.MuiMenuItem-root {
+		min-height: 36px;
+		margin: 1px 0;
+		padding: 6px 12px;
+		border-radius: 8px;
+		color: $adm-text;
+		font-family: $font-display;
+		font-size: 14px;
+		font-weight: 500;
+		.MuiTypography-root {
+			font-family: $font-display;
+			font-size: 14px;
+			font-weight: 500;
+			text-transform: capitalize;
+		}
+		&:hover {
+			background: #f5f2ee;
+		}
+		&.Mui-selected,
+		&.Mui-selected:hover {
+			background: $adm-brand-soft;
+			color: $adm-brand;
+			font-weight: 700;
 		}
 	}
 }
