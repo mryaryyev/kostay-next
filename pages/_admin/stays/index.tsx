@@ -21,6 +21,9 @@ import { REMOVE_PROPERTY_BY_ADMIN, UPDATE_PROPERTY_BY_ADMIN } from '../../../apo
 import { T } from '../../../libs/types/common';
 import { useRouter } from 'next/router';
 
+/** SEOUL → Seoul for the city filter. */
+const titleCase = (value: string) => value.charAt(0) + value.slice(1).toLowerCase();
+
 const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 	const [anchorEl, setAnchorEl] = useState<[] | HTMLElement[]>([]);
 	const [propertiesInquiry, setPropertiesInquiry] = useState<AllPropertiesInquiry>(initialInquiry);
@@ -242,11 +245,11 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 							<Stack className={'search-area'} sx={{ m: '24px' }}>
 								<Select sx={{ width: '160px', mr: '20px' }} value={searchLocation}>
 									<MenuItem value={'ALL'} onClick={() => searchLocationHandler('ALL')}>
-										ALL
+										All cities
 									</MenuItem>
 									{Object.values(PropertyLocation).map((location: string) => (
 										<MenuItem value={location} onClick={() => searchLocationHandler(location)} key={location}>
-											{location}
+											{titleCase(location)}
 										</MenuItem>
 									))}
 								</Select>

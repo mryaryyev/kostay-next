@@ -60,6 +60,13 @@ const withAdminLayout = (Component: ComponentType) => {
 			setLoading(false);
 		}, []);
 
+		// MUI draws menus and dropdowns at the end of <body>, outside #site-wrap; this class lets the
+		// admin styles reach them (admin.scss → body.is-admin)
+		useEffect(() => {
+			document.body.classList.add('is-admin');
+			return () => document.body.classList.remove('is-admin');
+		}, []);
+
 		useEffect(() => {
 			if (!loading && user.memberType !== MemberType.ADMIN) {
 				router.push('/').then();
