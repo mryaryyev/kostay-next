@@ -1396,11 +1396,77 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 			color: $st-navy;
 			font-weight: 600;
 		}
-		// "no exact match" line: its own row, in the brand color so it is not missed
-		.sx-ai-relaxed {
-			display: block;
-			margin-top: 4px;
-			color: #aa3614;
+	}
+	// "no exact match": the AI search dropped a filter, so the stays below are not what was asked;
+	// an amber banner above the cards, so nobody takes them for exact matches
+	.sx-ai-relaxed-banner {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px 16px;
+		border: 1px solid #f0c56b;
+		border-radius: 14px;
+		background: #fdf3dc;
+		.sx-ai-relaxed-icon {
+			width: 36px;
+			height: 36px;
+			flex: none;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 50%;
+			background: #fbe2a6;
+			color: #8a5a00;
+			svg {
+				font-size: 20px;
+			}
+		}
+		.sx-ai-relaxed-text {
+			flex: 1;
+			min-width: 0;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			strong {
+				color: #5c3b00;
+				font-size: 15px;
+				font-weight: 700;
+				overflow-wrap: anywhere;
+			}
+			span {
+				color: #7a5200;
+				font-size: 14px;
+			}
+		}
+		button {
+			flex: none;
+			padding: 8px 14px;
+			border: 1px solid #e0b04a;
+			border-radius: 10px;
+			background: #fff8e8;
+			color: #5c3b00;
+			font: inherit;
+			font-size: 13px;
+			font-weight: 700;
+			cursor: pointer;
+			&:hover {
+				background: #fbe2a6;
+			}
+			&:focus-visible {
+				outline: 2px solid #8a5a00;
+				outline-offset: 2px;
+			}
+		}
+		@include mobile {
+			flex-wrap: wrap;
+			align-items: flex-start;
+			// text takes the full row next to the icon; the button moves under it
+			.sx-ai-relaxed-text {
+				flex: 1 1 calc(100% - 48px);
+			}
+			button {
+				margin-left: 48px;
+			}
 		}
 	}
 }
