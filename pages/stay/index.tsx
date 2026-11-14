@@ -12,6 +12,7 @@ import { Property } from '../../libs/types/property/property';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchOffOutlinedIcon from '@mui/icons-material/SearchOffOutlined';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -25,20 +26,29 @@ import { sweetMixinErrorAlert } from '../../libs/sweetAlert';
 import moment from 'moment';
 import { scrollToListTop } from '../../libs/utils';
 
-// AI search filters, in words, for the "no exact match" note
-const RELAXED_WORDS: Record<string, string> = {
-	typeList: 'stay type',
-	guestsCount: 'number of guests',
-	pricesRange: 'budget',
-	locationList: 'city',
+// What the guest sees instead, per filter the AI search had to drop (for the "no exact match" banner)
+const RELAXED_PHRASES: Record<string, string> = {
+	typeList: 'of other types',
+	pricesRange: 'at other prices',
+	guestsCount: 'for fewer guests',
+	locationList: 'in other cities',
 };
 
-/** "No exact match, so the stay type and budget were left out." ('' when nothing was dropped) */
-const describeRelaxed = (fields?: string[] | null): string => {
-	const words = (fields ?? []).map((field) => RELAXED_WORDS[field]).filter(Boolean);
-	if (!words.length) return '';
-	const list = words.length === 1 ? words[0] : `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
-	return `No exact match, so the ${list} ${words.length === 1 ? 'was' : 'were'} left out.`;
+/** "You can see 3 stays of other types and at other prices below." ('' when nothing was dropped) */
+const describeRelaxed = (fields: string[] | null | undefined, total: number): string => {
+	const phrases = (fields ?? []).map((field) => RELAXED_PHRASES[field]).filter(Boolean);
+	if (!phrases.length) return '';
+	const list =
+		phrases.length === 1 ? phrases[0] : `${phrases.slice(0, -1).join(', ')} and ${phrases[phrases.length - 1]}`;
+	return `You can see ${total} ${total === 1 ? 'stay' : 'stays'} ${list} below.`;
+};
+
+/** "Edit search" in the banner: back to the Smart Search box, ready to type. */
+const focusAiSearch = () => {
+	const input = document.querySelector<HTMLInputElement>('.sx-ai-search input');
+	input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+	input?.focus({ preventScroll: true });
+	input?.select();
 };
 
 export const getStaticProps = async ({ locale }: any) => ({
@@ -120,7 +130,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	const isUpdating = listLoading && Boolean(listData);
 	const properties: Property[] = listData?.list ?? [];
 	const total: number = listData?.metaCounter?.[0]?.total ?? 0;
-	const relaxedNote = isAiMode ? describeRelaxed(aiSearchData?.aiSearchProperties?.aiRelaxedFields) : '';
+	const relaxedNote = isAiMode ? describeRelaxed(aiSearchData?.aiSearchProperties?.aiRelaxedFields, total) : '';
 	const allBooked = isAiMode && Boolean(aiSearchData?.aiSearchProperties?.aiAllBooked);
 	const refetchList = () => (isAiMode ? aiSearchRefetch() : getPropertiesRefetch({ input: searchFilter }));
 
@@ -273,11 +283,25 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 						)}
 					</div>
 
-					{isAiMode && !listLoading && !listError && (
+					{isAiMode && !listLoading && !listError && relaxedNote && (
+						<div className={'sx-ai-relaxed-banner'} role={'status'}>
+							<span className={'sx-ai-relaxed-icon'} aria-hidden="true">
+								<WarningAmberRoundedIcon />
+							</span>
+							<div className={'sx-ai-relaxed-text'}>
+								<strong>No exact match for “{aiQuery}”</strong>
+								<span>{relaxedNote}</span>
+							</div>
+							<button type="button" onClick={focusAiSearch}>
+								Edit search
+							</button>
+						</div>
+					)}
+
+					{isAiMode && !listLoading && !listError && !relaxedNote && (
 						<p className={'sx-ai-note'}>
 							{total} {total === 1 ? 'stay' : 'stays'} for <strong>“{aiQuery}”</strong>. Changing a filter switches back to the
 							regular search.
-							{relaxedNote && <span className={'sx-ai-relaxed'}>{relaxedNote}</span>}
 						</p>
 					)}
 
