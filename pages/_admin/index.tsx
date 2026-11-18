@@ -1,7 +1,7 @@
 import React from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow, Chip } from '@mui/material';
+import { Box, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { useQuery } from '@apollo/client';
 import AdminPageHeader from '../../libs/components/admin/AdminPageHeader';
@@ -128,39 +128,42 @@ const AdminHome: NextPage = () => {
 					<h3>Latest bookings</h3>
 					<Link href={'/_admin/bookings'}>See all</Link>
 				</div>
-				<Table size={'small'}>
-					<TableHead>
-						<TableRow>
-							<TableCell>STAY</TableCell>
-							<TableCell>GUEST</TableCell>
-							<TableCell>DATES</TableCell>
-							<TableCell>AMOUNT</TableCell>
-							<TableCell>STATUS</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{recent.length === 0 && (
+				{/* Narrow screens: the table scrolls inside the panel instead of widening the page */}
+				<TableContainer>
+					<Table size={'small'}>
+						<TableHead>
 							<TableRow>
-								<TableCell colSpan={5} align={'center'}>
-									No bookings yet.
-								</TableCell>
+								<TableCell>STAY</TableCell>
+								<TableCell>GUEST</TableCell>
+								<TableCell>DATES</TableCell>
+								<TableCell>AMOUNT</TableCell>
+								<TableCell>STATUS</TableCell>
 							</TableRow>
-						)}
-						{recent.map((booking) => (
-							<TableRow key={booking.id} hover>
-								<TableCell>{booking.propertyData?.propertyTitle ?? 'Removed stay'}</TableCell>
-								<TableCell>{booking.guestData?.memberFullName || booking.guestData?.memberNick || '—'}</TableCell>
-								<TableCell sx={{ whiteSpace: 'nowrap' }}>
-									{booking.checkIn} → {booking.checkOut}
-								</TableCell>
-								<TableCell sx={{ whiteSpace: 'nowrap' }}>{formatKRW(booking.totalPrice)}</TableCell>
-								<TableCell>
-									<Chip size={'small'} color={statusColors[booking.status]} label={booking.status} />
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
+						</TableHead>
+						<TableBody>
+							{recent.length === 0 && (
+								<TableRow>
+									<TableCell colSpan={5} align={'center'}>
+										No bookings yet.
+									</TableCell>
+								</TableRow>
+							)}
+							{recent.map((booking) => (
+								<TableRow key={booking.id} hover>
+									<TableCell>{booking.propertyData?.propertyTitle ?? 'Removed stay'}</TableCell>
+									<TableCell>{booking.guestData?.memberFullName || booking.guestData?.memberNick || '—'}</TableCell>
+									<TableCell sx={{ whiteSpace: 'nowrap' }}>
+										{booking.checkIn} → {booking.checkOut}
+									</TableCell>
+									<TableCell sx={{ whiteSpace: 'nowrap' }}>{formatKRW(booking.totalPrice)}</TableCell>
+									<TableCell>
+										<Chip size={'small'} color={statusColors[booking.status]} label={booking.status} />
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</TableContainer>
 			</Stack>
 		</Box>
 	);
