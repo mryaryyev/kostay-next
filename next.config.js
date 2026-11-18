@@ -3,6 +3,8 @@ const nextConfig = {
 	reactStrictMode: true,
 	// Docker: build a minimal server with only the files needed at runtime
 	output: 'standalone',
+	// No page uses next/image (photos are plain <img> tags), so the /_next/image endpoint stays off
+	images: { unoptimized: true },
 	// Old Nestar-style URLs keep working after the rename to /stay.
 	async redirects() {
 		return [
