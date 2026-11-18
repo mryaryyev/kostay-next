@@ -202,9 +202,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		}
 	}, [insertPropertyData, getPropertyData]);
 
-	if (user?.memberType !== 'HOST') {
-		router.back();
-	}
+	// Only Hosts can add or edit a stay: everyone else goes to their My Page.
+	// In an effect so it runs once, not on every render like the old router.back() did.
+	useEffect(() => {
+		if (user?.memberType !== 'HOST') router.replace('/mypage').then();
+	}, [user?.memberType]);
 
 	const priceInvalid = priceText !== '' && parsePositiveInt(priceText) === null;
 	const guestsInvalid = guestsText !== '' && parsePositiveInt(guestsText) === null;

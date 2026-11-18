@@ -34,6 +34,8 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		refetch: getHostPropertiesRefetch,
 	} = useQuery(GET_HOST_PROPERTIES, {
 		fetchPolicy: 'network-only',
+		// The API allows this query for Hosts only; skipping it avoids a "specific roles" error alert for other members
+		skip: user?.memberType !== 'HOST',
 		variables: { input: searchFilter },
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
@@ -107,9 +109,11 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		}
 	};
 
-	if (user?.memberType !== 'HOST') {
-		router.back();
-	}
+	// Only Hosts have stays to manage: everyone else goes to their My Page.
+	// In an effect so it runs once, not on every render like the old router.back() did.
+	useEffect(() => {
+		if (user?.memberType !== 'HOST') router.replace('/mypage').then();
+	}, [user?.memberType]);
 
 	const tabs = [
 		{ status: PropertyStatus.ACTIVE, label: 'Active', empty: 'No active stays yet.' },
