@@ -211,13 +211,14 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 												</Stack>
 											)}
 
-											{property.propertyStatus === PropertyStatus.INACTIVE && (
-												<Button className={'badge warning'}>{property.propertyStatus}</Button>
-											)}
-
-											{property.propertyStatus === PropertyStatus.ACTIVE && (
+											{/* Active and paused stays share one menu: it offers every status except the current one */}
+											{(property.propertyStatus === PropertyStatus.ACTIVE ||
+												property.propertyStatus === PropertyStatus.INACTIVE) && (
 												<>
-													<Button onClick={(e: any) => menuIconClickHandler(e, index)} className={'badge success'}>
+													<Button
+														onClick={(e: any) => menuIconClickHandler(e, index)}
+														className={property.propertyStatus === PropertyStatus.ACTIVE ? 'badge success' : 'badge warning'}
+													>
 														{property.propertyStatus}
 													</Button>
 
