@@ -58,7 +58,7 @@ const RecentlyVisited: NextPage = () => {
 			) : (
 				<div className="sx-saved-empty">
 					<HistoryIcon aria-hidden="true" />
-					<p>You haven't visited any stays yet.</p>
+					<p>You haven&apos;t visited any stays yet.</p>
 					<Link href="/stay">Browse stays</Link>
 				</div>
 			)}

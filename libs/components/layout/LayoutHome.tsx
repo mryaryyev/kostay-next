@@ -15,7 +15,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 const withLayoutMain = (Component: any) => {
-	return (props: any) => {
+	return function LayoutMain(props: any) {
 		const user = useReactiveVar(userVar);
 
 		/** LIFECYCLES **/

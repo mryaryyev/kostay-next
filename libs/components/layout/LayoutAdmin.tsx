@@ -40,7 +40,7 @@ const PAGE_NAMES: Record<string, string> = {
 };
 
 const withAdminLayout = (Component: ComponentType) => {
-	return (props: object) => {
+	return function AdminLayout(props: object) {
 		const router = useRouter();
 		const compact = useMediaQuery('(max-width:1199px)');
 		const user = useReactiveVar(userVar);

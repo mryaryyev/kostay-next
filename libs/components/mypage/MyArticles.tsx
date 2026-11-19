@@ -93,7 +93,7 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 			) : (
 				<div className="sx-articles-empty">
 					<ArticleOutlinedIcon aria-hidden="true" />
-					<p>You haven't written any articles yet.</p>
+					<p>You haven&apos;t written any articles yet.</p>
 					<Link href={{ pathname: '/mypage', query: { category: 'writeArticle' } }} scroll={false}>
 						Write your first article
 					</Link>

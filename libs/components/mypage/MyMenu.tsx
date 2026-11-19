@@ -170,6 +170,8 @@ const MyMenu = () => {
 			<div className="sx-menu-head">
 				<h5>Account</h5>
 				{user?.memberType === 'ADMIN' ? (
+					// Opens the admin area in a new tab on purpose, so a plain link instead of next/link
+					// eslint-disable-next-line @next/next/no-html-link-for-pages
 					<a href="/_admin/users" target={'_blank'} className="sx-menu-hub">
 						Admin
 					</a>

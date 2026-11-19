@@ -13,7 +13,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 const withLayoutFull = (Component: any) => {
-	return (props: any) => {
+	return function LayoutFull(props: any) {
 		const router = useRouter();
 		const user = useReactiveVar(userVar);
 

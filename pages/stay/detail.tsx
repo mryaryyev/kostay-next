@@ -58,6 +58,8 @@ import {
 	sweetTopSmallSuccessAlert,
 } from '../../libs/sweetAlert';
 
+// Swiper's module registration, not a React hook
+// eslint-disable-next-line react-hooks/rules-of-hooks
 SwiperCore.use([Autoplay, Navigation, Pagination]);
 
 // Booking dates are plain local YYYY-MM-DD strings (never toISOString, which shifts the day by timezone).
@@ -668,7 +670,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 								<button type="button" className="sx-reserve" disabled={!datesValid || isOwnStay} onClick={reserveHandler}>
 									{isOwnStay ? 'This is your stay' : datesValid ? 'Booking' : 'Select dates'}
 								</button>
-								<p className="sx-booking-note">You won't be charged yet — review and pay on the next step</p>
+								<p className="sx-booking-note">You won&apos;t be charged yet — review and pay on the next step</p>
 							</div>
 
 							{!isOwnStay && (

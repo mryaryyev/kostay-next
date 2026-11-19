@@ -127,7 +127,7 @@ const Checkout: NextPage = () => {
 				{booked ? (
 					<section className="sx-checkout-success">
 						<CheckCircleIcon aria-hidden="true" />
-						<h1>You're booked!</h1>
+						<h1>You&apos;re booked!</h1>
 						<p>
 							{property?.propertyTitle} · {booked.checkIn} → {booked.checkOut} · {booked.guestsCount}{' '}
 							{booked.guestsCount === 1 ? 'guest' : 'guests'}

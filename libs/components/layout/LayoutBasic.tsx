@@ -20,7 +20,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 const withLayoutBasic = (Component: any) => {
-	return (props: any) => {
+	return function LayoutBasic(props: any) {
 		const router = useRouter();
 		const { t, i18n } = useTranslation('common');
 		const [authHeader, setAuthHeader] = useState<boolean>(false);

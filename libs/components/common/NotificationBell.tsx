@@ -98,7 +98,7 @@ const NotificationBell = () => {
 					)}
 				</div>
 				{notifications.length === 0 ? (
-					<p className="sx-bell-empty">You're all caught up.</p>
+					<p className="sx-bell-empty">You&apos;re all caught up.</p>
 				) : (
 					<ul className="sx-bell-list">
 						{notifications.map((notification) => (
