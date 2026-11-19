@@ -1018,6 +1018,28 @@ body {
 			gap: 8px 12px;
 			padding: 14px;
 		}
+		.sx-ai {
+			gap: 14px;
+			padding: 18px;
+			border-radius: 18px;
+			.sx-ai-head h2 {
+				font-size: 19px;
+			}
+			.sx-ai-badge {
+				width: 38px;
+				height: 38px;
+				border-radius: 12px;
+			}
+			.sx-ai-form input {
+				font-size: 16px; // 16px keeps iOS Safari from zooming in on focus
+			}
+			.sx-ai-stays {
+				grid-template-columns: 1fr;
+			}
+			.sx-ai-question {
+				max-width: 100%;
+			}
+		}
 		.sx-notice-list time,
 		.sx-inquiry-list small {
 			display: none;
