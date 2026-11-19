@@ -17,10 +17,7 @@
 		"@mui/icons-material": "^5.4.2",
 		"@mui/lab": "^5.0.0-alpha.85",
 		"@mui/material": "^5.10.1",
-		"@react-three/drei": "9.58.5",
-		"@react-three/fiber": "8.12.0",
 		"@toast-ui/react-editor": "^3.1.7",
-		"@types/three": "0.150.0",
 		"animate.css": "^4.1.1",
 		"apollo-link-token-refresh": "^0.4.0",
 		"apollo-upload-client": "^17.0.0",
@@ -41,8 +38,7 @@
 		"react-scrollable-feed": "^1.3.2",
 		"sass": "^1.49.9",
 		"sweetalert2": "^11.7.27",
-		"swiper": "11",
-		"three": "0.150.1"
+		"swiper": "11"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
