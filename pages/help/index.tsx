@@ -13,6 +13,8 @@ import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Notice from '../../libs/components/cs/Notice';
 import Faq from '../../libs/components/cs/Faq';
 import Inquiry from '../../libs/components/cs/Inquiry';
+import AssistantBox from '../../libs/components/cs/AssistantBox';
+import { useAssistant } from '../../libs/hooks/useAssistant';
 import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
@@ -34,6 +36,7 @@ const CS: NextPage = () => {
 	const tab = router.query.tab === 'faq' || router.query.tab === 'inquiry' ? router.query.tab : 'notice';
 	const [searchInput, setSearchInput] = useState<string>('');
 	const [text, setText] = useState<string>('');
+	const assistant = useAssistant();
 
 	/** LIFECYCLES **/
 	useEffect(() => {
@@ -52,6 +55,7 @@ const CS: NextPage = () => {
 			<div className="container">
 				<div className="sx-cs-layout">
 					<main className="sx-cs-main">
+						<AssistantBox state={assistant.state} onAsk={assistant.ask} />
 						<div className="sx-cs-toolbar">
 							<div className="sx-cs-tabs" role="tablist" aria-label="Help Center sections">
 								{tabs.map((item) => (
