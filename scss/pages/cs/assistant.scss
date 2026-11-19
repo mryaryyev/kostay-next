@@ -1,0 +1,450 @@
+// Help Center assistant box: same palette and type as the rest of /help (cs.scss).
+#site-wrap #cs-page .sx-ai {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	padding: 28px;
+	border: 1px solid $cs-line;
+	border-radius: 24px;
+	background: linear-gradient(180deg, #fff 0%, #fffcf8 100%);
+	box-shadow: $cs-shadow-md;
+
+	.sx-ai-head {
+		display: flex;
+		align-items: flex-start;
+		gap: 14px;
+		h2 {
+			margin: 0;
+			color: $cs-navy;
+			font-size: 22px;
+			font-weight: 800;
+			letter-spacing: -0.01em;
+		}
+		p {
+			margin: 4px 0 0;
+			color: $cs-body;
+			font-size: 14px;
+			line-height: 21px;
+		}
+	}
+
+	.sx-ai-badge {
+		flex: 0 0 auto;
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 14px;
+		background: $cs-navy;
+		color: #fff;
+		svg {
+			width: 22px;
+			height: 22px;
+		}
+	}
+
+	.sx-ai-form {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 6px 6px 18px;
+		border: 1px solid $cs-line;
+		border-radius: 999px;
+		background: $cs-surface;
+		transition: box-shadow 160ms ease, border-color 160ms ease;
+		&:focus-within {
+			border-color: $cs-cta-bright;
+			box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.2);
+		}
+		input {
+			flex: 1;
+			min-width: 0;
+			padding: 8px 0;
+			border: 0;
+			outline: none;
+			background: transparent;
+			color: $cs-ink;
+			font-size: 15px;
+			&::placeholder {
+				color: $cs-outline;
+			}
+			&:disabled {
+				opacity: 0.6;
+			}
+		}
+		button {
+			flex: 0 0 auto;
+			display: grid;
+			place-items: center;
+			width: 40px;
+			height: 40px;
+			border: 0;
+			border-radius: 50%;
+			background: $cs-cta;
+			color: #fff;
+			transition: background 160ms ease, opacity 160ms ease;
+			svg {
+				width: 20px;
+				height: 20px;
+			}
+			&:hover:not(:disabled) {
+				background: $cs-cta-bright;
+			}
+			&:disabled {
+				opacity: 0.35;
+				cursor: default;
+			}
+			&:focus-visible {
+				outline: none;
+				box-shadow: 0 0 0 3px rgba(224, 93, 56, 0.35);
+			}
+		}
+	}
+
+	.sx-ai-label {
+		color: $cs-outline;
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.sx-ai-examples {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		button {
+			padding: 8px 14px;
+			border: 1px solid $cs-line;
+			border-radius: 999px;
+			background: $cs-low;
+			color: $cs-navy-soft;
+			font-size: 13px;
+			font-weight: 600;
+			transition: border-color 160ms ease, background 160ms ease;
+			&:hover {
+				border-color: $cs-navy;
+				background: #fff;
+			}
+		}
+	}
+
+	.sx-ai-thread {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		padding-top: 18px;
+		border-top: 1px solid $cs-line;
+	}
+
+	.sx-ai-question {
+		align-self: flex-end;
+		max-width: 85%;
+		margin: 0;
+		padding: 10px 16px;
+		border-radius: 18px 18px 4px 18px;
+		background: $cs-navy;
+		color: #fff;
+		font-size: 14px;
+		line-height: 21px;
+		overflow-wrap: anywhere;
+	}
+
+	.sx-ai-status {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: 0;
+		color: $cs-body;
+		font-size: 14px;
+	}
+
+	.sx-ai-dots {
+		display: inline-flex;
+		gap: 4px;
+		i {
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: $cs-cta-bright;
+			animation: sx-ai-pulse 1.2s infinite ease-in-out;
+			&:nth-child(2) {
+				animation-delay: 0.15s;
+			}
+			&:nth-child(3) {
+				animation-delay: 0.3s;
+			}
+		}
+	}
+
+	.sx-ai-answer {
+		color: $cs-ink;
+		font-size: 15px;
+		line-height: 24px;
+		overflow-wrap: anywhere;
+		p {
+			margin: 0 0 8px;
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+		strong {
+			color: $cs-navy;
+		}
+		&.is-writing p:last-child::after {
+			content: '';
+			display: inline-block;
+			width: 7px;
+			height: 16px;
+			margin-left: 3px;
+			vertical-align: -2px;
+			border-radius: 2px;
+			background: $cs-cta-bright;
+			animation: sx-ai-blink 1s steps(2) infinite;
+		}
+	}
+
+	.sx-ai-cite {
+		display: inline-grid;
+		place-items: center;
+		min-width: 18px;
+		height: 18px;
+		margin: 0 2px;
+		padding: 0 4px;
+		border-radius: 6px;
+		background: $cs-tint;
+		color: $cs-cta;
+		font-size: 11px;
+		font-weight: 800;
+		line-height: 1;
+		vertical-align: 2px;
+	}
+	a.sx-ai-cite:hover {
+		background: $cs-cta;
+		color: #fff;
+	}
+
+	.sx-ai-sources {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 16px;
+		border-radius: 16px;
+		background: $cs-low;
+		ol {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+			scroll-margin-top: 120px;
+			&:target .sx-ai-source-num {
+				background: $cs-cta;
+				color: #fff;
+			}
+		}
+	}
+
+	.sx-ai-source-num {
+		flex: 0 0 auto;
+		display: grid;
+		place-items: center;
+		width: 22px;
+		height: 22px;
+		border-radius: 7px;
+		background: #fff;
+		color: $cs-cta;
+		font-size: 12px;
+		font-weight: 800;
+		border: 1px solid $cs-line;
+	}
+
+	.sx-ai-source-body {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	// plain inline text, so long titles wrap (app.scss gives every link nowrap);
+	// the link icon sits at the end of the last line
+	.sx-ai-source-title {
+		white-space: normal;
+		color: $cs-navy;
+		font-size: 14px;
+		font-weight: 700;
+		line-height: 20px;
+		overflow-wrap: anywhere;
+		svg {
+			width: 14px;
+			height: 14px;
+			margin-left: 4px;
+			vertical-align: -2px;
+			color: $cs-outline;
+		}
+	}
+	a.sx-ai-source-title:hover {
+		color: $cs-cta;
+	}
+
+	.sx-ai-source-kind {
+		color: $cs-outline;
+		font-size: 12px;
+		font-weight: 600;
+		// a member's post is someone's opinion, not Kostay's word: say so
+		&.is-kostay_article {
+			color: $cs-cta;
+		}
+	}
+
+	.sx-ai-stays {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+		gap: 12px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		a {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+			overflow: hidden;
+			border: 1px solid $cs-line;
+			border-radius: 16px;
+			background: #fff;
+			transition: border-color 160ms ease, box-shadow 160ms ease;
+			&:hover {
+				border-color: $cs-navy;
+				box-shadow: $cs-shadow-md;
+			}
+		}
+		img {
+			width: 100%;
+			aspect-ratio: 16 / 10;
+			object-fit: cover;
+			background: $cs-container;
+		}
+	}
+
+	.sx-ai-stay-body {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 12px 14px 14px;
+		strong {
+			color: $cs-navy;
+			font-size: 15px;
+			font-weight: 800;
+		}
+		small {
+			color: $cs-outline;
+			font-size: 12px;
+			font-weight: 600;
+		}
+	}
+
+	.sx-ai-stay-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: 6px;
+		color: $cs-body;
+		font-size: 13px;
+		b {
+			color: $cs-ink;
+			font-weight: 800;
+		}
+		> span:last-child {
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+		}
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+	}
+
+	.sx-ai-more {
+		align-self: flex-start;
+		color: $cs-cta;
+		font-size: 14px;
+		font-weight: 700;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	.sx-ai-stay-body strong,
+	.sx-ai-notice-links a {
+		white-space: normal;
+	}
+
+	.sx-ai-notice {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		padding: 16px;
+		border-radius: 16px;
+		background: $cs-low;
+		color: $cs-body;
+		font-size: 14px;
+		line-height: 21px;
+		> svg {
+			flex: 0 0 auto;
+			width: 22px;
+			height: 22px;
+			color: $cs-outline;
+		}
+		p {
+			margin: 0;
+		}
+		.sx-ai-notice-links {
+			margin-top: 4px;
+			a {
+				color: $cs-cta;
+				font-weight: 700;
+			}
+		}
+		&.is-wait > svg {
+			color: #b7791f;
+		}
+		&.is-error > svg {
+			color: $cs-cta;
+		}
+	}
+}
+
+@keyframes sx-ai-pulse {
+	0%,
+	80%,
+	100% {
+		opacity: 0.25;
+		transform: scale(0.8);
+	}
+	40% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes sx-ai-blink {
+	to {
+		visibility: hidden;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#site-wrap #cs-page .sx-ai .sx-ai-dots i,
+	#site-wrap #cs-page .sx-ai .sx-ai-answer.is-writing p:last-child::after {
+		animation: none;
+	}
+}
