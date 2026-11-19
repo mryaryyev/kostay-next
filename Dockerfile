@@ -30,5 +30,8 @@ COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 COPY --from=build /app/next-i18next.config.js ./
 
+# Next writes its runtime cache here; the app runs as the non-root "node" user, so the folder must belong to it
+RUN mkdir -p .next/cache && chown node:node .next/cache
+
 USER node
 CMD ["node", "server.js"]
