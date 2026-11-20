@@ -50,7 +50,7 @@ const AssistantDock = () => {
 				onClose={() => setOpen(false)}
 				tab={tab}
 				onTab={setTab}
-				assistant={<AssistantBox state={state} onAsk={ask} variant="panel" />}
+				assistant={<AssistantBox state={state} onAsk={ask} />}
 				chat={<Chat embedded />}
 			/>
 		</>

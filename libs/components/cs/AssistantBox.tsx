@@ -7,7 +7,6 @@ import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import { REACT_APP_API_URL } from '../../config';
-import { AssistantIcon } from '../assistant/assistantIcons';
 import { formatKRW } from '../../utils';
 import { AssistantCitation, AssistantResult, AssistantStayCard, AssistantState } from '../../types/assistant/assistant';
 
@@ -30,8 +29,6 @@ const MAX_QUESTION = 500;
 interface AssistantBoxProps {
 	state: AssistantState;
 	onAsk: (question: string) => void;
-	/** "card" on the Help page; "panel" inside the side panel, which has its own title. */
-	variant?: 'card' | 'panel';
 }
 
 /**
@@ -201,10 +198,10 @@ const Result = ({ result }: { result: AssistantResult }) => {
 };
 
 /**
- * Help Center assistant: answers from Kostay's help pages and the Korea Tourism Organization's
- * travel data, and suggests stays. The parent owns the request; this box only shows a state.
+ * The assistant in the "Ask Kostay" window: answers from Kostay's help pages and the Korea Tourism
+ * Organization's travel data, and suggests stays. The parent owns the request; this box only shows a state.
  */
-const AssistantBox = ({ state, onAsk, variant = 'card' }: AssistantBoxProps) => {
+const AssistantBox = ({ state, onAsk }: AssistantBoxProps) => {
 	const [question, setQuestion] = useState<string>('');
 	const busy = state.kind === 'searching' || state.kind === 'writing';
 
@@ -216,23 +213,7 @@ const AssistantBox = ({ state, onAsk, variant = 'card' }: AssistantBoxProps) => 
 	};
 
 	return (
-		<section
-			className={variant === 'panel' ? 'sx-ai is-panel' : 'sx-ai'}
-			aria-labelledby={variant === 'panel' ? undefined : 'sx-ai-title'}
-			aria-label={variant === 'panel' ? 'Ask Kostay Assistant' : undefined}
-		>
-			{variant === 'card' && (
-				<div className="sx-ai-head">
-					<span className="sx-ai-badge" aria-hidden="true">
-						<AssistantIcon />
-					</span>
-					<div>
-						<h2 id="sx-ai-title">Ask Kostay Assistant</h2>
-						<p>Kostay and Korea Tourism Organization travel data</p>
-					</div>
-				</div>
-			)}
-
+		<section className="sx-ai" aria-label="Ask Kostay Assistant">
 			<form
 				className="sx-ai-form"
 				onSubmit={(e) => {
