@@ -1,5 +1,5 @@
 import React, { FormEvent, useEffect, useState } from 'react';
-import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
+import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 interface AiSearchBarProps {
@@ -26,7 +26,7 @@ const AiSearchBar = ({ query, onSearch, onClear }: AiSearchBarProps) => {
 
 	return (
 		<form className="sx-ai-search" onSubmit={submit} role="search">
-			<AutoAwesomeRoundedIcon className="sx-ai-search-icon" aria-hidden="true" />
+			<ManageSearchRoundedIcon className="sx-ai-search-icon" aria-hidden="true" />
 			<input
 				type="search"
 				value={text}
@@ -41,11 +41,11 @@ const AiSearchBar = ({ query, onSearch, onClear }: AiSearchBarProps) => {
 				</button>
 			)}
 			<button type="submit" className="sx-ai-search-submit" disabled={!text.trim()}>
+				<img className="sx-ai-search-submit-icon" src="/img/icons/search_white.svg" alt="" />
 				Search
 			</button>
 			{!query && (
 				<div className="sx-ai-search-examples">
-					<span>Try:</span>
 					{EXAMPLES.map((example) => (
 						<button type="button" key={example} onClick={() => onSearch(example)}>
 							{example}

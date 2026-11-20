@@ -2,8 +2,8 @@
 
 $sx-navy: #031636;
 $sx-eyebrow: #aa3614;
-$sx-cta: #aa3614;
-$sx-cta-hover: #591000;
+$sx-cta: #c2410c;
+$sx-cta-hover: #aa3614;
 $sx-ink: #1c1c18;
 $sx-body: #44474e;
 $sx-outline: #75777f;
@@ -325,13 +325,13 @@ $sx-col4: 307px; // (1300 - 3 * 24) / 4
 				height: 48px;
 				padding: 0 32px;
 				border-radius: 9999px;
-				background: $sx-cta;
+				background: #cc4a1b; // a lighter orange for the large Search buttons, still 4.6:1 with white text
 				box-shadow: $sx-shadow-sm;
 				color: #fff;
 				font-size: 15px;
 				font-weight: 700;
 				&:hover {
-					background: $sx-cta-hover;
+					background: $sx-cta; // one step darker on hover
 					box-shadow: $sx-shadow-md;
 				}
 			}

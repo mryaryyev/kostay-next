@@ -1,5 +1,5 @@
-// Help Center assistant box: same palette and type as the rest of /help (cs.scss).
-#site-wrap #cs-page .sx-ai {
+// Assistant box: on the Help page and in the side panel on every page (palette from cs.scss).
+#site-wrap .sx-ai {
 	display: flex;
 	flex-direction: column;
 	gap: 18px;
@@ -8,6 +8,22 @@
 	border-radius: 24px;
 	background: linear-gradient(180deg, #fff 0%, #fffcf8 100%);
 	box-shadow: $cs-shadow-md;
+
+	font-family: $font-display;
+	button {
+		font-family: inherit;
+		cursor: pointer;
+	}
+	a {
+		text-decoration: none;
+	}
+	&.is-panel {
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background: none;
+		box-shadow: none;
+	}
 
 	.sx-ai-head {
 		display: flex;
@@ -443,8 +459,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	#site-wrap #cs-page .sx-ai .sx-ai-dots i,
-	#site-wrap #cs-page .sx-ai .sx-ai-answer.is-writing p:last-child::after {
+	#site-wrap .sx-ai .sx-ai-dots i,
+	#site-wrap .sx-ai .sx-ai-answer.is-writing p:last-child::after {
 		animation: none;
 	}
 }

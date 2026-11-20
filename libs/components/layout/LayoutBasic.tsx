@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Top from '../Top';
 import { Stack } from '@mui/material';
 import { getJwtToken, updateUserInfo } from '../../auth';
-import Chat from '../Chat';
+import AssistantDock from '../assistant/AssistantDock';
 import StaysHero from '../property/StaysHero';
 import HostsHero from '../host/HostsHero';
 import CommunityHero from '../community/CommunityHero';
@@ -100,7 +100,7 @@ const withLayoutBasic = (Component: any) => {
 						<Component {...props} />
 					</Stack>
 
-					<Chat />
+					<AssistantDock />
 
 					<Stack id={'footer'}>
 						<HomeFooter />

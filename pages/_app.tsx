@@ -8,6 +8,7 @@ import { light } from '../scss/MaterialTheme';
 import { ApolloProvider } from '@apollo/client';
 import { useApollo } from '../apollo/client';
 import { appWithTranslation } from 'next-i18next';
+import { AssistantProvider } from '../libs/hooks/AssistantContext';
 import '../scss/app.scss';
 import '../scss/pages/main.scss';
 
@@ -43,7 +44,9 @@ const App = ({ Component, pageProps }: AppProps) => {
 			</Head>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-				<Component {...pageProps} />
+				<AssistantProvider>
+					<Component {...pageProps} />
+				</AssistantProvider>
 			</ThemeProvider>
 		</ApolloProvider>
 	);

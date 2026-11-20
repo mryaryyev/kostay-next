@@ -5,7 +5,7 @@ import Top from '../Top';
 import HomeFooter from '../homepage/HomeFooter';
 import { Stack } from '@mui/material';
 import { getJwtToken, updateUserInfo } from '../../auth';
-import Chat from '../Chat';
+import AssistantDock from '../assistant/AssistantDock';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import 'swiper/css';
@@ -41,7 +41,7 @@ const withLayoutFull = (Component: any) => {
 						<Component {...props} />
 					</Stack>
 
-					<Chat />
+					<AssistantDock />
 
 					<Stack id={'footer'}>
 						<HomeFooter />
