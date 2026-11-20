@@ -33,6 +33,9 @@ const tabs = [
 const CS: NextPage = () => {
 	const router = useRouter();
 	const tab = router.query.tab === 'faq' || router.query.tab === 'inquiry' ? router.query.tab : 'notice';
+	// "/help?tab=faq&faq=<id>": a link (the assistant's sources) to one question or notice
+	const linkedFaq = typeof router.query.faq === 'string' ? router.query.faq : undefined;
+	const linkedNotice = typeof router.query.notice === 'string' ? router.query.notice : undefined;
 	const [searchInput, setSearchInput] = useState<string>('');
 	const [text, setText] = useState<string>('');
 
@@ -97,8 +100,8 @@ const CS: NextPage = () => {
 							)}
 						</div>
 
-						{tab === 'notice' && <Notice text={text} />}
-						{tab === 'faq' && <Faq text={text} />}
+						{tab === 'notice' && <Notice text={text} linkedId={linkedNotice} />}
+						{tab === 'faq' && <Faq text={text} linkedId={linkedFaq} />}
 						{tab === 'inquiry' && <Inquiry />}
 					</main>
 

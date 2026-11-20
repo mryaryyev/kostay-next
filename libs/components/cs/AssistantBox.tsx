@@ -84,17 +84,31 @@ export const renderAnswer = (
 			</p>
 		));
 
+/**
+ * A help page source links to the exact question or notice ("/help?tab=faq&faq=<id>"), not just the tab:
+ * the Help Center opens that item and scrolls to it. The id is the one in the source's doc_id ("faq:<id>").
+ */
+export const sourceHref = (citation: AssistantCitation): string | null => {
+	if (!citation.url) return null;
+	const [kind, id] = citation.doc_id.split(':');
+	if ((kind === 'faq' || kind === 'notice') && id && citation.url.startsWith('/help')) {
+		return `${citation.url}${citation.url.includes('?') ? '&' : '?'}${kind}=${encodeURIComponent(id)}`;
+	}
+	return citation.url;
+};
+
 const SourceLink = ({ citation }: { citation: AssistantCitation }) => {
-	if (!citation.url) return <span className="sx-ai-source-title">{citation.title}</span>;
-	if (citation.url.startsWith('/')) {
+	const href = sourceHref(citation);
+	if (!href) return <span className="sx-ai-source-title">{citation.title}</span>;
+	if (href.startsWith('/')) {
 		return (
-			<Link className="sx-ai-source-title" href={citation.url}>
+			<Link className="sx-ai-source-title" href={href}>
 				{citation.title}
 			</Link>
 		);
 	}
 	return (
-		<a className="sx-ai-source-title" href={citation.url} target="_blank" rel="noopener noreferrer nofollow">
+		<a className="sx-ai-source-title" href={href} target="_blank" rel="noopener noreferrer nofollow">
 			{citation.title}
 			<OpenInNewRoundedIcon aria-hidden="true" />
 		</a>

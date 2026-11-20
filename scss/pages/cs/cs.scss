@@ -314,6 +314,11 @@ $cs-shadow-md: 0 4px 20px rgba(26, 43, 76, 0.06);
 			&:hover {
 				border-color: #d6d2cb;
 			}
+			// opened from a link (the assistant's sources): a short ring, so the eye finds it
+			&.is-linked {
+				border-color: $cs-cta;
+				box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.18);
+			}
 			&.is-open {
 				border-color: $cs-navy;
 				box-shadow: $cs-shadow-md;
