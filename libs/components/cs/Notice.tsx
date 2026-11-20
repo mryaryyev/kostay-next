@@ -7,11 +7,13 @@ import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
 import { GET_NOTICES } from '../../../apollo/user/query';
 import { NoticeCategory } from '../../enums/notice.enum';
 import { Notice as NoticeType } from '../../types/notice/notice';
+import { csItemId, useLinkedItem } from '../../hooks/useLinkedItem';
 
 const PAGE_LIMIT = 10;
 
 /** CS → Notice: written by the admin (Notice Management); event notices are pinned on top. */
-const Notice = ({ text }: { text: string }) => {
+// `linkedId` (from "/help?tab=notice&notice=<id>") opens that notice when it is on the page shown.
+const Notice = ({ text, linkedId }: { text: string; linkedId?: string }) => {
 	const [page, setPage] = useState<number>(1);
 	const [openId, setOpenId] = useState<string | null>(null);
 
@@ -30,6 +32,11 @@ const Notice = ({ text }: { text: string }) => {
 		setPage(1);
 		setOpenId(null);
 	}, [text]);
+	const highlighted = useLinkedItem(
+		linkedId,
+		notices.map((n) => n._id),
+		setOpenId,
+	);
 
 	return (
 		<section className="sx-cs-panel">
@@ -50,7 +57,13 @@ const Notice = ({ text }: { text: string }) => {
 					{notices.map((notice, index) => {
 						const open = openId === notice._id;
 						return (
-							<li key={notice._id} className={`${open ? 'is-open' : ''} ${notice.noticeEvent ? 'is-event' : ''}`}>
+							<li
+								key={notice._id}
+								id={csItemId(notice._id)}
+								className={`${open ? 'is-open' : ''} ${notice.noticeEvent ? 'is-event' : ''} ${
+									highlighted === notice._id ? 'is-linked' : ''
+								}`}
+							>
 								<button type="button" aria-expanded={open} onClick={() => setOpenId(open ? null : notice._id)}>
 									{notice.noticeEvent ? (
 										<em className="sx-notice-badge">Event</em>

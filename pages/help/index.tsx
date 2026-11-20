@@ -13,8 +13,7 @@ import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import Notice from '../../libs/components/cs/Notice';
 import Faq from '../../libs/components/cs/Faq';
 import Inquiry from '../../libs/components/cs/Inquiry';
-import AssistantBox from '../../libs/components/cs/AssistantBox';
-import { useAssistantContext } from '../../libs/hooks/AssistantContext';
+import AskKostayStrip from '../../libs/components/cs/AskKostayStrip';
 import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
@@ -34,10 +33,11 @@ const tabs = [
 const CS: NextPage = () => {
 	const router = useRouter();
 	const tab = router.query.tab === 'faq' || router.query.tab === 'inquiry' ? router.query.tab : 'notice';
+	// "/help?tab=faq&faq=<id>": a link (the assistant's sources) to one question or notice
+	const linkedFaq = typeof router.query.faq === 'string' ? router.query.faq : undefined;
+	const linkedNotice = typeof router.query.notice === 'string' ? router.query.notice : undefined;
 	const [searchInput, setSearchInput] = useState<string>('');
 	const [text, setText] = useState<string>('');
-	// the same assistant as the "Ask Kostay" window: one question, one answer, on every page
-	const assistant = useAssistantContext();
 
 	/** LIFECYCLES **/
 	useEffect(() => {
@@ -56,7 +56,7 @@ const CS: NextPage = () => {
 			<div className="container">
 				<div className="sx-cs-layout">
 					<main className="sx-cs-main">
-						<AssistantBox state={assistant.state} onAsk={assistant.ask} />
+						<AskKostayStrip />
 						<div className="sx-cs-toolbar">
 							<div className="sx-cs-tabs" role="tablist" aria-label="Help Center sections">
 								{tabs.map((item) => (
@@ -100,8 +100,8 @@ const CS: NextPage = () => {
 							)}
 						</div>
 
-						{tab === 'notice' && <Notice text={text} />}
-						{tab === 'faq' && <Faq text={text} />}
+						{tab === 'notice' && <Notice text={text} linkedId={linkedNotice} />}
+						{tab === 'faq' && <Faq text={text} linkedId={linkedFaq} />}
 						{tab === 'inquiry' && <Inquiry />}
 					</main>
 

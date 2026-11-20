@@ -1,14 +1,8 @@
-// Assistant box: on the Help page and in the side panel on every page (palette from cs.scss).
+// Assistant: the body of the "Ask Kostay" window on every page (palette from cs.scss).
 #site-wrap .sx-ai {
 	display: flex;
 	flex-direction: column;
 	gap: 18px;
-	padding: 28px;
-	border: 1px solid $cs-line;
-	border-radius: 24px;
-	background: linear-gradient(180deg, #fff 0%, #fffcf8 100%);
-	box-shadow: $cs-shadow-md;
-
 	font-family: $font-display;
 	button {
 		font-family: inherit;
@@ -17,48 +11,6 @@
 	a {
 		text-decoration: none;
 	}
-	&.is-panel {
-		padding: 0;
-		border: 0;
-		border-radius: 0;
-		background: none;
-		box-shadow: none;
-	}
-
-	.sx-ai-head {
-		display: flex;
-		align-items: flex-start;
-		gap: 14px;
-		h2 {
-			margin: 0;
-			color: $cs-navy;
-			font-size: 22px;
-			font-weight: 800;
-			letter-spacing: -0.01em;
-		}
-		p {
-			margin: 4px 0 0;
-			color: $cs-body;
-			font-size: 14px;
-			line-height: 21px;
-		}
-	}
-
-	.sx-ai-badge {
-		flex: 0 0 auto;
-		display: grid;
-		place-items: center;
-		width: 44px;
-		height: 44px;
-		border-radius: 14px;
-		background: $cs-navy;
-		color: #fff;
-		svg {
-			width: 22px;
-			height: 22px;
-		}
-	}
-
 	.sx-ai-form {
 		display: flex;
 		align-items: center;
@@ -221,20 +173,21 @@
 		}
 	}
 
+	// a small raised number, like a footnote, so the sentence still reads as one line of text
 	.sx-ai-cite {
 		display: inline-grid;
 		place-items: center;
-		min-width: 18px;
-		height: 18px;
-		margin: 0 2px;
-		padding: 0 4px;
-		border-radius: 6px;
+		min-width: 14px;
+		height: 14px;
+		margin: 0 1px 0 2px;
+		padding: 0 3px;
+		border-radius: 4px;
 		background: $cs-tint;
 		color: $cs-cta;
-		font-size: 11px;
+		font-size: 10px;
 		font-weight: 800;
 		line-height: 1;
-		vertical-align: 2px;
+		vertical-align: 6px;
 	}
 	a.sx-ai-cite:hover {
 		background: $cs-cta;
