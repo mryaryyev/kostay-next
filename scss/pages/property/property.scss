@@ -282,8 +282,8 @@
 /** STAYS PAGE (PC) — Stitch "Kostay - Find A Stay" **/
 
 $st-navy: #031636;
-$st-cta: #aa3614;
-$st-cta-hover: #591000;
+$st-cta: #c2410c;
+$st-cta-hover: #aa3614;
 $st-ink: #1c1c18;
 $st-body: #44474e;
 $st-outline: #75777f;
@@ -1343,7 +1343,7 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 		padding: 10px 20px;
 		border: none;
 		border-radius: 9999px;
-		background: #aa3614; // brand CTA, same as the home Search button
+		background: #c2410c; // brand CTA, same as the home Search button
 		color: #fff;
 		font-family: $font;
 		font-size: 14px;
@@ -1351,12 +1351,17 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 		cursor: pointer;
 		transition: background 0.2s;
 		&:hover:not(:disabled) {
-			background: #591000;
+			background: #aa3614;
 		}
+		// empty box: a neutral button, so it does not read as a faded or broken action
 		&:disabled {
-			opacity: 0.45;
+			background: #eee8e1;
+			color: #8a8178;
 			cursor: default;
 		}
+	}
+	.sx-ai-search-submit-icon {
+		display: none;
 	}
 	.sx-ai-search-examples {
 		display: flex;
@@ -1503,16 +1508,85 @@ $st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 #site-wrap.is-home .home-ai-search {
 	width: 100%;
 	margin: 28px 0 0;
-	.home-ai-search-or {
-		margin: 12px 0 0;
-		color: $st-outline;
-		font-family: $font;
-		font-size: 13px;
-		font-weight: 600;
-		text-align: center;
+	// both headings start a little inside, in line with the content of their boxes
+	> .sx-ai-search-head,
+	.home-filter-head {
+		padding-left: 20px;
 	}
-	// the filter box has a 48px top margin of its own; pull it closer under the AI bar
+	.home-filter-head {
+		margin: 28px 0 0;
+	}
+	// the same corners as the filter box below: 24px, and a 70px pill (35-36px corners) from 1200px
+	.sx-ai-search {
+		border-radius: 24px;
+		@media (min-width: 1200px) {
+			border-radius: 36px;
+		}
+	}
+	// tablet and up: the Search button centered on the right, the examples under the text
+	@media (min-width: 768px) {
+		.sx-ai-search {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr) auto auto;
+			grid-template-areas:
+				'icon input clear submit'
+				'. examples examples submit';
+			column-gap: 10px;
+			row-gap: 6px;
+			padding: 12px 10px 12px 24px;
+		}
+		.sx-ai-search-icon {
+			grid-area: icon;
+		}
+		.sx-ai-search input {
+			grid-area: input;
+		}
+		.sx-ai-search-clear {
+			grid-area: clear;
+		}
+		.sx-ai-search-examples {
+			grid-area: examples;
+			padding-left: 4px; // the column already starts where the text does
+		}
+		.sx-ai-search-submit {
+			grid-area: submit;
+			margin: 0;
+		}
+	}
+	// the same button as the filter bar's Search right below it (size, icon, spacing)
+	.sx-ai-search-submit {
+		display: inline-flex;
+		flex-shrink: 0;
+		align-items: center;
+		gap: 10px;
+		height: 48px;
+		margin: -6px 0; // phone: a bigger button, but the box keeps the height it had with the 36px one
+		padding: 0 32px;
+		font-size: 15px;
+		&:not(:disabled) {
+			background: #cc4a1b; // same as the filter bar's Search
+			&:hover {
+				background: #c2410c;
+			}
+		}
+		&:disabled .sx-ai-search-submit-icon {
+			filter: brightness(0) opacity(0.45); // white icon -> grey, like the label
+		}
+		// phone: the input shares the row, so keep the label only
+		@include mobile {
+			padding: 0 20px;
+		}
+	}
+	.sx-ai-search-submit-icon {
+		display: block;
+		width: 22px;
+		height: 22px;
+		@include mobile {
+			display: none;
+		}
+	}
+	// the filter box has a 48px top margin of its own; keep it under its heading, as the Smart Search box
 	+ .search-box.home-glass-search {
-		margin-top: 12px !important;
+		margin-top: 8px !important;
 	}
 }
