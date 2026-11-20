@@ -1,8 +1,11 @@
 // Assistant: the body of the "Ask Kostay" window on every page (palette from cs.scss).
 #site-wrap .sx-ai {
+	// fills the window: the conversation scrolls, the question box stays at the bottom
+	flex: 1;
+	min-height: 0;
 	display: flex;
 	flex-direction: column;
-	gap: 18px;
+	gap: 12px;
 	font-family: $font-display;
 	button {
 		font-family: inherit;
@@ -98,12 +101,73 @@
 		}
 	}
 
+	.sx-ai-top {
+		display: flex;
+		justify-content: flex-end;
+		margin: -6px 0 -4px;
+		button {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 6px 10px;
+			border: 0;
+			border-radius: 999px;
+			background: transparent;
+			color: $cs-body;
+			font-size: 13px;
+			font-weight: 700;
+			transition: background 160ms ease, color 160ms ease;
+			svg {
+				width: 16px;
+				height: 16px;
+			}
+			&:hover:not(:disabled) {
+				background: $cs-container;
+				color: $cs-navy;
+			}
+			&:disabled {
+				opacity: 0.4;
+				cursor: default;
+			}
+		}
+	}
+
+	.sx-ai-scroll {
+		flex: 1;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		// room for the scrollbar without moving the text
+		margin-right: -8px;
+		padding-right: 8px;
+	}
+
+	// nothing asked yet: a line and the examples, just above the question box
+	.sx-ai-empty {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		margin-top: auto;
+		p {
+			margin: 0;
+			color: $cs-body;
+			font-size: 14px;
+			line-height: 21px;
+		}
+	}
+
 	.sx-ai-thread {
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
-		padding-top: 18px;
-		border-top: 1px solid $cs-line;
+		gap: 22px;
+	}
+
+	.sx-ai-turn {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 	}
 
 	.sx-ai-question {
@@ -274,17 +338,17 @@
 		}
 	}
 
+	// rows with a small photo: a conversation holds several answers, so each one stays short
 	.sx-ai-stays {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-		gap: 12px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
 		margin: 0;
 		padding: 0;
 		list-style: none;
 		a {
 			display: flex;
-			flex-direction: column;
-			height: 100%;
+			align-items: stretch;
 			overflow: hidden;
 			border: 1px solid $cs-line;
 			border-radius: 16px;
@@ -296,22 +360,29 @@
 			}
 		}
 		img {
-			width: 100%;
-			aspect-ratio: 16 / 10;
+			flex: 0 0 96px;
+			width: 96px;
+			min-height: 84px;
 			object-fit: cover;
 			background: $cs-container;
 		}
 	}
 
 	.sx-ai-stay-body {
+		flex: 1;
+		min-width: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
-		padding: 12px 14px 14px;
+		justify-content: center;
+		gap: 2px;
+		padding: 10px 12px;
 		strong {
+			overflow: hidden;
 			color: $cs-navy;
-			font-size: 15px;
+			font-size: 14px;
 			font-weight: 800;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 		small {
 			color: $cs-outline;
@@ -324,7 +395,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-top: 6px;
+		margin-top: 4px;
 		color: $cs-body;
 		font-size: 13px;
 		b {

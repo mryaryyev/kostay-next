@@ -10,7 +10,7 @@ interface AssistantLauncherProps {
 	onAskExample?: (question: string) => void;
 }
 
-const INTRO_EXAMPLES = ['Can I get a refund if I cancel?', 'Festivals in Busan this winter'];
+const INTRO_EXAMPLES = ['Hanok in Jeonju for 4 people', 'Festivals in Busan this winter'];
 
 /** "Ask Kostay" button on every page: the assistant and the live chat behind one button. */
 const AssistantLauncher = ({ onOpen, showIntro, onDismissIntro, onAskExample }: AssistantLauncherProps) => (
@@ -21,7 +21,7 @@ const AssistantLauncher = ({ onOpen, showIntro, onDismissIntro, onAskExample }: 
 					<CloseRoundedIcon />
 				</button>
 				<strong>Ask Kostay</strong>
-				<p>Get answers from Kostay about bookings, festivals and places to stay, or chat with other travelers.</p>
+				<p>Find a place to stay, ask how booking works or what&apos;s on in Korea, or chat with other travelers.</p>
 				<div className="sx-ask-intro-examples">
 					{INTRO_EXAMPLES.map((example) => (
 						<button type="button" key={example} onClick={() => onAskExample?.(example)}>
