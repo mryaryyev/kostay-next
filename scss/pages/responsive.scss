@@ -1673,3 +1673,23 @@ body {
 		}
 	}
 }
+
+/* ---------- Phones: text fields ---------- */
+// iOS Safari zooms the page when a field with text under 16px gets focus and does not zoom back out.
+// Every field a visitor types in is 16px on phones, whatever its size on larger screens.
+#site-wrap {
+	@include mobile {
+		input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+		textarea,
+		select {
+			font-size: 16px !important;
+		}
+		// a long placeholder ends with "…" instead of being cut mid-letter
+		input::placeholder {
+			text-overflow: ellipsis;
+		}
+		input:placeholder-shown {
+			text-overflow: ellipsis;
+		}
+	}
+}

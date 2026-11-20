@@ -243,7 +243,7 @@
 		place-items: center;
 		min-width: 14px;
 		height: 14px;
-		margin: 0 1px 0 2px;
+		margin: 0 0 0 2px; // nothing on the right: a full stop or comma follows directly
 		padding: 0 3px;
 		border-radius: 4px;
 		background: $cs-tint;

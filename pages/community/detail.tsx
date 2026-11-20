@@ -385,7 +385,10 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 									<img src={memberImage} alt="" />
 									<span>
 										<strong>{boardArticle?.memberData?.memberNick}</strong>
-										<Moment format={'MMM D, YYYY · HH:mm'}>{boardArticle?.createdAt}</Moment>
+										{/* without a date Moment shows "now", which differs between the server and the browser */}
+										{boardArticle?.createdAt && (
+											<Moment format={'MMM D, YYYY · HH:mm'}>{boardArticle.createdAt}</Moment>
+										)}
 									</span>
 								</button>
 								<ul className="sx-article-stats">
