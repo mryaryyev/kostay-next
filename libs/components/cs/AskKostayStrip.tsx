@@ -18,7 +18,7 @@ const AskKostayStrip = () => {
 				<AssistantIcon />
 			</span>
 			<p>
-				<strong>Can&apos;t find your answer?</strong> <span>Ask about bookings, festivals and places to stay.</span>
+				<strong>Can&apos;t find your answer?</strong> <span>Ask about stays, booking or festivals.</span>
 			</p>
 			<button type="button" onClick={open}>
 				Ask Kostay
