@@ -50,7 +50,12 @@ interface MessagePayload {
 	createdAt?: string;
 }
 
-const Chat = () => {
+interface ChatProps {
+	/** Inside the "Ask Kostay" window: no floating button, always open, fills its box. */
+	embedded?: boolean;
+}
+
+const Chat = ({ embedded = false }: ChatProps) => {
 	const chatContentRef = useRef<HTMLDivElement>(null);
 	const [messageInput, setMessageInput] = useState<string>('');
 	const [open, setOpen] = useState(false);
@@ -140,13 +145,13 @@ const Chat = () => {
 	};
 
 	return (
-		<Stack className="chatting">
-			{openButton ? (
+		<Stack className={embedded ? 'chatting is-embedded' : 'chatting'}>
+			{openButton && !embedded ? (
 				<button className="chat-button" onClick={handleOpenChat} aria-label={open ? 'Close chat' : 'Open chat'}>
 					{open ? <CloseFullscreenIcon /> : <ChatBubbleOutlineRoundedIcon />}
 				</button>
 			) : null}
-			<Stack className={`chat-frame ${open ? 'open' : ''}`}>
+			<Stack className={`chat-frame ${open || embedded ? 'open' : ''}`}>
 				<Box className={'chat-top'} component={'div'}>
 					<div>Online Chat</div>
 					{isOnline ? (

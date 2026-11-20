@@ -14,7 +14,7 @@ import Notice from '../../libs/components/cs/Notice';
 import Faq from '../../libs/components/cs/Faq';
 import Inquiry from '../../libs/components/cs/Inquiry';
 import AssistantBox from '../../libs/components/cs/AssistantBox';
-import { useAssistant } from '../../libs/hooks/useAssistant';
+import { useAssistantContext } from '../../libs/hooks/AssistantContext';
 import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
@@ -36,7 +36,8 @@ const CS: NextPage = () => {
 	const tab = router.query.tab === 'faq' || router.query.tab === 'inquiry' ? router.query.tab : 'notice';
 	const [searchInput, setSearchInput] = useState<string>('');
 	const [text, setText] = useState<string>('');
-	const assistant = useAssistant();
+	// the same assistant as the "Ask Kostay" window: one question, one answer, on every page
+	const assistant = useAssistantContext();
 
 	/** LIFECYCLES **/
 	useEffect(() => {

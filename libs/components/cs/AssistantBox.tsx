@@ -1,6 +1,5 @@
 import React, { Fragment, useState } from 'react';
 import Link from 'next/link';
-import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import SearchOffRoundedIcon from '@mui/icons-material/SearchOffRounded';
 import HourglassEmptyRoundedIcon from '@mui/icons-material/HourglassEmptyRounded';
@@ -8,6 +7,7 @@ import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import { REACT_APP_API_URL } from '../../config';
+import { AssistantIcon } from '../assistant/assistantIcons';
 import { formatKRW } from '../../utils';
 import { AssistantCitation, AssistantResult, AssistantStayCard, AssistantState } from '../../types/assistant/assistant';
 
@@ -30,6 +30,8 @@ const MAX_QUESTION = 500;
 interface AssistantBoxProps {
 	state: AssistantState;
 	onAsk: (question: string) => void;
+	/** "card" on the Help page; "panel" inside the side panel, which has its own title. */
+	variant?: 'card' | 'panel';
 }
 
 /**
@@ -202,7 +204,7 @@ const Result = ({ result }: { result: AssistantResult }) => {
  * Help Center assistant: answers from Kostay's help pages and the Korea Tourism Organization's
  * travel data, and suggests stays. The parent owns the request; this box only shows a state.
  */
-const AssistantBox = ({ state, onAsk }: AssistantBoxProps) => {
+const AssistantBox = ({ state, onAsk, variant = 'card' }: AssistantBoxProps) => {
 	const [question, setQuestion] = useState<string>('');
 	const busy = state.kind === 'searching' || state.kind === 'writing';
 
@@ -214,16 +216,22 @@ const AssistantBox = ({ state, onAsk }: AssistantBoxProps) => {
 	};
 
 	return (
-		<section className="sx-ai" aria-labelledby="sx-ai-title">
-			<div className="sx-ai-head">
-				<span className="sx-ai-badge" aria-hidden="true">
-					<AutoAwesomeOutlinedIcon />
-				</span>
-				<div>
-					<h2 id="sx-ai-title">Ask Kostay Assistant</h2>
-					<p>Answers from our help pages and Korea Tourism Organization travel data, with sources.</p>
+		<section
+			className={variant === 'panel' ? 'sx-ai is-panel' : 'sx-ai'}
+			aria-labelledby={variant === 'panel' ? undefined : 'sx-ai-title'}
+			aria-label={variant === 'panel' ? 'Ask Kostay Assistant' : undefined}
+		>
+			{variant === 'card' && (
+				<div className="sx-ai-head">
+					<span className="sx-ai-badge" aria-hidden="true">
+						<AssistantIcon />
+					</span>
+					<div>
+						<h2 id="sx-ai-title">Ask Kostay Assistant</h2>
+						<p>Kostay and Korea Tourism Organization travel data</p>
+					</div>
 				</div>
-			</div>
+			)}
 
 			<form
 				className="sx-ai-form"
@@ -248,7 +256,6 @@ const AssistantBox = ({ state, onAsk }: AssistantBoxProps) => {
 
 			{state.kind === 'idle' && (
 				<div className="sx-ai-examples">
-					<span className="sx-ai-label">Try</span>
 					{EXAMPLE_QUESTIONS.map((example) => (
 						<button type="button" key={example} onClick={() => ask(example)}>
 							{example}
