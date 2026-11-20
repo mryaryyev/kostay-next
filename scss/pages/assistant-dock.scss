@@ -230,8 +230,10 @@
 
 	.sx-ask-panel-body {
 		flex: 1;
-		overflow-y: auto;
-		padding: 20px;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+		padding: 16px 20px 20px;
 	}
 
 	.sx-ask-panel-chat {

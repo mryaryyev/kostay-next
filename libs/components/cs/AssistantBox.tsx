@@ -1,5 +1,6 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import SearchOffRoundedIcon from '@mui/icons-material/SearchOffRounded';
 import HourglassEmptyRoundedIcon from '@mui/icons-material/HourglassEmptyRounded';
@@ -8,13 +9,16 @@ import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import { REACT_APP_API_URL } from '../../config';
 import { formatKRW } from '../../utils';
-import { AssistantCitation, AssistantResult, AssistantStayCard, AssistantState } from '../../types/assistant/assistant';
+import { AssistantCitation, AssistantResult, AssistantStayCard, AssistantTurn } from '../../types/assistant/assistant';
 
-/** One of each kind the assistant handles: a help question, a travel question, a stay request. */
+/**
+ * One of each kind the assistant handles, in the order the site cares about: a stay request, a booking
+ * question, then travel. The travel one has no date in it, so its answer does not go stale.
+ */
 export const EXAMPLE_QUESTIONS = [
-	'Can I get a refund if I cancel?',
-	'When is the Busan fireworks festival?',
 	'Hanok in Jeonju for 4 people',
+	'How do I book a stay?',
+	'Festivals in Busan this winter',
 ];
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -27,8 +31,10 @@ const SOURCE_LABELS: Record<string, string> = {
 const MAX_QUESTION = 500;
 
 interface AssistantBoxProps {
-	state: AssistantState;
+	/** The conversation so far, oldest first; the last turn may still be searching or writing. */
+	turns: AssistantTurn[];
 	onAsk: (question: string) => void;
+	onNewChat: () => void;
 }
 
 /**
@@ -56,6 +62,7 @@ export const renderAnswer = (
 	text: string,
 	linkCitations = true,
 	numbers: Map<number, number> = new Map(),
+	anchor = 'ai-source', // several answers on screen: each links to its own sources
 ): JSX.Element[] =>
 	text
 		.split('\n')
@@ -67,7 +74,7 @@ export const renderAnswer = (
 					if (citation) {
 						const shown = numbers.get(Number(citation[1])) ?? Number(citation[1]);
 						return linkCitations ? (
-							<a key={index} className="sx-ai-cite" href={`#ai-source-${shown}`}>
+							<a key={index} className="sx-ai-cite" href={`#${anchor}-${shown}`}>
 								{shown}
 							</a>
 						) : (
@@ -115,12 +122,12 @@ const SourceLink = ({ citation }: { citation: AssistantCitation }) => {
 	);
 };
 
-const Sources = ({ citations }: { citations: AssistantCitation[] }) => (
+const Sources = ({ citations, anchor }: { citations: AssistantCitation[]; anchor: string }) => (
 	<div className="sx-ai-sources">
 		<span className="sx-ai-label">Sources</span>
 		<ol>
 			{citations.map((citation, index) => (
-				<li key={citation.number} id={`ai-source-${index + 1}`}>
+				<li key={citation.number} id={`${anchor}-${index + 1}`}>
 					<span className="sx-ai-source-num">{index + 1}</span>
 					<span className="sx-ai-source-body">
 						<SourceLink citation={citation} />
@@ -167,12 +174,12 @@ const StayCards = ({ cards }: { cards: AssistantStayCard[] }) => (
 );
 
 /** The result of a finished question: an answer with sources, stays, or an honest "can't". */
-const Result = ({ result }: { result: AssistantResult }) => {
+const Result = ({ result, anchor }: { result: AssistantResult; anchor: string }) => {
 	if (result.status === 'answered') {
 		return (
 			<>
-				<div className="sx-ai-answer">{renderAnswer(result.answer, true, displayNumbers(result.citations))}</div>
-				{result.citations.length > 0 && <Sources citations={result.citations} />}
+				<div className="sx-ai-answer">{renderAnswer(result.answer, true, displayNumbers(result.citations), anchor)}</div>
+				{result.citations.length > 0 && <Sources citations={result.citations} anchor={anchor} />}
 			</>
 		);
 	}
@@ -211,13 +218,44 @@ const Result = ({ result }: { result: AssistantResult }) => {
 	);
 };
 
+/** One question and its answer, or the answer on its way. */
+const Turn = ({ turn, index }: { turn: AssistantTurn; index: number }) => (
+	<div className="sx-ai-turn">
+		<p className="sx-ai-question">{turn.question}</p>
+		{turn.kind === 'searching' && (
+			<p className="sx-ai-status">
+				<span className="sx-ai-dots" aria-hidden="true">
+					<i />
+					<i />
+					<i />
+				</span>
+				Searching help pages and travel guides…
+			</p>
+		)}
+		{turn.kind === 'writing' && (
+			<div className="sx-ai-answer is-writing">{renderAnswer(turn.text, false, numbersFromText(turn.text))}</div>
+		)}
+		{turn.kind === 'done' && <Result result={turn.result} anchor={`ai-source-${index}`} />}
+	</div>
+);
+
 /**
- * The assistant in the "Ask Kostay" window: answers from Kostay's help pages and the Korea Tourism
- * Organization's travel data, and suggests stays. The parent owns the request; this box only shows a state.
+ * The assistant in the "Ask Kostay" window: a conversation. Answers come from Kostay's help pages and the
+ * Korea Tourism Organization's travel data, or are stays to book. The parent owns the requests; this box
+ * only shows the turns. The question box stays at the bottom, the conversation scrolls above it.
  */
-const AssistantBox = ({ state, onAsk }: AssistantBoxProps) => {
+const AssistantBox = ({ turns, onAsk, onNewChat }: AssistantBoxProps) => {
 	const [question, setQuestion] = useState<string>('');
-	const busy = state.kind === 'searching' || state.kind === 'writing';
+	const scroller = useRef<HTMLDivElement>(null);
+	const last = turns[turns.length - 1];
+	const busy = last?.kind === 'searching' || last?.kind === 'writing';
+
+	// keep the newest question and the arriving answer in view
+	const progress = last?.kind === 'writing' ? last.text.length : last?.kind;
+	useEffect(() => {
+		const box = scroller.current;
+		if (box) box.scrollTop = box.scrollHeight;
+	}, [turns.length, progress]);
 
 	const ask = (value: string) => {
 		const trimmed = value.trim();
@@ -228,6 +266,36 @@ const AssistantBox = ({ state, onAsk }: AssistantBoxProps) => {
 
 	return (
 		<section className="sx-ai" aria-label="Ask Kostay Assistant">
+			{turns.length > 0 && (
+				<div className="sx-ai-top">
+					<button type="button" onClick={onNewChat} disabled={busy}>
+						<AddCommentOutlinedIcon aria-hidden="true" />
+						New chat
+					</button>
+				</div>
+			)}
+
+			<div className="sx-ai-scroll" ref={scroller}>
+				{turns.length === 0 ? (
+					<div className="sx-ai-empty">
+						<p>Ask about places to stay, how booking works, or festivals and things to do in Korea.</p>
+						<div className="sx-ai-examples">
+							{EXAMPLE_QUESTIONS.map((example) => (
+								<button type="button" key={example} onClick={() => ask(example)}>
+									{example}
+								</button>
+							))}
+						</div>
+					</div>
+				) : (
+					<div className="sx-ai-thread" aria-live="polite">
+						{turns.map((turn, index) => (
+							<Turn key={index} turn={turn} index={index} />
+						))}
+					</div>
+				)}
+			</div>
+
 			<form
 				className="sx-ai-form"
 				onSubmit={(e) => {
@@ -239,7 +307,7 @@ const AssistantBox = ({ state, onAsk }: AssistantBoxProps) => {
 					type="text"
 					value={question}
 					maxLength={MAX_QUESTION}
-					placeholder="Ask about refunds, festivals or stays"
+					placeholder={turns.length ? 'Ask another question' : 'Ask about stays, booking or festivals'}
 					aria-label="Your question"
 					disabled={busy}
 					onChange={(e) => setQuestion(e.target.value)}
@@ -248,36 +316,6 @@ const AssistantBox = ({ state, onAsk }: AssistantBoxProps) => {
 					<ArrowUpwardRoundedIcon />
 				</button>
 			</form>
-
-			{state.kind === 'idle' && (
-				<div className="sx-ai-examples">
-					{EXAMPLE_QUESTIONS.map((example) => (
-						<button type="button" key={example} onClick={() => ask(example)}>
-							{example}
-						</button>
-					))}
-				</div>
-			)}
-
-			{state.kind !== 'idle' && (
-				<div className="sx-ai-thread" aria-live="polite">
-					<p className="sx-ai-question">{state.question}</p>
-					{state.kind === 'searching' && (
-						<p className="sx-ai-status">
-							<span className="sx-ai-dots" aria-hidden="true">
-								<i />
-								<i />
-								<i />
-							</span>
-							Searching help pages and travel guides…
-						</p>
-					)}
-					{state.kind === 'writing' && (
-						<div className="sx-ai-answer is-writing">{renderAnswer(state.text, false, numbersFromText(state.text))}</div>
-					)}
-					{state.kind === 'done' && <Result result={state.result} />}
-				</div>
-			)}
 		</section>
 	);
 };

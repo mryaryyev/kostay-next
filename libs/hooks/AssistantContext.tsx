@@ -1,13 +1,15 @@
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAssistant } from './useAssistant';
-import { AssistantState } from '../types/assistant/assistant';
+import { AssistantTurn } from '../types/assistant/assistant';
 
 export type AskTab = 'assistant' | 'chat';
 
 interface AssistantContextValue {
-	state: AssistantState;
+	/** The conversation with the assistant, oldest question first. */
+	turns: AssistantTurn[];
 	ask: (question: string) => Promise<void>;
+	newChat: () => void;
 	open: boolean;
 	setOpen: (open: boolean) => void;
 	tab: AskTab;
@@ -31,12 +33,12 @@ const introSeen = (): boolean => {
 };
 
 /**
- * One assistant for the whole site. It sits in _app, above the page layouts, so the answer and the open
- * window survive a page change, and the Help Center box and the "Ask Kostay" window show the same answer.
+ * One assistant for the whole site. It sits in _app, above the page layouts, so the conversation and the
+ * open window survive a page change.
  */
 export const AssistantProvider = ({ children }: { children: ReactNode }) => {
 	const router = useRouter();
-	const { state, ask } = useAssistant();
+	const { turns, ask, newChat } = useAssistant();
 	const [open, setOpen] = useState(false);
 	const [tab, setTab] = useState<AskTab>('assistant');
 	const [introVisible, setIntroVisible] = useState(false);
@@ -65,8 +67,8 @@ export const AssistantProvider = ({ children }: { children: ReactNode }) => {
 	}, []);
 
 	const value = useMemo(
-		() => ({ state, ask, open, setOpen, tab, setTab, introVisible, dismissIntro }),
-		[state, ask, open, tab, introVisible, dismissIntro],
+		() => ({ turns, ask, newChat, open, setOpen, tab, setTab, introVisible, dismissIntro }),
+		[turns, ask, newChat, open, tab, introVisible, dismissIntro],
 	);
 	return <AssistantContext.Provider value={value}>{children}</AssistantContext.Provider>;
 };

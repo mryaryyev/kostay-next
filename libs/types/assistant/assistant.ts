@@ -27,11 +27,15 @@ export interface AssistantResult {
 	intent: string;
 	stays: string[];
 	stayCards?: AssistantStayCard[];
+	/** The question that was answered: a follow-up ("in Incheon") comes back written out in full. */
+	question?: string;
 }
 
-/** What the box shows: nothing asked yet, sources being searched, sentences arriving, or the final result. */
-export type AssistantState =
-	| { kind: 'idle' }
+/**
+ * One question of the conversation and where its answer stands: sources being searched, sentences
+ * arriving, or the final result. Only the last turn can be unfinished.
+ */
+export type AssistantTurn =
 	| { kind: 'searching'; question: string }
 	| { kind: 'writing'; question: string; text: string }
 	| { kind: 'done'; question: string; result: AssistantResult };

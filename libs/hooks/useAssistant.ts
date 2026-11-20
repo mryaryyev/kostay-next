@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { REACT_APP_API_URL } from '../config';
 import { SseParser } from '../sse';
-import { AssistantResult, AssistantState } from '../types/assistant/assistant';
+import { AssistantResult, AssistantTurn } from '../types/assistant/assistant';
 
 const failure = (status: AssistantResult['status'], answer: string): AssistantResult => ({
 	status,
@@ -15,23 +15,40 @@ const failure = (status: AssistantResult['status'], answer: string): AssistantRe
 export const UNAVAILABLE = failure('error', 'The assistant is not available right now. Please try again in a moment.');
 const INVALID = failure('error', 'Please write a question of up to 500 characters.');
 
+/** Earlier questions sent with a new one; kostay-api accepts at most this many. */
+export const MAX_HISTORY = 3;
+/** Turns kept on screen; older ones drop off the top. */
+export const MAX_TURNS = 20;
+
+// a question that was understood is worth remembering, whatever came of it; a failed call is not
+const UNDERSTOOD: AssistantResult['status'][] = ['answered', 'stays', 'no_source'];
+
+/** The conversation with its last turn replaced. */
+const withLast = (turns: AssistantTurn[], last: AssistantTurn): AssistantTurn[] => [...turns.slice(0, -1), last];
+
 /**
- * Asks kostay-api's POST /assistant/stream and turns its events into the box's state:
- * searching -> writing (each checked sentence as it arrives) -> done (the final answer).
- * One question at a time: a new question, or leaving the page, cancels the one in flight,
- * which also stops the answer upstream so nobody pays for it.
+ * A conversation with the assistant over kostay-api's POST /assistant/stream. Each question becomes a
+ * turn: searching -> writing (each checked sentence as it arrives) -> done (the final answer).
+ *
+ * Follow-ups: every answer comes back with the question as the assistant understood it ("in Incheon" ->
+ * "cheapest stays in Incheon"). Those, not the visitor's own words, are sent as `history` with the next
+ * question, so each entry can be read on its own and the last three are enough.
+ *
+ * One question at a time. Starting a new chat, or leaving, cancels the one in flight, which also stops
+ * the answer upstream so nobody pays for it. Nothing is stored: a reload starts a new conversation.
  */
 export const useAssistant = () => {
-	const [state, setState] = useState<AssistantState>({ kind: 'idle' });
+	const [turns, setTurns] = useState<AssistantTurn[]>([]);
+	const history = useRef<string[]>([]);
 	const inFlight = useRef<AbortController | null>(null);
 
 	useEffect(() => () => inFlight.current?.abort(), []);
 
 	const ask = useCallback(async (question: string) => {
-		inFlight.current?.abort();
+		if (inFlight.current) return; // the box is disabled meanwhile; this guards a double submit
 		const controller = new AbortController();
 		inFlight.current = controller;
-		setState({ kind: 'searching', question });
+		setTurns((earlier) => [...earlier, { kind: 'searching' as const, question }].slice(-MAX_TURNS));
 
 		let result: AssistantResult | null = null;
 		try {
@@ -39,7 +56,7 @@ export const useAssistant = () => {
 			const response = await fetch(`${REACT_APP_API_URL}/assistant/stream`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
-				body: JSON.stringify({ question }),
+				body: JSON.stringify({ question, history: history.current.slice(-MAX_HISTORY) }),
 				signal: controller.signal,
 			});
 			if (response.status === 400) {
@@ -56,7 +73,8 @@ export const useAssistant = () => {
 					for (const event of parser.push(decoder.decode(value, { stream: true }))) {
 						if (event.event === 'delta') {
 							text += (JSON.parse(event.data) as { text: string }).text;
-							setState({ kind: 'writing', question, text });
+							const writing = { kind: 'writing' as const, question, text };
+							if (!controller.signal.aborted) setTurns((now) => withLast(now, writing));
 						} else if (event.event === 'done') {
 							result = JSON.parse(event.data) as AssistantResult;
 						}
@@ -66,11 +84,21 @@ export const useAssistant = () => {
 		} catch {
 			// network error or our own abort; an abort is handled below
 		}
-		if (controller.signal.aborted) return; // a newer question (or leaving the page) took over
+		if (controller.signal.aborted) return; // a new chat (or leaving the page) took over
 		inFlight.current = null;
 		// "done" is the checked final answer; without it the answer did not finish
-		setState({ kind: 'done', question, result: result ?? UNAVAILABLE });
+		const final = result ?? UNAVAILABLE;
+		if (UNDERSTOOD.includes(final.status)) history.current.push(final.question || question);
+		setTurns((now) => withLast(now, { kind: 'done', question, result: final }));
 	}, []);
 
-	return { state, ask };
+	/** Forget the conversation: the next question is read on its own. */
+	const newChat = useCallback(() => {
+		inFlight.current?.abort();
+		inFlight.current = null;
+		history.current = [];
+		setTurns([]);
+	}, []);
+
+	return { turns, ask, newChat };
 };

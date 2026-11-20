@@ -12,7 +12,7 @@ import { userVar } from '../../../apollo/store';
 /** "Ask Kostay" on every page: one button for the assistant and the live chat. */
 const AssistantDock = () => {
 	const router = useRouter();
-	const { state, ask, open, setOpen, tab, setTab, introVisible, dismissIntro } = useAssistantContext();
+	const { turns, ask, newChat, open, setOpen, tab, setTab, introVisible, dismissIntro } = useAssistantContext();
 	const user = useReactiveVar(userVar);
 
 	// The live chat used to sit on every page and open its socket on load. It now mounts only when its tab is
@@ -50,7 +50,7 @@ const AssistantDock = () => {
 				onClose={() => setOpen(false)}
 				tab={tab}
 				onTab={setTab}
-				assistant={<AssistantBox state={state} onAsk={ask} />}
+				assistant={<AssistantBox turns={turns} onAsk={ask} onNewChat={newChat} />}
 				chat={<Chat embedded />}
 			/>
 		</>
