@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # Next bakes the API addresses into the build; these are placeholders, nothing is called
+      REACT_APP_API_URL: http://localhost:3007
+      REACT_APP_API_GRAPHQL_URL: http://localhost:3007/graphql
+      REACT_APP_API_WS: ws://localhost:3007
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn lint
+      - run: yarn tsc --noEmit
+      - run: yarn build
