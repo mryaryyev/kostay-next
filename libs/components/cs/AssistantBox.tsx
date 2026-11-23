@@ -9,7 +9,13 @@ import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import { REACT_APP_API_URL } from '../../config';
 import { formatKRW } from '../../utils';
-import { AssistantCitation, AssistantResult, AssistantStayCard, AssistantTurn } from '../../types/assistant/assistant';
+import {
+	AssistantCitation,
+	AssistantHostCard,
+	AssistantResult,
+	AssistantStayCard,
+	AssistantTurn,
+} from '../../types/assistant/assistant';
 
 /**
  * One of each kind the assistant handles, in the order the site cares about: a stay request, a booking
@@ -173,26 +179,66 @@ const StayCards = ({ cards }: { cards: AssistantStayCard[] }) => (
 	</ul>
 );
 
-/** The result of a finished question: an answer with sources, stays, or an honest "can't". */
+const titleCase = (word: string) => word.charAt(0) + word.slice(1).toLowerCase();
+
+const HostCards = ({ cards, city }: { cards: AssistantHostCard[]; city: string }) => (
+	<ul className="sx-ai-stays is-hosts">
+		{cards.map((card) => (
+			<li key={card._id}>
+				<Link href={{ pathname: '/host/detail', query: { hostId: card._id } }}>
+					<img
+						src={card.memberImage ? `${REACT_APP_API_URL}/${card.memberImage}` : '/img/profile/defaultUser.svg'}
+						alt=""
+						loading="lazy"
+					/>
+					<span className="sx-ai-stay-body">
+						<strong>{card.memberNick}</strong>
+						<small>Host · {titleCase(city)}</small>
+						<span className="sx-ai-stay-meta">
+							<span>
+								<b>{card.stays}</b> {card.stays === 1 ? 'stay' : 'stays'} here
+							</span>
+						</span>
+					</span>
+				</Link>
+			</li>
+		))}
+	</ul>
+);
+
+/** Stays and hosts that come with an answer, or stand in for one. */
+const Suggestions = ({ result }: { result: AssistantResult }) => (
+	<>
+		{!!result.stayCards?.length && (
+			<>
+				<StayCards cards={result.stayCards} />
+				<Link className="sx-ai-more" href="/stay">
+					See all stays
+				</Link>
+			</>
+		)}
+		{!!result.hostCards?.length && <HostCards cards={result.hostCards} city={result.hosts_city ?? ''} />}
+	</>
+);
+
+/** The result of a finished question: an answer with sources (and stays or hosts if asked), or an honest "can't". */
 const Result = ({ result, anchor }: { result: AssistantResult; anchor: string }) => {
 	if (result.status === 'answered') {
 		return (
 			<>
 				<div className="sx-ai-answer">{renderAnswer(result.answer, true, displayNumbers(result.citations), anchor)}</div>
 				{result.citations.length > 0 && <Sources citations={result.citations} anchor={anchor} />}
+				<Suggestions result={result} />
 			</>
 		);
 	}
-	if (result.status === 'stays' && result.stayCards?.length) {
+	if (result.status === 'stays' && (result.stayCards?.length || result.hostCards?.length)) {
 		return (
 			<>
 				<div className="sx-ai-answer">
 					<p>{result.answer}</p>
 				</div>
-				<StayCards cards={result.stayCards} />
-				<Link className="sx-ai-more" href="/stay">
-					See all stays
-				</Link>
+				<Suggestions result={result} />
 			</>
 		);
 	}

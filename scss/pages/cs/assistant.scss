@@ -368,6 +368,17 @@
 		}
 	}
 
+	// host cards: the same card with a round photo
+	.sx-ai-stays.is-hosts img {
+		flex: 0 0 48px;
+		width: 48px;
+		height: 48px;
+		min-height: 0;
+		align-self: center;
+		margin-left: 12px;
+		border-radius: 50%;
+	}
+
 	.sx-ai-stay-body {
 		flex: 1;
 		min-width: 0;

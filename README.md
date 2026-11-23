@@ -32,7 +32,7 @@ One button on every page opens a small window with two tabs: the assistant and t
 
 - **Assistant.** The answer is read from a stream (`fetch` on a POST request, not `EventSource`,
   which can only GET): first "searching", then each sentence as it arrives, then the final answer with
-  numbered sources and stay cards. A source link opens the exact FAQ item or notice in the Help Center
+  numbered sources, stay cards and host cards (a question can ask for an answer and stays together). A source link opens the exact FAQ item or notice in the Help Center
   and scrolls to it.
 - **Follow-up questions.** Each answer comes back with the question as the assistant understood it;
   the last three of those are sent with the next question, so "and in Seoul?" works.

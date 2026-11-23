@@ -20,6 +20,14 @@ export interface AssistantStayCard {
 	propertyImage: string | null;
 }
 
+export interface AssistantHostCard {
+	_id: string;
+	memberNick: string;
+	memberImage: string | null;
+	/** active stays of this host in the asked city */
+	stays: number;
+}
+
 export interface AssistantResult {
 	status: 'answered' | 'no_source' | 'stays' | 'error' | 'limited';
 	answer: string;
@@ -27,6 +35,9 @@ export interface AssistantResult {
 	intent: string;
 	stays: string[];
 	stayCards?: AssistantStayCard[];
+	/** hosts asked for in this city (SEOUL, BUSAN, ...) and the hosts found there */
+	hosts_city?: string;
+	hostCards?: AssistantHostCard[];
 	/** The question that was answered: a follow-up ("in Incheon") comes back written out in full. */
 	question?: string;
 }
