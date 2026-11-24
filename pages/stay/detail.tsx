@@ -31,7 +31,7 @@ import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { useRouter } from 'next/router';
 import { Property } from '../../libs/types/property/property';
 import moment from 'moment';
-import { formatKRW } from '../../libs/utils';
+import { cityLabel, formatKRW } from '../../libs/utils';
 import { CHECK_IN_TIME, CHECK_OUT_TIME, REACT_APP_API_URL } from '../../libs/config';
 import { userVar } from '../../apollo/store';
 import { CommentInput, CommentsInquiry } from '../../libs/types/comment/comment.input';
@@ -400,7 +400,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const isAdmin = user?.memberType === MemberType.ADMIN;
 	const hostImage = host?.memberImage ? `${REACT_APP_API_URL}/${host.memberImage}` : '/img/profile/defaultUser.svg';
 	const typeLabel = toLabel(property?.propertyType ?? '');
-	const locationLabel = toLabel(property?.propertyLocation ?? '');
+	const locationLabel = cityLabel(property?.propertyLocation);
 	// Stays have no coordinates yet, so the map searches by address (neighbourhood zoom keeps the exact home private).
 	const mapQuery = [property?.propertyAddress || locationLabel, 'South Korea']
 		.filter((part, index, parts) => part && (index === 0 || !parts[0]?.includes(part)))
@@ -439,7 +439,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 							<div className="sx-detail-meta">
 								<span>
 									<StarRoundedIcon aria-hidden="true" />
-									{commentTotal} reviews
+									{commentTotal} {commentTotal === 1 ? 'review' : 'reviews'}
 								</span>
 								<span>
 									<VisibilityOutlinedIcon aria-hidden="true" />

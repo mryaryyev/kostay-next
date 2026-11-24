@@ -19,7 +19,7 @@ import { BOOK_AND_PAY } from '../../apollo/user/mutation';
 import { Property } from '../../libs/types/property/property';
 import { BookedRange, Booking } from '../../libs/types/booking/booking';
 import { CHECK_IN_TIME, CHECK_OUT_TIME, REACT_APP_API_URL } from '../../libs/config';
-import { formatKRW } from '../../libs/utils';
+import { cityLabel, formatKRW } from '../../libs/utils';
 import { sweetErrorHandling } from '../../libs/sweetAlert';
 
 export const getStaticProps = async ({ locale }: any) => ({
@@ -256,7 +256,7 @@ const Checkout: NextPage = () => {
 										<strong>{property?.propertyTitle}</strong>
 										<span>
 											<PlaceOutlinedIcon aria-hidden="true" />
-											{[property?.propertyAddress, toLabel(property?.propertyLocation)].filter(Boolean).join(', ')}
+											{[property?.propertyAddress, cityLabel(property?.propertyLocation)].filter(Boolean).join(', ')}
 										</span>
 									</div>
 								</div>

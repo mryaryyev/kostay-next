@@ -8,7 +8,7 @@ import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import { REACT_APP_API_URL } from '../../config';
-import { formatKRW } from '../../utils';
+import { cityLabel, formatKRW } from '../../utils';
 import {
 	AssistantCitation,
 	AssistantHostCard,
@@ -161,7 +161,7 @@ const StayCards = ({ cards }: { cards: AssistantStayCard[] }) => (
 						<strong>{card.propertyTitle}</strong>
 						<small>
 							{card.propertyType.charAt(0) + card.propertyType.slice(1).toLowerCase()} ·{' '}
-							{card.propertyLocation.charAt(0) + card.propertyLocation.slice(1).toLowerCase()}
+							{cityLabel(card.propertyLocation)}
 						</small>
 						<span className="sx-ai-stay-meta">
 							<span>
@@ -179,7 +179,6 @@ const StayCards = ({ cards }: { cards: AssistantStayCard[] }) => (
 	</ul>
 );
 
-const titleCase = (word: string) => word.charAt(0) + word.slice(1).toLowerCase();
 
 const HostCards = ({ cards, city }: { cards: AssistantHostCard[]; city: string }) => (
 	<ul className="sx-ai-stays is-hosts">
@@ -193,7 +192,7 @@ const HostCards = ({ cards, city }: { cards: AssistantHostCard[]; city: string }
 					/>
 					<span className="sx-ai-stay-body">
 						<strong>{card.memberNick}</strong>
-						<small>Host · {titleCase(city)}</small>
+						<small>Host · {cityLabel(city)}</small>
 						<span className="sx-ai-stay-meta">
 							<span>
 								<b>{card.stays}</b> {card.stays === 1 ? 'stay' : 'stays'} here

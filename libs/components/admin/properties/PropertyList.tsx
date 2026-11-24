@@ -1,4 +1,4 @@
-import { formatKRW } from '../../../utils';
+import { cityLabel, formatKRW } from '../../../utils';
 import React from 'react';
 import Link from 'next/link';
 import {
@@ -152,7 +152,7 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 														<div>
 															{property.propertyTitle}
 															<small className={'adm-sub'}>
-																{titleCase(property.propertyType)} · {titleCase(property.propertyLocation)} · #{property._id.slice(-6)}
+																{titleCase(property.propertyType)} · {cityLabel(property.propertyLocation)} · #{property._id.slice(-6)}
 															</small>
 														</div>
 													</Link>
@@ -165,7 +165,7 @@ export const PropertyPanelList = (props: PropertyPanelListType) => {
 													<div>
 														{property.propertyTitle}
 														<small className={'adm-sub'}>
-															{titleCase(property.propertyType)} · {titleCase(property.propertyLocation)} · #{property._id.slice(-6)}
+															{titleCase(property.propertyType)} · {cityLabel(property.propertyLocation)} · #{property._id.slice(-6)}
 														</small>
 													</div>
 												</Stack>

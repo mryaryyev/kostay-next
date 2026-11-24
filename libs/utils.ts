@@ -4,6 +4,12 @@ import { Direction } from './enums/common.enum';
 import { PropertyLocation, PropertyType } from './enums/property.enum';
 import type { PropertiesInquiry } from './types/property/property.input';
 
+// Display names for location codes; CHONJU is stored as-is but shown with today's spelling.
+const CITY_LABELS: Partial<Record<string, string>> = { CHONJU: 'Jeonju' };
+
+export const cityLabel = (code?: string | null): string =>
+	code ? CITY_LABELS[code] ?? code.charAt(0) + code.slice(1).toLowerCase() : '';
+
 const krwFormatter = new Intl.NumberFormat('ko-KR', {
 	style: 'currency',
 	currency: 'KRW',

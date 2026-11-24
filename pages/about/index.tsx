@@ -10,6 +10,7 @@ import EditCalendarOutlinedIcon from '@mui/icons-material/EditCalendarOutlined';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { PropertyLocation, PropertyType } from '../../libs/enums/property.enum';
+import { cityLabel } from '../../libs/utils';
 
 const stats = [
 	{ value: String(Object.values(PropertyLocation).length), label: 'Destinations' },
@@ -54,7 +55,6 @@ const hostSteps = [
 	},
 ];
 
-const formatCity = (location: string) => location.charAt(0) + location.slice(1).toLowerCase();
 
 const About: NextPage = () => {
 	return (
@@ -124,7 +124,7 @@ const About: NextPage = () => {
 						{Object.values(PropertyLocation).map((location) => (
 							<Link href={`/stay?location=${location}`} className={'about-city'} key={location}>
 								<img src={`/img/banner/cities/${location}.webp`} alt="" loading={'lazy'} />
-								<span>{formatCity(location)}</span>
+								<span>{cityLabel(location)}</span>
 							</Link>
 						))}
 					</div>

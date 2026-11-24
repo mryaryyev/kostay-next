@@ -13,7 +13,7 @@ import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { CREATE_PROPERTY, UPDATE_PROPERTY } from '../../../apollo/user/mutation';
 import { GET_PROPERTY } from '../../../apollo/user/query';
 import { sweetErrorHandling, sweetMixinErrorAlert, sweetMixinSuccessAlert } from '../../sweetAlert';
-import { formatKRW, isPositiveInt, parsePositiveInt } from '../../utils';
+import { cityLabel, formatKRW, isPositiveInt, parsePositiveInt } from '../../utils';
 
 const AddProperty = ({ initialValues, ...props }: any) => {
 	const router = useRouter();
@@ -276,7 +276,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 						<FormSelect
 							labelId="stay-location-label"
 							value={insertPropertyData.propertyLocation || ''}
-							options={propertyLocation.map((location: any) => ({ value: location, label: toLabel(location) }))}
+							options={propertyLocation.map((location: any) => ({ value: location, label: cityLabel(location) }))}
 							placeholder="Select a location"
 							onChange={(value) =>
 								setInsertPropertyData({ ...insertPropertyData, propertyLocation: value as PropertyLocation })

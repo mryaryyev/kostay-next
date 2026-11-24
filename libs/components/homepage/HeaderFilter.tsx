@@ -9,7 +9,7 @@ import { PropertyLocation, PropertyType } from '../../enums/property.enum';
 import { PropertiesInquiry } from '../../types/property/property.input';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { buildPropertyQuery, formatKRW, normalizePropertySearch } from '../../utils';
+import { buildPropertyQuery, cityLabel, formatKRW, normalizePropertySearch } from '../../utils';
 import moment from 'moment';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
@@ -477,7 +477,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 									>
 										<img src={`/img/banner/cities/${location}.webp`} alt="" />
 										<span className="filter-location-text">
-											<strong>{cityName(location)}</strong>
+											<strong>{cityLabel(location)}</strong>
 											<small>{cityHints[location]}</small>
 										</span>
 										<i className="filter-location-check" aria-hidden="true">

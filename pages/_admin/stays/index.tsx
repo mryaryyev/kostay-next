@@ -19,10 +19,10 @@ import { useMutation, useQuery } from '@apollo/client';
 import { GET_ALL_PROPERTIES_BY_ADMIN } from '../../../apollo/admin/query';
 import { REMOVE_PROPERTY_BY_ADMIN, UPDATE_PROPERTY_BY_ADMIN } from '../../../apollo/admin/mutation';
 import { T } from '../../../libs/types/common';
+import { cityLabel } from '../../../libs/utils';
 import { useRouter } from 'next/router';
 
 /** SEOUL → Seoul for the city filter. */
-const titleCase = (value: string) => value.charAt(0) + value.slice(1).toLowerCase();
 
 const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 	const [anchorEl, setAnchorEl] = useState<[] | HTMLElement[]>([]);
@@ -249,7 +249,7 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 									</MenuItem>
 									{Object.values(PropertyLocation).map((location: string) => (
 										<MenuItem value={location} onClick={() => searchLocationHandler(location)} key={location}>
-											{titleCase(location)}
+											{cityLabel(location)}
 										</MenuItem>
 									))}
 								</Select>

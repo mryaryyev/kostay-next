@@ -7,7 +7,7 @@ import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import { Booking } from '../../types/booking/booking';
 import { BookingStatus, PaymentStatus } from '../../enums/booking.enum';
 import { REACT_APP_API_URL } from '../../config';
-import { formatKRW } from '../../utils';
+import { cityLabel, formatKRW } from '../../utils';
 
 const statusLabels: Record<BookingStatus, string> = {
 	// Only bookings made before Instant Book can still be PENDING (never paid); they can only be cancelled.
@@ -17,7 +17,6 @@ const statusLabels: Record<BookingStatus, string> = {
 	[BookingStatus.COMPLETED]: 'Completed',
 };
 
-const toLabel = (value?: string) => (value ? value.charAt(0) + value.slice(1).toLowerCase() : '');
 
 // Dates are plain YYYY-MM-DD strings, so nights are counted in UTC to avoid timezone shifts.
 const nightsBetween = (from: string, to: string) => {
@@ -62,7 +61,7 @@ const BookingCard = ({ booking, view, actions }: BookingCardProps) => {
 				{stay && (
 					<span className="sx-booking-meta">
 						<PlaceOutlinedIcon aria-hidden="true" />
-						{[stay.propertyAddress, toLabel(stay.propertyLocation)].filter(Boolean).join(', ')}
+						{[stay.propertyAddress, cityLabel(stay.propertyLocation)].filter(Boolean).join(', ')}
 					</span>
 				)}
 				<div className="sx-booking-facts">

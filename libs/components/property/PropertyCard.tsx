@@ -3,7 +3,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Property } from '../../types/property/property';
 import Link from 'next/link';
-import { formatKRW } from '../../utils';
+import { cityLabel, formatKRW } from '../../utils';
 import { REACT_APP_API_URL } from '../../config';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
@@ -80,7 +80,7 @@ const PropertyCard = (props: PropertyCardType) => {
 			<div className="sx-stay-content">
 				<div>
 					<span className="sx-stay-address">
-						{property.propertyAddress}, {property.propertyLocation}
+						{property.propertyAddress}, {cityLabel(property.propertyLocation)}
 					</span>
 					<h3>
 						<Link href={detailHref}>{property.propertyTitle}</Link>

@@ -17,7 +17,7 @@ import Moment from 'react-moment';
 import { Booking } from '../../../types/booking/booking';
 import { BookingStatus, PaymentStatus } from '../../../enums/booking.enum';
 import { REACT_APP_API_URL } from '../../../config';
-import { formatKRW } from '../../../utils';
+import { cityLabel, formatKRW } from '../../../utils';
 
 interface BookingListProps {
 	bookings: Booking[];
@@ -76,7 +76,7 @@ export const BookingList = ({ bookings, cancelHandler }: BookingListProps) => {
 											</Typography>
 										</Link>
 										<Typography variant={'caption'} color={'text.secondary'}>
-											{booking.propertyData?.propertyLocation}
+											{cityLabel(booking.propertyData?.propertyLocation)}
 										</Typography>
 									</TableCell>
 									<TableCell align="left">

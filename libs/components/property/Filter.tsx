@@ -7,6 +7,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import BookingCalendar from './BookingCalendar';
+import { cityLabel } from '../../utils';
 
 /** Plain local YYYY-MM-DD (never toISOString). */
 const pad = (value: number) => String(value).padStart(2, '0');
@@ -314,7 +315,7 @@ const Filter = (props: FilterType) => {
 								checked={(search.locationList || []).includes(location)}
 								onChange={propertyLocationSelectHandler}
 							/>
-							<span>{toLabel(location)}</span>
+							<span>{cityLabel(location)}</span>
 						</label>
 					))}
 				</div>

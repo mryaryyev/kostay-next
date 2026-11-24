@@ -1,4 +1,4 @@
-import { formatKRW } from '../../utils';
+import { cityLabel, formatKRW } from '../../utils';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import IconButton from '@mui/material/IconButton';
@@ -19,7 +19,6 @@ interface HomeStayCardProps {
 	variant?: 'default' | 'popular';
 }
 
-const toTitleCase = (value: string) => (value ? `${value.charAt(0)}${value.slice(1).toLowerCase()}` : '');
 
 const plural = (count: number, word: string) => `${count} ${count === 1 ? word : `${word}s`}`;
 
@@ -65,7 +64,7 @@ const HomeStayCard = (props: HomeStayCardProps) => {
 				)}
 				<span className="sx-stay-location">
 					<PlaceIcon aria-hidden="true" />
-					{toTitleCase(property.propertyLocation)}
+					{cityLabel(property.propertyLocation)}
 				</span>
 			</div>
 			<div className="sx-stay-body">

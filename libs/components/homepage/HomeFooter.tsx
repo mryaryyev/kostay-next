@@ -5,6 +5,7 @@ import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import KostayLogo from '../common/KostayLogo';
 import { PropertyLocation, PropertyType } from '../../enums/property.enum';
+import { cityLabel } from '../../utils';
 
 interface FooterLink {
 	label: string;
@@ -25,7 +26,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
 		title: 'Destinations',
 		// All eight backend locations, shown in two columns of four.
 		links: Object.values(PropertyLocation).map((location) => ({
-			label: location.charAt(0) + location.slice(1).toLowerCase(),
+			label: cityLabel(location),
 			href: `/stay?location=${location}`,
 		})),
 	},
